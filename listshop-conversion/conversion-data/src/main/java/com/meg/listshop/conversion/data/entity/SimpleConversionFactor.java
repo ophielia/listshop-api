@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.data.entity;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
@@ -11,6 +17,18 @@ public class SimpleConversionFactor implements ConversionFactor {
     private String marker;
     private String unitSize;
     private Boolean unitDefault;
+
+    public SimpleConversionFactor() {
+    }
+
+    public SimpleConversionFactor(Double factor, UnitEntity toUnit, UnitEntity fromUnit, String marker, String unitSize, Boolean unitDefault) {
+        this.factor = factor;
+        this.toUnit = toUnit;
+        this.fromUnit = fromUnit;
+        this.marker = marker;
+        this.unitSize = unitSize;
+        this.unitDefault = unitDefault;
+    }
 
     public static ConversionFactor reverseFactor(ConversionFactor factor) {
         SimpleConversionFactor reversed = new SimpleConversionFactor();

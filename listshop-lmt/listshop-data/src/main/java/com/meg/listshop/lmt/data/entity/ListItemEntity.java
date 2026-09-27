@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
@@ -12,6 +18,15 @@ import java.util.*;
  */
 @Entity
 @Table(name = "list_item")
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "filledItem",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "details"),
+                        @NamedAttributeNode(value = "tag")
+                }
+        )
+})
 public class ListItemEntity {
 
     @Id
@@ -20,7 +35,10 @@ public class ListItemEntity {
     @Column(name = "item_id")
     private Long itemId;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL)
     private List<ListItemDetailEntity> details = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.MERGE)
@@ -50,6 +68,9 @@ public class ListItemEntity {
     private Date removedOn;
 
     private Date updatedOn;
+
+    @Column(name = "last_changed")
+    private Date lastChanged;
 
     @Column(name = "quantity")
     private Double roundedQuantity;
@@ -171,6 +192,13 @@ public class ListItemEntity {
         this.tagId = tagId;
     }
 
+    public Date getLastChanged() {
+        return lastChanged;
+    }
+
+    public void setLastChanged(Date lastChanged) {
+        this.lastChanged = lastChanged;
+    }
 
     public String getRawListSources() {
         return rawListSources != null ? rawListSources : "";
@@ -265,7 +293,6 @@ public class ListItemEntity {
     public String toString() {
         return "ListItemEntity{" +
                 "item_id=" + itemId +
-                ", details=" + details +
                 ", tag=" + tag +
                 ", rawDishSources='" + rawDishSources + '\'' +
                 ", rawListSources='" + rawListSources + '\'' +
@@ -287,12 +314,26 @@ public class ListItemEntity {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ListItemEntity)) return false;
+        ListItemEntity that = (ListItemEntity) o;
+        return itemId != null && itemId.equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
     public ListItemEntity createCopy() {
         ListItemEntity cloned = new ListItemEntity();
         cloned.setAddedOn(this.getAddedOn());
         cloned.setCrossedOff(this.getCrossedOff());
         cloned.setRemovedOn(this.getRemovedOn());
         cloned.setUpdatedOn(this.getUpdatedOn());
+        cloned.setLastChanged(this.getLastChanged());
         cloned.setUsedCount(this.getUsedCount());
         cloned.setListId(this.getListId());
         cloned.setRawDishSources(this.getRawDishSources());

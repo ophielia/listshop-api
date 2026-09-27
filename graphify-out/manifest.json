@@ -1,0 +1,3956 @@
+{
+  ".junie/memory/language.json": {
+    "mtime": 1784960005.113409,
+    "seen": 1789036138.7188601,
+    "ast_hash": "d751713988987e9331980363e24189ce",
+    "semantic_hash": "d751713988987e9331980363e24189ce"
+  },
+  "common/listshop-common-data/pom.xml": {
+    "mtime": 1780143344.034289,
+    "seen": 1789036138.718863,
+    "ast_hash": "46be9b19204bb76f6eba1a2788795075",
+    "semantic_hash": "46be9b19204bb76f6eba1a2788795075"
+  },
+  "common/listshop-common-data/src/main/java/com/meg/listshop/common/data/entity/UnitEntity.java": {
+    "mtime": 1780143544.1685905,
+    "seen": 1789036138.718865,
+    "ast_hash": "87fa362719b690cf76e87619e8fe6537",
+    "semantic_hash": "87fa362719b690cf76e87619e8fe6537"
+  },
+  "common/listshop-common-data/src/main/java/com/meg/listshop/common/data/repository/UnitRepository.java": {
+    "mtime": 1743175216.293761,
+    "seen": 1789036138.7188659,
+    "ast_hash": "ff9e860b8216c35fdd6916e0f7baa7d7",
+    "semantic_hash": "ff9e860b8216c35fdd6916e0f7baa7d7"
+  },
+  "common/listshop-common/pom.xml": {
+    "mtime": 1782880448.2173297,
+    "seen": 1789036138.718868,
+    "ast_hash": "99825e273f20d612c4bec9ce84f01f74",
+    "semantic_hash": "99825e273f20d612c4bec9ce84f01f74"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/DateUtils.java": {
+    "mtime": 1719760169.8801353,
+    "seen": 1789036138.718869,
+    "ast_hash": "3488f917c7488cc09e7069b232bdc038",
+    "semantic_hash": "3488f917c7488cc09e7069b232bdc038"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/FlatStringUtils.java": {
+    "mtime": 1719760169.8803096,
+    "seen": 1789036138.718871,
+    "ast_hash": "e4ccf6dc964ad849086282291bd55141",
+    "semantic_hash": "e4ccf6dc964ad849086282291bd55141"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/RoundingType.java": {
+    "mtime": 1743175216.294189,
+    "seen": 1789036138.718872,
+    "ast_hash": "43c3982468bddeaa20d6dda0e1451b6d",
+    "semantic_hash": "43c3982468bddeaa20d6dda0e1451b6d"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/RoundingUtils.java": {
+    "mtime": 1782880448.217723,
+    "seen": 1789036138.7188742,
+    "ast_hash": "d80cee46f07e1c8e00e83f264b6e7739",
+    "semantic_hash": "d80cee46f07e1c8e00e83f264b6e7739"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/SharedPropertyKeys.java": {
+    "mtime": 1743175216.294556,
+    "seen": 1789036138.718875,
+    "ast_hash": "4cabb5eda434ab749cf66e9098deb5d6",
+    "semantic_hash": "4cabb5eda434ab749cf66e9098deb5d6"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/StringTools.java": {
+    "mtime": 1780143344.0349865,
+    "seen": 1789036138.7188768,
+    "ast_hash": "0583e734cef92b6f5a4a3e18cb9fd1ed",
+    "semantic_hash": "0583e734cef92b6f5a4a3e18cb9fd1ed"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/UnitSubtype.java": {
+    "mtime": 1719760169.880791,
+    "seen": 1789036138.718879,
+    "ast_hash": "99bdbc70b7430ff8a08d093b1b50c2a3",
+    "semantic_hash": "99bdbc70b7430ff8a08d093b1b50c2a3"
+  },
+  "common/listshop-common/src/main/java/com/meg/listshop/common/UnitType.java": {
+    "mtime": 1780143544.1691675,
+    "seen": 1789036138.71888,
+    "ast_hash": "9666639dc093909a4ff164b8fc2b6613",
+    "semantic_hash": "9666639dc093909a4ff164b8fc2b6613"
+  },
+  "common/listshop-common/src/test/java/com/meg/listshop/common/RoundingUtilsTest.java": {
+    "mtime": 1782880448.2183757,
+    "seen": 1789036138.7188811,
+    "ast_hash": "998fefbd678b3a5a846587ced1ce6f34",
+    "semantic_hash": "998fefbd678b3a5a846587ced1ce6f34"
+  },
+  "common/pom.xml": {
+    "mtime": 1780143344.0352,
+    "seen": 1789036138.718883,
+    "ast_hash": "5c79fa7af8b14131361223550eebbd2c",
+    "semantic_hash": "5c79fa7af8b14131361223550eebbd2c"
+  },
+  "listshop-api/pom.xml": {
+    "mtime": 1780143344.035602,
+    "seen": 1789036138.718884,
+    "ast_hash": "10125fe3588d0726e22619393347982d",
+    "semantic_hash": "10125fe3588d0726e22619393347982d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/Dummy.java": {
+    "mtime": 1647073212.8448107,
+    "seen": 1789036138.718886,
+    "ast_hash": "6152c81cc4c1287c63a08096fc85775e",
+    "semantic_hash": "6152c81cc4c1287c63a08096fc85775e"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/controller/AdminLayoutRestControllerApi.java": {
+    "mtime": 1766819271.9072273,
+    "seen": 1789036138.7188869,
+    "ast_hash": "33d77f4af1fce7e6b69efea0032508a9",
+    "semantic_hash": "33d77f4af1fce7e6b69efea0032508a9"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/controller/AdminTagRestControllerApi.java": {
+    "mtime": 1768588829.35114,
+    "seen": 1789036138.718888,
+    "ast_hash": "f521199d5d1c7db3ae0eb441ac588ec7",
+    "semantic_hash": "f521199d5d1c7db3ae0eb441ac588ec7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/controller/AdminUserRestControllerApi.java": {
+    "mtime": 1768588829.351339,
+    "seen": 1789036138.71889,
+    "ast_hash": "18ffef0a2a1d39a78812d4264df78a86",
+    "semantic_hash": "18ffef0a2a1d39a78812d4264df78a86"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/model/AdminUser.java": {
+    "mtime": 1657371214.8065636,
+    "seen": 1789036138.718891,
+    "ast_hash": "c88d98682d0bedf80e3359f4b2cbb7ae",
+    "semantic_hash": "c88d98682d0bedf80e3359f4b2cbb7ae"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/model/AdminUserListResource.java": {
+    "mtime": 1653456462.2464235,
+    "seen": 1789036138.718892,
+    "ast_hash": "bcb318274bc26d97a3d3f0bfb3266a6b",
+    "semantic_hash": "bcb318274bc26d97a3d3f0bfb3266a6b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/model/PostSearchTags.java": {
+    "mtime": 1709488005.4910553,
+    "seen": 1789036138.718894,
+    "ast_hash": "08d9816e76c5d193b55ffc81bf81e2bf",
+    "semantic_hash": "08d9816e76c5d193b55ffc81bf81e2bf"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/model/PostSearchUsers.java": {
+    "mtime": 1653456462.2468188,
+    "seen": 1789036138.7188962,
+    "ast_hash": "110affb98186eaad6beebc57c94dfeb4",
+    "semantic_hash": "110affb98186eaad6beebc57c94dfeb4"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/admin/model/PostUpdateTags.java": {
+    "mtime": 1768588829.3514886,
+    "seen": 1789036138.7188969,
+    "ast_hash": "d0874185030836911a4579370f8065a5",
+    "semantic_hash": "d0874185030836911a4579370f8065a5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/controller/AuthenticationRestControllerApi.java": {
+    "mtime": 1743175216.2959344,
+    "seen": 1789036138.7188978,
+    "ast_hash": "3056fcb3ec4793a837ec77e2e6fc51cc",
+    "semantic_hash": "3056fcb3ec4793a837ec77e2e6fc51cc"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/controller/ProposalRestControllerApi.java": {
+    "mtime": 1768588829.351715,
+    "seen": 1789036138.7189,
+    "ast_hash": "2a765632b70c900057e3825a8486348a",
+    "semantic_hash": "2a765632b70c900057e3825a8486348a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/controller/UserRestControllerApi.java": {
+    "mtime": 1780143344.0360625,
+    "seen": 1789036138.718901,
+    "ast_hash": "12190e8abeaeb6dfd121cd59eb9784ae",
+    "semantic_hash": "12190e8abeaeb6dfd121cd59eb9784ae"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/exceptions/UserCreateException.java": {
+    "mtime": 1780143344.0362823,
+    "seen": 1789036138.718903,
+    "ast_hash": "4f81de8334748c1297986a132c8bcf31",
+    "semantic_hash": "4f81de8334748c1297986a132c8bcf31"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/ClientDeviceInfo.java": {
+    "mtime": 1647073212.84524,
+    "seen": 1789036138.718904,
+    "ast_hash": "44c87b6edc46bc9fc9446879b6eefb27",
+    "semantic_hash": "44c87b6edc46bc9fc9446879b6eefb27"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/ClientType.java": {
+    "mtime": 1647073212.8452964,
+    "seen": 1789036138.7189062,
+    "ast_hash": "0995d576f39f9724f1ce55da59a3babf",
+    "semantic_hash": "0995d576f39f9724f1ce55da59a3babf"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/ClientVersions.java": {
+    "mtime": 1648364808.481994,
+    "seen": 1789036138.7189069,
+    "ast_hash": "4016cebe60440046eb1fc8a73d0381f3",
+    "semantic_hash": "4016cebe60440046eb1fc8a73d0381f3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/JwtAuthenticationRequest.java": {
+    "mtime": 1647073212.8453524,
+    "seen": 1789036138.7189078,
+    "ast_hash": "f81e50b8b64dec7b942e0271a2d89dd5",
+    "semantic_hash": "f81e50b8b64dec7b942e0271a2d89dd5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/JwtAuthenticationResponse.java": {
+    "mtime": 1647073212.8454092,
+    "seen": 1789036138.71891,
+    "ast_hash": "5b31c1482f8c42336a963fefbe720aba",
+    "semantic_hash": "5b31c1482f8c42336a963fefbe720aba"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/JwtAuthorizationRequest.java": {
+    "mtime": 1647073212.845464,
+    "seen": 1789036138.718912,
+    "ast_hash": "486fad27aa73db40f8f09fc1bda3ee7e",
+    "semantic_hash": "486fad27aa73db40f8f09fc1bda3ee7e"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/ListShopPayload.java": {
+    "mtime": 1648364808.4822876,
+    "seen": 1789036138.718913,
+    "ast_hash": "cb7187928294c798096527daed5d7b1b",
+    "semantic_hash": "cb7187928294c798096527daed5d7b1b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/PostChangePassword.java": {
+    "mtime": 1648364808.4825964,
+    "seen": 1789036138.718915,
+    "ast_hash": "c4e9a9071779625ad6bc4281e1248db1",
+    "semantic_hash": "c4e9a9071779625ad6bc4281e1248db1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/PostToken.java": {
+    "mtime": 1647073212.8455179,
+    "seen": 1789036138.7189162,
+    "ast_hash": "6ee3470da3a511da93c7017dc18b963a",
+    "semantic_hash": "6ee3470da3a511da93c7017dc18b963a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/PostTokenRequest.java": {
+    "mtime": 1647073212.8455863,
+    "seen": 1789036138.7189171,
+    "ast_hash": "dc65babdacda8cd21120d78cdc51c7e5",
+    "semantic_hash": "dc65babdacda8cd21120d78cdc51c7e5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/PostUserProperties.java": {
+    "mtime": 1657371214.8068962,
+    "seen": 1789036138.7189188,
+    "ast_hash": "c13e5db121432f52f6b62b5eb9123e99",
+    "semantic_hash": "c13e5db121432f52f6b62b5eb9123e99"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/ProposalResource.java": {
+    "mtime": 1647073212.8456435,
+    "seen": 1789036138.71892,
+    "ast_hash": "1607774137054b18b0eafe1d20f24bea",
+    "semantic_hash": "1607774137054b18b0eafe1d20f24bea"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/PutCreateUser.java": {
+    "mtime": 1780143344.036768,
+    "seen": 1789036138.718922,
+    "ast_hash": "bd4898169c593205704930bc66a2377a",
+    "semantic_hash": "bd4898169c593205704930bc66a2377a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/Role.java": {
+    "mtime": 1647073212.8457808,
+    "seen": 1789036138.718923,
+    "ast_hash": "3c8f6e5a545b3a53808dce03fcb0f1f8",
+    "semantic_hash": "3c8f6e5a545b3a53808dce03fcb0f1f8"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/TargetProposal.java": {
+    "mtime": 1647073212.845844,
+    "seen": 1789036138.718925,
+    "ast_hash": "4f9eb7b00dc82e43fe42169940d61b69",
+    "semantic_hash": "4f9eb7b00dc82e43fe42169940d61b69"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/TargetProposalDish.java": {
+    "mtime": 1647073212.8459048,
+    "seen": 1789036138.7189271,
+    "ast_hash": "a88a5b84894d58fef2b78edbf0c655f6",
+    "semantic_hash": "a88a5b84894d58fef2b78edbf0c655f6"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/TargetProposalSlot.java": {
+    "mtime": 1647073212.845966,
+    "seen": 1789036138.7189279,
+    "ast_hash": "0e17c56c779582b923660734cae53d31",
+    "semantic_hash": "0e17c56c779582b923660734cae53d31"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/TargetType.java": {
+    "mtime": 1647073212.8460243,
+    "seen": 1789036138.71893,
+    "ast_hash": "95395f04880076ced46922f9e9a74319",
+    "semantic_hash": "95395f04880076ced46922f9e9a74319"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/User.java": {
+    "mtime": 1674202233.9582615,
+    "seen": 1789036138.718931,
+    "ast_hash": "eacd3126e5abfb061411d9acd2596a86",
+    "semantic_hash": "eacd3126e5abfb061411d9acd2596a86"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/UserPropertiesResource.java": {
+    "mtime": 1657371214.8069842,
+    "seen": 1789036138.718933,
+    "ast_hash": "f3be243837cf0bf51158bfdfc4167c72",
+    "semantic_hash": "f3be243837cf0bf51158bfdfc4167c72"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/UserProperty.java": {
+    "mtime": 1657371214.8070629,
+    "seen": 1789036138.718934,
+    "ast_hash": "fcf46f79394dd0abcacf156e72f9afb3",
+    "semantic_hash": "fcf46f79394dd0abcacf156e72f9afb3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/UserPropertyResource.java": {
+    "mtime": 1657371214.8071399,
+    "seen": 1789036138.718936,
+    "ast_hash": "ef946a06d6f9fed5dbcbe2a8842b3223",
+    "semantic_hash": "ef946a06d6f9fed5dbcbe2a8842b3223"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/auth/api/model/UserResource.java": {
+    "mtime": 1647073212.8461475,
+    "seen": 1789036138.7189372,
+    "ast_hash": "76d6b95dfa4218e9c798226317ed4846",
+    "semantic_hash": "76d6b95dfa4218e9c798226317ed4846"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/CampaignControllerApi.java": {
+    "mtime": 1743175216.296611,
+    "seen": 1789036138.718938,
+    "ast_hash": "cded5dfdb0084523597855f586b99543",
+    "semantic_hash": "cded5dfdb0084523597855f586b99543"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/DishRestControllerApi.java": {
+    "mtime": 1780143344.037165,
+    "seen": 1789036138.71894,
+    "ast_hash": "7d9d736b768f6b80e4351c0ed8aac2c5",
+    "semantic_hash": "7d9d736b768f6b80e4351c0ed8aac2c5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/LayoutRestControllerApi.java": {
+    "mtime": 1743175216.2970335,
+    "seen": 1789036138.718941,
+    "ast_hash": "0ab0fac46d10b8f984013169bcc554a5",
+    "semantic_hash": "0ab0fac46d10b8f984013169bcc554a5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/LegacyShoppingListRestControllerApi.java": {
+    "mtime": 1784964309.6250577,
+    "seen": 1789036138.718942,
+    "ast_hash": "599d37b62e44f7b6ef5e88f5d7a1e24a",
+    "semantic_hash": "599d37b62e44f7b6ef5e88f5d7a1e24a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/MealPlanRestControllerApi.java": {
+    "mtime": 1780143344.0375051,
+    "seen": 1789036138.718944,
+    "ast_hash": "6dc06a6d411fef34b4cf3d518b2456c1",
+    "semantic_hash": "6dc06a6d411fef34b4cf3d518b2456c1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/StatisticRestControllerApi.java": {
+    "mtime": 1780143344.0377464,
+    "seen": 1789036138.718945,
+    "ast_hash": "b526cd65ee7b6d6e9d586066c8dc8c51",
+    "semantic_hash": "b526cd65ee7b6d6e9d586066c8dc8c51"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/TagRestControllerApi.java": {
+    "mtime": 1768588829.3529549,
+    "seen": 1789036138.718946,
+    "ast_hash": "3a011aaca4417786ba6b44b3c64db1b4",
+    "semantic_hash": "3a011aaca4417786ba6b44b3c64db1b4"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/TargetRestControllerApi.java": {
+    "mtime": 1768588829.3531663,
+    "seen": 1789036138.7189481,
+    "ast_hash": "3c7bf591f83d24df1573afbe864c63fd",
+    "semantic_hash": "3c7bf591f83d24df1573afbe864c63fd"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/v2/AmountRestControllerApi.java": {
+    "mtime": 1719760169.8817842,
+    "seen": 1789036138.718949,
+    "ast_hash": "06cfdbab19c215f34619ae0e50d1ac29",
+    "semantic_hash": "06cfdbab19c215f34619ae0e50d1ac29"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/v2/V2DishRestControllerApi.java": {
+    "mtime": 1788973518.691484,
+    "seen": 1789036138.718951,
+    "ast_hash": "83fb7b3a2e225a4811ff8745e6baa2a3",
+    "semantic_hash": "83fb7b3a2e225a4811ff8745e6baa2a3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/v2/V2LayoutRestControllerApi.java": {
+    "mtime": 1782880448.2189088,
+    "seen": 1789036138.718952,
+    "ast_hash": "592cfea7e7ef059d07ef636f3497c440",
+    "semantic_hash": "592cfea7e7ef059d07ef636f3497c440"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/v2/V2ShoppingListRestControllerApi.java": {
+    "mtime": 1784964309.6261406,
+    "seen": 1789036138.718953,
+    "ast_hash": "72c82e9f40b10ec5ed57a2cf7dbbade2",
+    "semantic_hash": "72c82e9f40b10ec5ed57a2cf7dbbade2"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/v2/V2TagRestControllerApi.java": {
+    "mtime": 1788672412.4679132,
+    "seen": 1789036138.718955,
+    "ast_hash": "7b602fe3832bd820f1759d8956ebce14",
+    "semantic_hash": "7b602fe3832bd820f1759d8956ebce14"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ActionIgnoredException.java": {
+    "mtime": 1684876784.7325714,
+    "seen": 1789036138.718956,
+    "ast_hash": "cf4824685cfadf087fdbf58ada5a3498",
+    "semantic_hash": "cf4824685cfadf087fdbf58ada5a3498"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ActionInvalidException.java": {
+    "mtime": 1684876784.7335618,
+    "seen": 1789036138.7189581,
+    "ast_hash": "ee501fd994f43a73191259bb65f3aa05",
+    "semantic_hash": "ee501fd994f43a73191259bb65f3aa05"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/AuthenticationException.java": {
+    "mtime": 1684876784.7359812,
+    "seen": 1789036138.718959,
+    "ast_hash": "77e0599a3d0f1ba0196a1ba99cbf9b58",
+    "semantic_hash": "77e0599a3d0f1ba0196a1ba99cbf9b58"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/BadParameterException.java": {
+    "mtime": 1684876784.7367113,
+    "seen": 1789036138.71896,
+    "ast_hash": "190903d25259c31841e80f6fdb5939b4",
+    "semantic_hash": "190903d25259c31841e80f6fdb5939b4"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ItemProcessingException.java": {
+    "mtime": 1766819271.9079063,
+    "seen": 1789036138.718961,
+    "ast_hash": "7b4571d2836ba9bd442b1dad445d5d91",
+    "semantic_hash": "7b4571d2836ba9bd442b1dad445d5d91"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ObjectNotFoundException.java": {
+    "mtime": 1684876784.7372773,
+    "seen": 1789036138.718963,
+    "ast_hash": "84c524eb0a1a6195a4eceb74a3a624d0",
+    "semantic_hash": "84c524eb0a1a6195a4eceb74a3a624d0"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ObjectNotYoursException.java": {
+    "mtime": 1684876784.7392619,
+    "seen": 1789036138.7189639,
+    "ast_hash": "e188a30c7ae5bd83c63bf57d0123290c",
+    "semantic_hash": "e188a30c7ae5bd83c63bf57d0123290c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ProcessingException.java": {
+    "mtime": 1684876784.7401783,
+    "seen": 1789036138.718966,
+    "ast_hash": "0ba1b712af5641bc5da3d6f42138f4e0",
+    "semantic_hash": "0ba1b712af5641bc5da3d6f42138f4e0"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ProposalProcessingException.java": {
+    "mtime": 1684876784.7405853,
+    "seen": 1789036138.718967,
+    "ast_hash": "ee947427251d82b9ecc5875fa4a3ef04",
+    "semantic_hash": "ee947427251d82b9ecc5875fa4a3ef04"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/TagStructureException.java": {
+    "mtime": 1647073212.8473334,
+    "seen": 1789036138.7189682,
+    "ast_hash": "a0a1fbd6fc3f0ad7e76a7ae31be23691",
+    "semantic_hash": "a0a1fbd6fc3f0ad7e76a7ae31be23691"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/TokenException.java": {
+    "mtime": 1684876784.7409828,
+    "seen": 1789036138.71897,
+    "ast_hash": "e45cfdab4a6734f1aa2025fca314703d",
+    "semantic_hash": "e45cfdab4a6734f1aa2025fca314703d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/UserNotFoundException.java": {
+    "mtime": 1647073212.847461,
+    "seen": 1789036138.7189708,
+    "ast_hash": "69b59b0f273787288801d01d6dc0dc19",
+    "semantic_hash": "69b59b0f273787288801d01d6dc0dc19"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/AbstractListShopResource.java": {
+    "mtime": 1743175216.2983923,
+    "seen": 1789036138.718972,
+    "ast_hash": "d9b791534f3f481405f7c98200ca6a6a",
+    "semantic_hash": "d9b791534f3f481405f7c98200ca6a6a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/AdminTagFullInfo.java": {
+    "mtime": 1743175216.2986732,
+    "seen": 1789036138.7189739,
+    "ast_hash": "9e1ee59e6f88dcb9bb574f41381d0329",
+    "semantic_hash": "9e1ee59e6f88dcb9bb574f41381d0329"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/AdminTagFullInfoResource.java": {
+    "mtime": 1709488005.4919214,
+    "seen": 1789036138.718975,
+    "ast_hash": "661de6656f6b90411945b1c0556afff8",
+    "semantic_hash": "661de6656f6b90411945b1c0556afff8"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ApiError.java": {
+    "mtime": 1657371214.8072805,
+    "seen": 1789036138.718977,
+    "ast_hash": "0e7f733bd441f20e684b65be7eb816f7",
+    "semantic_hash": "0e7f733bd441f20e684b65be7eb816f7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ApproachType.java": {
+    "mtime": 1657371214.8073392,
+    "seen": 1789036138.7189782,
+    "ast_hash": "b6ca4ca50c96bf813999b7093df2e1a5",
+    "semantic_hash": "b6ca4ca50c96bf813999b7093df2e1a5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/CampaignPut.java": {
+    "mtime": 1743175216.2988994,
+    "seen": 1789036138.7189791,
+    "ast_hash": "32c0602f0aa9e27db305f740e8be4b56",
+    "semantic_hash": "32c0602f0aa9e27db305f740e8be4b56"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Category.java": {
+    "mtime": 1653456462.2476301,
+    "seen": 1789036138.718981,
+    "ast_hash": "d1400f5790de8e3e3c8dfdb9961e8fea",
+    "semantic_hash": "d1400f5790de8e3e3c8dfdb9961e8fea"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/CategoryListResource.java": {
+    "mtime": 1674202233.9603705,
+    "seen": 1789036138.718982,
+    "ast_hash": "ba9fbccf075269331e9c4552eb35d57f",
+    "semantic_hash": "ba9fbccf075269331e9c4552eb35d57f"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/CategoryMappingListResource.java": {
+    "mtime": 1709488005.4924827,
+    "seen": 1789036138.718983,
+    "ast_hash": "88088437de1f15477609ff3961c6799e",
+    "semantic_hash": "88088437de1f15477609ff3961c6799e"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/CategoryResource.java": {
+    "mtime": 1653456462.2478101,
+    "seen": 1789036138.718986,
+    "ast_hash": "4d2a34363f7ec5b9babfb320184f5e15",
+    "semantic_hash": "4d2a34363f7ec5b9babfb320184f5e15"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/CategoryType.java": {
+    "mtime": 1657371214.8073945,
+    "seen": 1789036138.718987,
+    "ast_hash": "8fbc324229e331bfc8bdc7afa2a5ea20",
+    "semantic_hash": "8fbc324229e331bfc8bdc7afa2a5ea20"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ContextType.java": {
+    "mtime": 1657371214.8074448,
+    "seen": 1789036138.718988,
+    "ast_hash": "71b3a757f5d937d62b246e682b278ebd",
+    "semantic_hash": "71b3a757f5d937d62b246e682b278ebd"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ConversionGrid.java": {
+    "mtime": 1709488005.4930017,
+    "seen": 1789036138.71899,
+    "ast_hash": "ab5597ee63453f32531420198783f2f3",
+    "semantic_hash": "ab5597ee63453f32531420198783f2f3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ConversionSample.java": {
+    "mtime": 1719760169.8824265,
+    "seen": 1789036138.718991,
+    "ast_hash": "eb7f593a1066d5d48e30383b7f7cfa1b",
+    "semantic_hash": "eb7f593a1066d5d48e30383b7f7cfa1b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Dish.java": {
+    "mtime": 1719760169.8825936,
+    "seen": 1789036138.7189918,
+    "ast_hash": "bc11fa217ab3c1b7becbcb573616dded",
+    "semantic_hash": "bc11fa217ab3c1b7becbcb573616dded"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/DishListResource.java": {
+    "mtime": 1653456462.2482088,
+    "seen": 1789036138.718994,
+    "ast_hash": "efa4e156f021518429db009d85c705b2",
+    "semantic_hash": "efa4e156f021518429db009d85c705b2"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/DishRatingInfo.java": {
+    "mtime": 1719760169.8827846,
+    "seen": 1789036138.7189949,
+    "ast_hash": "b69d94815a8d7f6b30880a2180cc3817",
+    "semantic_hash": "b69d94815a8d7f6b30880a2180cc3817"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/DishResource.java": {
+    "mtime": 1653456462.2485054,
+    "seen": 1789036138.718996,
+    "ast_hash": "709b6c52ca4d1e50e590b24eee7e0dff",
+    "semantic_hash": "709b6c52ca4d1e50e590b24eee7e0dff"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/DishSort.java": {
+    "mtime": 1657371214.807507,
+    "seen": 1789036138.718998,
+    "ast_hash": "ac2ff79945b4ae8113545e1abd87e622",
+    "semantic_hash": "ac2ff79945b4ae8113545e1abd87e622"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/DishSortDirection.java": {
+    "mtime": 1657371214.8075778,
+    "seen": 1789036138.7189991,
+    "ast_hash": "c3ee0455b62687885cc5d99af177d101",
+    "semantic_hash": "c3ee0455b62687885cc5d99af177d101"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/DishSortKey.java": {
+    "mtime": 1657371214.8076394,
+    "seen": 1789036138.719,
+    "ast_hash": "b23471ad3ac158a8414eb26eabad1314",
+    "semantic_hash": "b23471ad3ac158a8414eb26eabad1314"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedCategoryMappingListResource.java": {
+    "mtime": 1709488005.493634,
+    "seen": 1789036138.719001,
+    "ast_hash": "9d05a15e4aaa89605d7f96ef834a25b7",
+    "semantic_hash": "9d05a15e4aaa89605d7f96ef834a25b7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedDishListResource.java": {
+    "mtime": 1653456462.2487502,
+    "seen": 1789036138.719003,
+    "ast_hash": "ef5b89cc03d1dfd2ed7bdffa98da9c57",
+    "semantic_hash": "ef5b89cc03d1dfd2ed7bdffa98da9c57"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedFoodCategoryListResource.java": {
+    "mtime": 1709488005.4941666,
+    "seen": 1789036138.719004,
+    "ast_hash": "5a53ae6c756f7b7e833e6b77afb42fc3",
+    "semantic_hash": "5a53ae6c756f7b7e833e6b77afb42fc3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedFoodListResource.java": {
+    "mtime": 1709488005.4947498,
+    "seen": 1789036138.7190049,
+    "ast_hash": "9d8755a19bd1e9e920a27d6d9524dad0",
+    "semantic_hash": "9d8755a19bd1e9e920a27d6d9524dad0"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedLayoutCategoryListResource.java": {
+    "mtime": 1766819271.908062,
+    "seen": 1789036138.719007,
+    "ast_hash": "f58accea77198831f1f447dc0833bcda",
+    "semantic_hash": "f58accea77198831f1f447dc0833bcda"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedListCategoryListResource.java": {
+    "mtime": 1674202233.9611614,
+    "seen": 1789036138.719008,
+    "ast_hash": "55a0f1919ed5cb4a00e7f6336b68cef7",
+    "semantic_hash": "55a0f1919ed5cb4a00e7f6336b68cef7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedListLayoutListResource.java": {
+    "mtime": 1674202233.9626908,
+    "seen": 1789036138.719009,
+    "ast_hash": "4a091e75a18d4183b030eacc5dacc132",
+    "semantic_hash": "4a091e75a18d4183b030eacc5dacc132"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedMealPlanListResource.java": {
+    "mtime": 1647073212.8480496,
+    "seen": 1789036138.719011,
+    "ast_hash": "f6342455b97ce5a285f2330333dad427",
+    "semantic_hash": "f6342455b97ce5a285f2330333dad427"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedShoppingListListResource.java": {
+    "mtime": 1647073212.848114,
+    "seen": 1789036138.719012,
+    "ast_hash": "f10d8abae142fbe619a56d1f3c0c7ac1",
+    "semantic_hash": "f10d8abae142fbe619a56d1f3c0c7ac1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedSuggestionListResource.java": {
+    "mtime": 1719760169.8830748,
+    "seen": 1789036138.7190132,
+    "ast_hash": "8947961b50891041512bce1cd344fde2",
+    "semantic_hash": "8947961b50891041512bce1cd344fde2"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedTagListResource.java": {
+    "mtime": 1684876784.7440321,
+    "seen": 1789036138.719015,
+    "ast_hash": "30bb3359f8ab9a9e27ca8f719cdf9d6a",
+    "semantic_hash": "30bb3359f8ab9a9e27ca8f719cdf9d6a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/EmbeddedTargetListResource.java": {
+    "mtime": 1647073212.8482413,
+    "seen": 1789036138.7190158,
+    "ast_hash": "35f59c78dd14f7d2e3b6ba955f6c3874",
+    "semantic_hash": "35f59c78dd14f7d2e3b6ba955f6c3874"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Food.java": {
+    "mtime": 1709488005.4952054,
+    "seen": 1789036138.719017,
+    "ast_hash": "3372c1ee2c298d61c4470bf477ff98e7",
+    "semantic_hash": "3372c1ee2c298d61c4470bf477ff98e7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodCategory.java": {
+    "mtime": 1709488005.4954445,
+    "seen": 1789036138.719019,
+    "ast_hash": "e6eded427ad88cdcfa5f501ad8767fb4",
+    "semantic_hash": "e6eded427ad88cdcfa5f501ad8767fb4"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodCategoryListResource.java": {
+    "mtime": 1709488005.4957967,
+    "seen": 1789036138.7190201,
+    "ast_hash": "3e8c1d26502aaa55a121b725ec40db6d",
+    "semantic_hash": "3e8c1d26502aaa55a121b725ec40db6d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodCategoryMapping.java": {
+    "mtime": 1709488005.4960318,
+    "seen": 1789036138.719021,
+    "ast_hash": "fdbc6a28c5ea177695b18b6eb88c01f8",
+    "semantic_hash": "fdbc6a28c5ea177695b18b6eb88c01f8"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodCategoryMappingResource.java": {
+    "mtime": 1709488005.4966364,
+    "seen": 1789036138.719023,
+    "ast_hash": "35bf0e285619b3f8d9f5d0aed18b4134",
+    "semantic_hash": "35bf0e285619b3f8d9f5d0aed18b4134"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodCategoryResource.java": {
+    "mtime": 1709488005.496915,
+    "seen": 1789036138.7190242,
+    "ast_hash": "fe4d8df60253d329d253a254b46ed6bb",
+    "semantic_hash": "fe4d8df60253d329d253a254b46ed6bb"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodListResource.java": {
+    "mtime": 1709488005.4971814,
+    "seen": 1789036138.7190259,
+    "ast_hash": "c3ecad3bde1d4b0c59b0cda7ee28eccc",
+    "semantic_hash": "c3ecad3bde1d4b0c59b0cda7ee28eccc"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FoodResource.java": {
+    "mtime": 1709488005.4974382,
+    "seen": 1789036138.719027,
+    "ast_hash": "4874d251de2c474b3e25d6608e9e87eb",
+    "semantic_hash": "4874d251de2c474b3e25d6608e9e87eb"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/FractionType.java": {
+    "mtime": 1780143344.0386567,
+    "seen": 1789036138.719028,
+    "ast_hash": "2c683d1e58d6ed0912ad0b8cd2e4c4c9",
+    "semantic_hash": "2c683d1e58d6ed0912ad0b8cd2e4c4c9"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Item.java": {
+    "mtime": 1647073212.8483155,
+    "seen": 1789036138.719029,
+    "ast_hash": "8f274d232a99a2ca9d9c5c5d74008ec3",
+    "semantic_hash": "8f274d232a99a2ca9d9c5c5d74008ec3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ItemOperationPut.java": {
+    "mtime": 1647073212.8483863,
+    "seen": 1789036138.719031,
+    "ast_hash": "97642d57f3e227de2eb145d8f95af1ad",
+    "semantic_hash": "97642d57f3e227de2eb145d8f95af1ad"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ItemOperationType.java": {
+    "mtime": 1657371214.807716,
+    "seen": 1789036138.719032,
+    "ast_hash": "924ee900f39bd7ca2659c5bebb252ec1",
+    "semantic_hash": "924ee900f39bd7ca2659c5bebb252ec1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ItemSource.java": {
+    "mtime": 1657371214.8077765,
+    "seen": 1789036138.719033,
+    "ast_hash": "c3232f9760c09085db819b72c25f990c",
+    "semantic_hash": "c3232f9760c09085db819b72c25f990c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ItemSourceType.java": {
+    "mtime": 1766819271.9082873,
+    "seen": 1789036138.719035,
+    "ast_hash": "810e768881a17625729a377b5ae95179",
+    "semantic_hash": "810e768881a17625729a377b5ae95179"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/LayoutCategory.java": {
+    "mtime": 1766819271.9084446,
+    "seen": 1789036138.7190359,
+    "ast_hash": "28e1b077b27c89def072d3fc3c9ca4f5",
+    "semantic_hash": "28e1b077b27c89def072d3fc3c9ca4f5"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/LayoutCategoryListResource.java": {
+    "mtime": 1766819271.9085946,
+    "seen": 1789036138.719038,
+    "ast_hash": "a3ba83311faa59b3b95a5a4f5e992bf0",
+    "semantic_hash": "a3ba83311faa59b3b95a5a4f5e992bf0"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/LayoutCategoryResource.java": {
+    "mtime": 1766819271.9087446,
+    "seen": 1789036138.719039,
+    "ast_hash": "0f1a156cb332bb56d01565d1a29aed45",
+    "semantic_hash": "0f1a156cb332bb56d01565d1a29aed45"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/LegendSource.java": {
+    "mtime": 1647073212.8484533,
+    "seen": 1789036138.71904,
+    "ast_hash": "f83d6da2fec7aca74db614cf90f74bfb",
+    "semantic_hash": "f83d6da2fec7aca74db614cf90f74bfb"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListAddProperties.java": {
+    "mtime": 1699393289.915166,
+    "seen": 1789036138.719041,
+    "ast_hash": "2830d140a46dab923304f5c9a5159501",
+    "semantic_hash": "2830d140a46dab923304f5c9a5159501"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListGenerateProperties.java": {
+    "mtime": 1784964309.627012,
+    "seen": 1789036138.719043,
+    "ast_hash": "f6d8728af6cf2f084ee31ffd230231b1",
+    "semantic_hash": "f6d8728af6cf2f084ee31ffd230231b1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListItemSource.java": {
+    "mtime": 1766819271.9088962,
+    "seen": 1789036138.7190442,
+    "ast_hash": "e53cbeb5192d00ad82379b01f0e90b47",
+    "semantic_hash": "e53cbeb5192d00ad82379b01f0e90b47"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListLayout.java": {
+    "mtime": 1674202233.9636385,
+    "seen": 1789036138.7190452,
+    "ast_hash": "e69c4fbc6ecd8ef2b8709909b31aef94",
+    "semantic_hash": "e69c4fbc6ecd8ef2b8709909b31aef94"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListLayoutCategory.java": {
+    "mtime": 1768369030.8050113,
+    "seen": 1789036138.7190468,
+    "ast_hash": "53313071269479f3ab3b0953883ddbeb",
+    "semantic_hash": "53313071269479f3ab3b0953883ddbeb"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListLayoutListResource.java": {
+    "mtime": 1674202233.9646142,
+    "seen": 1789036138.719048,
+    "ast_hash": "0f5cf87d50492b0799ea939d7182983b",
+    "semantic_hash": "0f5cf87d50492b0799ea939d7182983b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListLayoutResource.java": {
+    "mtime": 1674202233.9650686,
+    "seen": 1789036138.719049,
+    "ast_hash": "bc640cb1f9418457a231e1f8676590ac",
+    "semantic_hash": "bc640cb1f9418457a231e1f8676590ac"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListOperationType.java": {
+    "mtime": 1766819271.909039,
+    "seen": 1789036138.7190511,
+    "ast_hash": "3c320a0c69f08eda78389ea033f9a2d1",
+    "semantic_hash": "3c320a0c69f08eda78389ea033f9a2d1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListShopModel.java": {
+    "mtime": 1647073212.8489103,
+    "seen": 1789036138.719052,
+    "ast_hash": "34c9599ed41ff1dd034acf297ef31c3e",
+    "semantic_hash": "34c9599ed41ff1dd034acf297ef31c3e"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ListShopResource.java": {
+    "mtime": 1743175216.2993903,
+    "seen": 1789036138.719053,
+    "ast_hash": "da0b7e91b46a1b32fd62fe4098e12edf",
+    "semantic_hash": "da0b7e91b46a1b32fd62fe4098e12edf"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MappingPost.java": {
+    "mtime": 1674202233.9672735,
+    "seen": 1789036138.7190552,
+    "ast_hash": "5c3b14b2a9521e5902b6e668c4e4a1b7",
+    "semantic_hash": "5c3b14b2a9521e5902b6e668c4e4a1b7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MealPlan.java": {
+    "mtime": 1653456462.2496254,
+    "seen": 1789036138.719056,
+    "ast_hash": "dc3effbd06c9f1a60bbbeb47cf466240",
+    "semantic_hash": "dc3effbd06c9f1a60bbbeb47cf466240"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MealPlanListResource.java": {
+    "mtime": 1647073212.8491068,
+    "seen": 1789036138.7190568,
+    "ast_hash": "6debc0f255f13074e0ddb6e0820b5779",
+    "semantic_hash": "6debc0f255f13074e0ddb6e0820b5779"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MealPlanResource.java": {
+    "mtime": 1647073212.8491678,
+    "seen": 1789036138.719059,
+    "ast_hash": "dedb9af6e747a02c3ff50433f5f573eb",
+    "semantic_hash": "dedb9af6e747a02c3ff50433f5f573eb"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MealPlanType.java": {
+    "mtime": 1657371214.8079312,
+    "seen": 1789036138.71906,
+    "ast_hash": "3e03e2741b2f397354cfc542a43c5e18",
+    "semantic_hash": "3e03e2741b2f397354cfc542a43c5e18"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MergeConflicts.java": {
+    "mtime": 1647073212.8492382,
+    "seen": 1789036138.719061,
+    "ast_hash": "2815f57d1d835f8ee6fb706332cbc538",
+    "semantic_hash": "2815f57d1d835f8ee6fb706332cbc538"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MergeRequest.java": {
+    "mtime": 1702536350.2661624,
+    "seen": 1789036138.719063,
+    "ast_hash": "f5aeb7b43ef9d49b95ac82e8cf3a46eb",
+    "semantic_hash": "f5aeb7b43ef9d49b95ac82e8cf3a46eb"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MergeResult.java": {
+    "mtime": 1647073212.8493538,
+    "seen": 1789036138.719064,
+    "ast_hash": "1387581087f8c38b2b9d67e4c42e4355",
+    "semantic_hash": "1387581087f8c38b2b9d67e4c42e4355"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/MergeResultResource.java": {
+    "mtime": 1647073212.849418,
+    "seen": 1789036138.7190661,
+    "ast_hash": "1b97dd0c67bde7e2cbcde9404b3c0f8a",
+    "semantic_hash": "1b97dd0c67bde7e2cbcde9404b3c0f8a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ModifierType.java": {
+    "mtime": 1719760169.8833973,
+    "seen": 1789036138.7190669,
+    "ast_hash": "0703c85ea123f9d5e3615a078567ce76",
+    "semantic_hash": "0703c85ea123f9d5e3615a078567ce76"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/RatingInfo.java": {
+    "mtime": 1719760169.8835819,
+    "seen": 1789036138.7190678,
+    "ast_hash": "ff4dc58f03a8e991d5d198e387db7d79",
+    "semantic_hash": "ff4dc58f03a8e991d5d198e387db7d79"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/RatingUpdateInfo.java": {
+    "mtime": 1719760169.8837562,
+    "seen": 1789036138.71907,
+    "ast_hash": "03314633405d8fc16d701f8e17679579",
+    "semantic_hash": "03314633405d8fc16d701f8e17679579"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/RatingUpdateInfoResource.java": {
+    "mtime": 1647073212.8495865,
+    "seen": 1789036138.719071,
+    "ast_hash": "c54c17fdaee4edcef831f265e7576c70",
+    "semantic_hash": "c54c17fdaee4edcef831f265e7576c70"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ShoppingList.java": {
+    "mtime": 1647073212.849646,
+    "seen": 1789036138.719072,
+    "ast_hash": "a7d1e4578fb917c094a37c889f501151",
+    "semantic_hash": "a7d1e4578fb917c094a37c889f501151"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ShoppingListCategory.java": {
+    "mtime": 1668842218.5269563,
+    "seen": 1789036138.719074,
+    "ast_hash": "23870ae3830b5f12c31b38f674fe7f82",
+    "semantic_hash": "23870ae3830b5f12c31b38f674fe7f82"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ShoppingListItem.java": {
+    "mtime": 1766819271.9093137,
+    "seen": 1789036138.7190762,
+    "ast_hash": "ffe54bf5def61dad9fac2c7c5f6e07ea",
+    "semantic_hash": "ffe54bf5def61dad9fac2c7c5f6e07ea"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ShoppingListListResource.java": {
+    "mtime": 1647073212.8497515,
+    "seen": 1789036138.719077,
+    "ast_hash": "e7888df07353626d4046df711bb2326c",
+    "semantic_hash": "e7888df07353626d4046df711bb2326c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ShoppingListPut.java": {
+    "mtime": 1647073212.8498142,
+    "seen": 1789036138.719079,
+    "ast_hash": "957d265d325bb6c28f8486380a5f7947",
+    "semantic_hash": "957d265d325bb6c28f8486380a5f7947"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/ShoppingListResource.java": {
+    "mtime": 1650278804.6411345,
+    "seen": 1789036138.71908,
+    "ast_hash": "333d38f6d62afccc7bc5547383eaa4dc",
+    "semantic_hash": "333d38f6d62afccc7bc5547383eaa4dc"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Slot.java": {
+    "mtime": 1647073212.8499277,
+    "seen": 1789036138.7190819,
+    "ast_hash": "4d54ad00de4adc32872b24a20dca6ed1",
+    "semantic_hash": "4d54ad00de4adc32872b24a20dca6ed1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/SortOrMoveDirection.java": {
+    "mtime": 1657371214.807987,
+    "seen": 1789036138.719083,
+    "ast_hash": "40871f90d1b6ecdb9d863fb13911fa26",
+    "semantic_hash": "40871f90d1b6ecdb9d863fb13911fa26"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Statistic.java": {
+    "mtime": 1653456462.2950857,
+    "seen": 1789036138.719084,
+    "ast_hash": "b27e1db02cde5b9c6ce88509296fec27",
+    "semantic_hash": "b27e1db02cde5b9c6ce88509296fec27"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/StatisticCountType.java": {
+    "mtime": 1657371214.8080435,
+    "seen": 1789036138.7190862,
+    "ast_hash": "38d20963d1ffde72ade2a69d02c9ec9b",
+    "semantic_hash": "38d20963d1ffde72ade2a69d02c9ec9b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/StatisticListPost.java": {
+    "mtime": 1653456462.2948627,
+    "seen": 1789036138.7190871,
+    "ast_hash": "3a1ce9399b768963bbf22a767f51ceb4",
+    "semantic_hash": "3a1ce9399b768963bbf22a767f51ceb4"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/StatisticListResource.java": {
+    "mtime": 1653456462.250796,
+    "seen": 1789036138.7190888,
+    "ast_hash": "49b37d8ae8e1cf10617484a2dd54f738",
+    "semantic_hash": "49b37d8ae8e1cf10617484a2dd54f738"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Suggestion.java": {
+    "mtime": 1719760169.8839383,
+    "seen": 1789036138.71909,
+    "ast_hash": "e2771e4213b911efb42df31497fc0592",
+    "semantic_hash": "e2771e4213b911efb42df31497fc0592"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/SuggestionListResource.java": {
+    "mtime": 1719760169.8841166,
+    "seen": 1789036138.719091,
+    "ast_hash": "5b6c769a4f038c12dd5b2cfac56e7ea6",
+    "semantic_hash": "5b6c769a4f038c12dd5b2cfac56e7ea6"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Tag.java": {
+    "mtime": 1780143344.0388646,
+    "seen": 1789036138.719093,
+    "ast_hash": "2026481d047de68536ea9c4649e75f71",
+    "semantic_hash": "2026481d047de68536ea9c4649e75f71"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagFilterType.java": {
+    "mtime": 1709488005.4980733,
+    "seen": 1789036138.719094,
+    "ast_hash": "af92fb65d160c5fe33f8392a73ad9605",
+    "semantic_hash": "af92fb65d160c5fe33f8392a73ad9605"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagListResource.java": {
+    "mtime": 1653456462.2512887,
+    "seen": 1789036138.719096,
+    "ast_hash": "4eb8d5fcd8c71a38ff0ce965b742b3d0",
+    "semantic_hash": "4eb8d5fcd8c71a38ff0ce965b742b3d0"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagOperationPut.java": {
+    "mtime": 1719760169.8850827,
+    "seen": 1789036138.7190971,
+    "ast_hash": "6abae4e0d663fa0a8b134184caf9a05d",
+    "semantic_hash": "6abae4e0d663fa0a8b134184caf9a05d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagOperationType.java": {
+    "mtime": 1719760169.8854825,
+    "seen": 1789036138.719098,
+    "ast_hash": "7b74f3cfdfa3e4ddc441fbeeeceb4930",
+    "semantic_hash": "7b74f3cfdfa3e4ddc441fbeeeceb4930"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagPut.java": {
+    "mtime": 1743175216.299556,
+    "seen": 1789036138.7191,
+    "ast_hash": "e1c26a6a227f24714e2d228abc66fa67",
+    "semantic_hash": "e1c26a6a227f24714e2d228abc66fa67"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagResource.java": {
+    "mtime": 1653456462.2519202,
+    "seen": 1789036138.7191029,
+    "ast_hash": "761890e0c2b05a5867ba779ae07a354d",
+    "semantic_hash": "761890e0c2b05a5867ba779ae07a354d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TagType.java": {
+    "mtime": 1647073212.8501644,
+    "seen": 1789036138.719104,
+    "ast_hash": "770afc03f15188b9a4fb6c23263f6729",
+    "semantic_hash": "770afc03f15188b9a4fb6c23263f6729"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/Target.java": {
+    "mtime": 1647073212.8502142,
+    "seen": 1789036138.719106,
+    "ast_hash": "bb5fb6e98f00abd555e18e2b00f5a13d",
+    "semantic_hash": "bb5fb6e98f00abd555e18e2b00f5a13d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TargetListResource.java": {
+    "mtime": 1647073212.8502626,
+    "seen": 1789036138.7191072,
+    "ast_hash": "085468174ecce3d25bcd49645b0b2d9d",
+    "semantic_hash": "085468174ecce3d25bcd49645b0b2d9d"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TargetResource.java": {
+    "mtime": 1647073212.850315,
+    "seen": 1789036138.719108,
+    "ast_hash": "1df224cb46344621dfa4d57020ed30d9",
+    "semantic_hash": "1df224cb46344621dfa4d57020ed30d9"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TargetSlot.java": {
+    "mtime": 1647073212.850375,
+    "seen": 1789036138.7191098,
+    "ast_hash": "e28a645603bebcf53d2e65bc376accb7",
+    "semantic_hash": "e28a645603bebcf53d2e65bc376accb7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/TokenType.java": {
+    "mtime": 1647073212.8504293,
+    "seen": 1789036138.719111,
+    "ast_hash": "97dc6670ed8817b8329cdd60642acf57",
+    "semantic_hash": "97dc6670ed8817b8329cdd60642acf57"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/UserAccount.java": {
+    "mtime": 1657371214.8081782,
+    "seen": 1789036138.7191129,
+    "ast_hash": "e65bb7e0564f5386fa49f5042d195150",
+    "semantic_hash": "e65bb7e0564f5386fa49f5042d195150"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/Amount.java": {
+    "mtime": 1780143344.0390103,
+    "seen": 1789036138.719114,
+    "ast_hash": "fdf4eb9f3745d8086f5a44bf76f56270",
+    "semantic_hash": "fdf4eb9f3745d8086f5a44bf76f56270"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/Dish.java": {
+    "mtime": 1780143344.039229,
+    "seen": 1789036138.719115,
+    "ast_hash": "d5e3d456f8a0aaf6b361242f56491c38",
+    "semantic_hash": "d5e3d456f8a0aaf6b361242f56491c38"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/DishList.java": {
+    "mtime": 1780143344.039363,
+    "seen": 1789036138.7191172,
+    "ast_hash": "d2fcba54be2a4e382899e780ff1bf916",
+    "semantic_hash": "d2fcba54be2a4e382899e780ff1bf916"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/DishRating.java": {
+    "mtime": 1780143344.0394847,
+    "seen": 1789036138.719118,
+    "ast_hash": "82e9181f8686494bb809815c8860f5e4",
+    "semantic_hash": "82e9181f8686494bb809815c8860f5e4"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/DishRatings.java": {
+    "mtime": 1780143344.0396066,
+    "seen": 1789036138.719119,
+    "ast_hash": "655ee8e768295a4bade4f221c810c092",
+    "semantic_hash": "655ee8e768295a4bade4f221c810c092"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/Ingredient.java": {
+    "mtime": 1780143344.0398118,
+    "seen": 1789036138.719121,
+    "ast_hash": "ee7d4ef82d6153c601514a6131823748",
+    "semantic_hash": "ee7d4ef82d6153c601514a6131823748"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/IngredientList.java": {
+    "mtime": 1780143344.0399272,
+    "seen": 1789036138.719122,
+    "ast_hash": "22cc696aa11a6b6ce8a380e1821b16f3",
+    "semantic_hash": "22cc696aa11a6b6ce8a380e1821b16f3"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/IngredientPut.java": {
+    "mtime": 1780143344.0401428,
+    "seen": 1789036138.719123,
+    "ast_hash": "ff73803bcc6d7209aa24da204319f238",
+    "semantic_hash": "ff73803bcc6d7209aa24da204319f238"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/LegendSource.java": {
+    "mtime": 1782880448.2197046,
+    "seen": 1789036138.719124,
+    "ast_hash": "0806183e1163e17f1563abcffcca30d1",
+    "semantic_hash": "0806183e1163e17f1563abcffcca30d1"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ListLayout.java": {
+    "mtime": 1780143344.0403779,
+    "seen": 1789036138.719126,
+    "ast_hash": "652a51adaa9ae61639067a26e0526fe9",
+    "semantic_hash": "652a51adaa9ae61639067a26e0526fe9"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ListLayoutCategory.java": {
+    "mtime": 1780143344.0405014,
+    "seen": 1789036138.719127,
+    "ast_hash": "31fbc85f593b8e81f1f5a676c2c9970c",
+    "semantic_hash": "31fbc85f593b8e81f1f5a676c2c9970c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ListLayoutList.java": {
+    "mtime": 1780143344.0406163,
+    "seen": 1789036138.7191281,
+    "ast_hash": "71629d0c7c745c5338ad647ebb27359c",
+    "semantic_hash": "71629d0c7c745c5338ad647ebb27359c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/MergeItem.java": {
+    "mtime": 1784964309.6280005,
+    "seen": 1789036138.719129,
+    "ast_hash": "cbbf70d1524bf604d82fedfbcd0e0f0c",
+    "semantic_hash": "cbbf70d1524bf604d82fedfbcd0e0f0c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/MergeRequest.java": {
+    "mtime": 1783661544.723601,
+    "seen": 1789036138.719131,
+    "ast_hash": "774b2b3f9577fb81253fbeaa05fe3648",
+    "semantic_hash": "774b2b3f9577fb81253fbeaa05fe3648"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/MergeResult.java": {
+    "mtime": 1780143344.0408504,
+    "seen": 1789036138.719132,
+    "ast_hash": "7de3dedf48247081717bbddfaeee313f",
+    "semantic_hash": "7de3dedf48247081717bbddfaeee313f"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/NestedDish.java": {
+    "mtime": 1780143344.0410013,
+    "seen": 1789036138.719133,
+    "ast_hash": "2c233bfd74f095ce79bc402d62868d21",
+    "semantic_hash": "2c233bfd74f095ce79bc402d62868d21"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/NestedShoppingList.java": {
+    "mtime": 1780143344.0411336,
+    "seen": 1789036138.719135,
+    "ast_hash": "90f321b4b13590bf754bb10739f26ef2",
+    "semantic_hash": "90f321b4b13590bf754bb10739f26ef2"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/NestedTag.java": {
+    "mtime": 1780143344.0412583,
+    "seen": 1789036138.719136,
+    "ast_hash": "7e7f6f832344c8a3f49da3b6aacf3cac",
+    "semantic_hash": "7e7f6f832344c8a3f49da3b6aacf3cac"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/PostListItem.java": {
+    "mtime": 1780143344.0413754,
+    "seen": 1789036138.719137,
+    "ast_hash": "9670b9b14fceb2e5a1b88a8837cdf18c",
+    "semantic_hash": "9670b9b14fceb2e5a1b88a8837cdf18c"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/PutDish.java": {
+    "mtime": 1788972748.8899987,
+    "seen": 1789036138.7191381,
+    "ast_hash": "3f868535e50df28c9b9f1f2b85137846",
+    "semantic_hash": "3f868535e50df28c9b9f1f2b85137846"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/RatingInfo.java": {
+    "mtime": 1780143344.0415065,
+    "seen": 1789036138.71914,
+    "ast_hash": "4937e06ee7b21bf89c91403232f1c2ff",
+    "semantic_hash": "4937e06ee7b21bf89c91403232f1c2ff"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ShoppingList.java": {
+    "mtime": 1780143344.0416408,
+    "seen": 1789036138.719141,
+    "ast_hash": "ec3fb6b4eebb08abee37b5977ed1819b",
+    "semantic_hash": "ec3fb6b4eebb08abee37b5977ed1819b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ShoppingListCategory.java": {
+    "mtime": 1780143344.0417538,
+    "seen": 1789036138.719142,
+    "ast_hash": "4ef7fe8cbd31c0cb84ca7dc53d6a11d7",
+    "semantic_hash": "4ef7fe8cbd31c0cb84ca7dc53d6a11d7"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ShoppingListItem.java": {
+    "mtime": 1784964309.6290886,
+    "seen": 1789036138.719143,
+    "ast_hash": "ee166971af60de8f4030dc375bf5da02",
+    "semantic_hash": "ee166971af60de8f4030dc375bf5da02"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ShoppingListItemDetails.java": {
+    "mtime": 1780143344.0419948,
+    "seen": 1789036138.719145,
+    "ast_hash": "3110df6486d4eddc16da7e64b80c70ff",
+    "semantic_hash": "3110df6486d4eddc16da7e64b80c70ff"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ShoppingListList.java": {
+    "mtime": 1780143344.0421188,
+    "seen": 1789036138.719146,
+    "ast_hash": "2074d5f055eeda8cc6b9ac207b9d4882",
+    "semantic_hash": "2074d5f055eeda8cc6b9ac207b9d4882"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/ShoppingListPut.java": {
+    "mtime": 1784990762.0887113,
+    "seen": 1789036138.719148,
+    "ast_hash": "bec466c3dc3ab671c67a47fc0a06599b",
+    "semantic_hash": "bec466c3dc3ab671c67a47fc0a06599b"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/SourceReferenceType.java": {
+    "mtime": 1780143344.042366,
+    "seen": 1789036138.71915,
+    "ast_hash": "b0319af17e62cab5e8163501d8aa5e7a",
+    "semantic_hash": "b0319af17e62cab5e8163501d8aa5e7a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/SpecificationType.java": {
+    "mtime": 1770664375.8805003,
+    "seen": 1789036138.719151,
+    "ast_hash": "af85a1e9b53d948b5469238c7be82495",
+    "semantic_hash": "af85a1e9b53d948b5469238c7be82495"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/Tag.java": {
+    "mtime": 1783400343.5428908,
+    "seen": 1789036138.7191522,
+    "ast_hash": "cccce1039c02c0a4d107a903be7921df",
+    "semantic_hash": "cccce1039c02c0a4d107a903be7921df"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/api/model/v2/TagList.java": {
+    "mtime": 1780143344.0426202,
+    "seen": 1789036138.719154,
+    "ast_hash": "95f2f98f0c054b688808c8ba256a033a",
+    "semantic_hash": "95f2f98f0c054b688808c8ba256a033a"
+  },
+  "listshop-api/src/main/java/com/meg/listshop/lmt/service/ListLayoutException.java": {
+    "mtime": 1647073212.8505168,
+    "seen": 1789036138.7191548,
+    "ast_hash": "286d48cd9b751fc17a7ca234738ca919",
+    "semantic_hash": "286d48cd9b751fc17a7ca234738ca919"
+  },
+  "listshop-conversion/conversion-api/pom.xml": {
+    "mtime": 1780143344.0430064,
+    "seen": 1789036138.719156,
+    "ast_hash": "83553a56b5f7666702ee85b61028ca11",
+    "semantic_hash": "83553a56b5f7666702ee85b61028ca11"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/AddScaleRequest.java": {
+    "mtime": 1770664375.8811998,
+    "seen": 1789036138.719158,
+    "ast_hash": "3bc7eec171b7f8fc2de9f621799ddb6a",
+    "semantic_hash": "3bc7eec171b7f8fc2de9f621799ddb6a"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/ConversionRequest.java": {
+    "mtime": 1743175216.3002458,
+    "seen": 1789036138.7191591,
+    "ast_hash": "c7913c2c469d1e1006cbfcff35adf6c4",
+    "semantic_hash": "c7913c2c469d1e1006cbfcff35adf6c4"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/ConversionSampleDTO.java": {
+    "mtime": 1709488005.5029082,
+    "seen": 1789036138.719161,
+    "ast_hash": "1d886e97a3dfef7392adc35b3e4b4cbd",
+    "semantic_hash": "1d886e97a3dfef7392adc35b3e4b4cbd"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/ConversionTargetType.java": {
+    "mtime": 1719760169.8871927,
+    "seen": 1789036138.7191622,
+    "ast_hash": "047a2416a5f9e66fd529f79bc613d6ff",
+    "semantic_hash": "047a2416a5f9e66fd529f79bc613d6ff"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/SimpleAmount.java": {
+    "mtime": 1782880448.2201653,
+    "seen": 1789036138.719163,
+    "ast_hash": "b47c3f2181880bb930f1f24d4d4373b7",
+    "semantic_hash": "b47c3f2181880bb930f1f24d4d4373b7"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/SimpleFoodFactor.java": {
+    "mtime": 1719760169.887616,
+    "seen": 1789036138.7191648,
+    "ast_hash": "901d969fd76a1d23eaad2a7db5d378b9",
+    "semantic_hash": "901d969fd76a1d23eaad2a7db5d378b9"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/data/pojo/UnitFlavor.java": {
+    "mtime": 1702536350.268843,
+    "seen": 1789036138.719166,
+    "ast_hash": "e3865d97d3db5d8c494d107f60f6173b",
+    "semantic_hash": "e3865d97d3db5d8c494d107f60f6173b"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/exceptions/ConversionAddException.java": {
+    "mtime": 1743175216.3006482,
+    "seen": 1789036138.719167,
+    "ast_hash": "dad8f0859dd7c3bf947a5eddc49afffd",
+    "semantic_hash": "dad8f0859dd7c3bf947a5eddc49afffd"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/exceptions/ConversionFactorException.java": {
+    "mtime": 1702536350.2690573,
+    "seen": 1789036138.7191691,
+    "ast_hash": "117fe7dc63034dddb58435918837fae0",
+    "semantic_hash": "117fe7dc63034dddb58435918837fae0"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/exceptions/ConversionPathException.java": {
+    "mtime": 1702536350.2691662,
+    "seen": 1789036138.71917,
+    "ast_hash": "1cbc94d88fec8b215baa1290a0e89dac",
+    "semantic_hash": "1cbc94d88fec8b215baa1290a0e89dac"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/service/ConversionService.java": {
+    "mtime": 1743175216.3009064,
+    "seen": 1789036138.719171,
+    "ast_hash": "b0ebbfd9c65881c5e22bc3c9ae1d22eb",
+    "semantic_hash": "b0ebbfd9c65881c5e22bc3c9ae1d22eb"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/service/ConverterService.java": {
+    "mtime": 1770664375.8818216,
+    "seen": 1789036138.7191732,
+    "ast_hash": "4ffe82e20d49c1cfc2bab5e649c07865",
+    "semantic_hash": "4ffe82e20d49c1cfc2bab5e649c07865"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/service/ConvertibleAmount.java": {
+    "mtime": 1770664375.8821828,
+    "seen": 1789036138.719174,
+    "ast_hash": "53221cf9a00be26262c7a43f833d5df9",
+    "semantic_hash": "53221cf9a00be26262c7a43f833d5df9"
+  },
+  "listshop-conversion/conversion-api/src/main/java/com/meg/listshop/conversion/service/FoodFactor.java": {
+    "mtime": 1719760169.8885036,
+    "seen": 1789036138.7191749,
+    "ast_hash": "3516720d6844d66a85d39f4772237fa1",
+    "semantic_hash": "3516720d6844d66a85d39f4772237fa1"
+  },
+  "listshop-conversion/conversion-common/pom.xml": {
+    "mtime": 1780143344.0439174,
+    "seen": 1789036138.719177,
+    "ast_hash": "e947a3f748f321b0428e950cfdf8e965",
+    "semantic_hash": "e947a3f748f321b0428e950cfdf8e965"
+  },
+  "listshop-conversion/conversion-common/src/main/java/com/meg/listshop/conversion/data/pojo/DomainType.java": {
+    "mtime": 1780143544.170701,
+    "seen": 1789036138.719178,
+    "ast_hash": "c06093e6e7b749fc0c1b4c06c44b1bc4",
+    "semantic_hash": "c06093e6e7b749fc0c1b4c06c44b1bc4"
+  },
+  "listshop-conversion/conversion-data/pom.xml": {
+    "mtime": 1780143344.044234,
+    "seen": 1789036138.719179,
+    "ast_hash": "d24564b65f204d4954904e5a05782661",
+    "semantic_hash": "d24564b65f204d4954904e5a05782661"
+  },
+  "listshop-conversion/conversion-data/src/main/java/com/meg/listshop/conversion/data/entity/ConversionBridgeFactorEntity.java": {
+    "mtime": 1780143544.1710417,
+    "seen": 1789036138.719181,
+    "ast_hash": "ccf602e4b12bcdf7757bb0ce5caf7baa",
+    "semantic_hash": "ccf602e4b12bcdf7757bb0ce5caf7baa"
+  },
+  "listshop-conversion/conversion-data/src/main/java/com/meg/listshop/conversion/data/entity/ConversionFactor.java": {
+    "mtime": 1778820684.2362595,
+    "seen": 1789036138.719182,
+    "ast_hash": "b068d2df8f7b3d52ebc58fd44fb6da9b",
+    "semantic_hash": "b068d2df8f7b3d52ebc58fd44fb6da9b"
+  },
+  "listshop-conversion/conversion-data/src/main/java/com/meg/listshop/conversion/data/entity/ConversionFactorEntity.java": {
+    "mtime": 1743175216.302137,
+    "seen": 1789036138.719184,
+    "ast_hash": "8ae79260f673190a396c09f68f201943",
+    "semantic_hash": "8ae79260f673190a396c09f68f201943"
+  },
+  "listshop-conversion/conversion-data/src/main/java/com/meg/listshop/conversion/data/entity/SimpleConversionFactor.java": {
+    "mtime": 1780143544.1720226,
+    "seen": 1789036138.7191849,
+    "ast_hash": "86fde43d3a3e4746c8cfb72bbfa499b3",
+    "semantic_hash": "86fde43d3a3e4746c8cfb72bbfa499b3"
+  },
+  "listshop-conversion/conversion-service/pom.xml": {
+    "mtime": 1780143344.0444152,
+    "seen": 1789036138.7191858,
+    "ast_hash": "2827349dabc42f49e4d9e667c5a19ffa",
+    "semantic_hash": "2827349dabc42f49e4d9e667c5a19ffa"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/data/repository/ConversionFactorRepository.java": {
+    "mtime": 1780143544.1726663,
+    "seen": 1789036138.719188,
+    "ast_hash": "ed8c6b752b6222ec25ebd184974e7853",
+    "semantic_hash": "ed8c6b752b6222ec25ebd184974e7853"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/data/repository/CustomConversionFactorRepository.java": {
+    "mtime": 1780143544.1732821,
+    "seen": 1789036138.719189,
+    "ast_hash": "e41e7ce660f77d911fa1fab658d0d6b7",
+    "semantic_hash": "e41e7ce660f77d911fa1fab658d0d6b7"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/data/repository/FactorCriteria.java": {
+    "mtime": 1782880448.220703,
+    "seen": 1789036138.719191,
+    "ast_hash": "06237cf9529befbbd52723b4ca742f38",
+    "semantic_hash": "06237cf9529befbbd52723b4ca742f38"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/data/repository/FactorCriteriaBuilder.java": {
+    "mtime": 1782880448.221108,
+    "seen": 1789036138.719192,
+    "ast_hash": "6a2370ee1118e8d297fbe60acf5abbfa",
+    "semantic_hash": "6a2370ee1118e8d297fbe60acf5abbfa"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/data/repository/UnitSpecifications.java": {
+    "mtime": 1743175216.3029244,
+    "seen": 1789036138.719193,
+    "ast_hash": "5ae771d02d21f45fdefbc3a20602dd3c",
+    "semantic_hash": "5ae771d02d21f45fdefbc3a20602dd3c"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/data/repository/impl/CustomConversionFactorRepositoryImpl.java": {
+    "mtime": 1782880448.2216666,
+    "seen": 1789036138.719195,
+    "ast_hash": "426c3809aeb2669aff5ac750e5114216",
+    "semantic_hash": "426c3809aeb2669aff5ac750e5114216"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ConversionContext.java": {
+    "mtime": 1770664375.8849814,
+    "seen": 1789036138.7191958,
+    "ast_hash": "9c7549e149399523c55ba346088ff15e",
+    "semantic_hash": "9c7549e149399523c55ba346088ff15e"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ConversionServiceImpl.java": {
+    "mtime": 1766819271.9106464,
+    "seen": 1789036138.719198,
+    "ast_hash": "2f387e6cc4e4dadba998f1788183ad7e",
+    "semantic_hash": "2f387e6cc4e4dadba998f1788183ad7e"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ConversionSpec.java": {
+    "mtime": 1770664375.8853743,
+    "seen": 1789036138.719199,
+    "ast_hash": "e5837835f002429a68bf453d10dcfc9d",
+    "semantic_hash": "e5837835f002429a68bf453d10dcfc9d"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ConversionTarget.java": {
+    "mtime": 1782880448.2222676,
+    "seen": 1789036138.719214,
+    "ast_hash": "fb4b54bbb3bdeb13f2fa6552e7751588",
+    "semantic_hash": "fb4b54bbb3bdeb13f2fa6552e7751588"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ConverterServiceImpl.java": {
+    "mtime": 1782880448.2227125,
+    "seen": 1789036138.719219,
+    "ast_hash": "16633bb8ff134d0967fc3a2b5fd7102d",
+    "semantic_hash": "16633bb8ff134d0967fc3a2b5fd7102d"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/DeltaSpec.java": {
+    "mtime": 1780143544.1781313,
+    "seen": 1789036138.7192209,
+    "ast_hash": "20aedc5b99dc4fae7e23e2c10cddf53b",
+    "semantic_hash": "20aedc5b99dc4fae7e23e2c10cddf53b"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ProcessingContext.java": {
+    "mtime": 1780143544.1788309,
+    "seen": 1789036138.719222,
+    "ast_hash": "7187b2b5789b1c781b568504e4998b60",
+    "semantic_hash": "7187b2b5789b1c781b568504e4998b60"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/ProcessingUtils.java": {
+    "mtime": 1780143544.1795049,
+    "seen": 1789036138.719224,
+    "ast_hash": "993b70d24c6142460b5fdede24a9f881",
+    "semantic_hash": "993b70d24c6142460b5fdede24a9f881"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/domain/DomainConversionHandler.java": {
+    "mtime": 1780143544.1802666,
+    "seen": 1789036138.7192261,
+    "ast_hash": "6b38d374ece433f2388533dd32641364",
+    "semantic_hash": "6b38d374ece433f2388533dd32641364"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/factors/FactorProvider.java": {
+    "mtime": 1780143544.1809492,
+    "seen": 1789036138.7192268,
+    "ast_hash": "8aa867f09f9790c1c5be6436f711bcbc",
+    "semantic_hash": "8aa867f09f9790c1c5be6436f711bcbc"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/processors/AbstractConverterProcessor.java": {
+    "mtime": 1780143544.1816254,
+    "seen": 1789036138.719229,
+    "ast_hash": "2d297234fe9a36b17dbecdab5f8fad1e",
+    "semantic_hash": "2d297234fe9a36b17dbecdab5f8fad1e"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/processors/ConverterProcessor.java": {
+    "mtime": 1780143544.1820033,
+    "seen": 1789036138.71923,
+    "ast_hash": "9ac10185559bebd7d8559d57c8bcc668",
+    "semantic_hash": "9ac10185559bebd7d8559d57c8bcc668"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/processors/DomainConverterProcessor.java": {
+    "mtime": 1782880448.2232301,
+    "seen": 1789036138.719231,
+    "ast_hash": "1787ef05127a0b19fc9369ced6ef552d",
+    "semantic_hash": "1787ef05127a0b19fc9369ced6ef552d"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/processors/ScalingProcessor.java": {
+    "mtime": 1780143544.1831172,
+    "seen": 1789036138.719233,
+    "ast_hash": "8478b722ec4aa66dc8e883ededbb4aa1",
+    "semantic_hash": "8478b722ec4aa66dc8e883ededbb4aa1"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/processors/TagConverterProcessor.java": {
+    "mtime": 1782880448.223609,
+    "seen": 1789036138.719234,
+    "ast_hash": "ec913ca4f3724f398100ed1528734d82",
+    "semantic_hash": "ec913ca4f3724f398100ed1528734d82"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/BaseScaleHandler.java": {
+    "mtime": 1782880448.224015,
+    "seen": 1789036138.7192361,
+    "ast_hash": "be2b3dca55a593177d04eb5d0119c007",
+    "semantic_hash": "be2b3dca55a593177d04eb5d0119c007"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/ContextScaler.java": {
+    "mtime": 1780143544.184998,
+    "seen": 1789036138.719237,
+    "ast_hash": "20944b38dee5268f384bfb5584cda8e2",
+    "semantic_hash": "20944b38dee5268f384bfb5584cda8e2"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/GenericScaler.java": {
+    "mtime": 1780143544.1855404,
+    "seen": 1789036138.7192378,
+    "ast_hash": "f34f0d4d068e2c7f783747a4d5080ed4",
+    "semantic_hash": "f34f0d4d068e2c7f783747a4d5080ed4"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/ScaleHandler.java": {
+    "mtime": 1780143544.186061,
+    "seen": 1789036138.71924,
+    "ast_hash": "a5587ca26c5bc7e5c9a747a2f8711c6e",
+    "semantic_hash": "a5587ca26c5bc7e5c9a747a2f8711c6e"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/SingleUnitScaler.java": {
+    "mtime": 1780143544.1866322,
+    "seen": 1789036138.719241,
+    "ast_hash": "23e486ff26e46219bd8f69037c914613",
+    "semantic_hash": "23e486ff26e46219bd8f69037c914613"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/TagContextScaler.java": {
+    "mtime": 1782880448.224418,
+    "seen": 1789036138.719243,
+    "ast_hash": "ee931ba10405b501ae7b100ec9734b5a",
+    "semantic_hash": "ee931ba10405b501ae7b100ec9734b5a"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/TagUnitScaler.java": {
+    "mtime": 1780143544.1880875,
+    "seen": 1789036138.719244,
+    "ast_hash": "f927045a689f740596ac96dcc274d1e0",
+    "semantic_hash": "f927045a689f740596ac96dcc274d1e0"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/scaling/UnitScaler.java": {
+    "mtime": 1780143544.1886106,
+    "seen": 1789036138.7192461,
+    "ast_hash": "30e9a57afe8a68a464a68356e876a789",
+    "semantic_hash": "30e9a57afe8a68a464a68356e876a789"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/tag/BaseTagHandler.java": {
+    "mtime": 1780143544.1892269,
+    "seen": 1789036138.719247,
+    "ast_hash": "7962ceaee05c6661f85b35386ccc22ef",
+    "semantic_hash": "7962ceaee05c6661f85b35386ccc22ef"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/tag/HybridTagHandler.java": {
+    "mtime": 1782880448.2248263,
+    "seen": 1789036138.719254,
+    "ast_hash": "a9d06e80024d0b5a0a44f65dcf2fb694",
+    "semantic_hash": "a9d06e80024d0b5a0a44f65dcf2fb694"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/tag/StandardTagHandler.java": {
+    "mtime": 1782880448.2252162,
+    "seen": 1789036138.7192562,
+    "ast_hash": "3d96986788a4cce3464eaaf56f22c253",
+    "semantic_hash": "3d96986788a4cce3464eaaf56f22c253"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/service/tag/TagHandler.java": {
+    "mtime": 1780143544.1905177,
+    "seen": 1789036138.719257,
+    "ast_hash": "099c7c2d1f2fb4857be3a4372154d40e",
+    "semantic_hash": "099c7c2d1f2fb4857be3a4372154d40e"
+  },
+  "listshop-conversion/conversion-service/src/main/java/com/meg/listshop/conversion/tools/ConversionTools.java": {
+    "mtime": 1719760169.89945,
+    "seen": 1789036138.7192588,
+    "ast_hash": "b7cbd153bb5a1702632698d5e984549b",
+    "semantic_hash": "b7cbd153bb5a1702632698d5e984549b"
+  },
+  "listshop-conversion/conversion-service/src/test/java/com/meg/listshop/conversion/service/ConversionFactorServiceMockTest.java": {
+    "mtime": 1719760169.9005427,
+    "seen": 1789036138.71926,
+    "ast_hash": "1b5c7f1b5f58834339f9d9d8bf8b4b56",
+    "semantic_hash": "1b5c7f1b5f58834339f9d9d8bf8b4b56"
+  },
+  "listshop-conversion/conversion-service/src/test/java/com/meg/listshop/conversion/service/ConversionSpecTest.java": {
+    "mtime": 1719760169.9009917,
+    "seen": 1789036138.719262,
+    "ast_hash": "4ca198d399600ada16c6e0b7c9f954ee",
+    "semantic_hash": "4ca198d399600ada16c6e0b7c9f954ee"
+  },
+  "listshop-conversion/conversion-service/src/test/java/com/meg/listshop/conversion/tools/ConversionTestTools.java": {
+    "mtime": 1719760169.9039273,
+    "seen": 1789036138.719263,
+    "ast_hash": "f1fe7aa5f28498522d32b93ee6560aa6",
+    "semantic_hash": "f1fe7aa5f28498522d32b93ee6560aa6"
+  },
+  "listshop-conversion/pom.xml": {
+    "mtime": 1780143344.0450823,
+    "seen": 1789036138.719265,
+    "ast_hash": "1b065dfe5e9715f03c2375806c881df5",
+    "semantic_hash": "1b065dfe5e9715f03c2375806c881df5"
+  },
+  "listshop-lmt/listshop-data/pom.xml": {
+    "mtime": 1780143344.0453627,
+    "seen": 1789036138.719266,
+    "ast_hash": "38cbad95dc383290bb60703b62191cfe",
+    "semantic_hash": "38cbad95dc383290bb60703b62191cfe"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/CategoryTagMapping.java": {
+    "mtime": 1782880448.2255764,
+    "seen": 1789036138.719268,
+    "ast_hash": "428ce5667243afb80bab9b6fde4211d9",
+    "semantic_hash": "428ce5667243afb80bab9b6fde4211d9"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/AbstractInflateAndFlatten.java": {
+    "mtime": 1702536350.2792153,
+    "seen": 1789036138.719269,
+    "ast_hash": "28cb9a8c8ce82b690468e2887a4c023b",
+    "semantic_hash": "28cb9a8c8ce82b690468e2887a4c023b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/AutoTagInstructionEntity.java": {
+    "mtime": 1743175216.3076952,
+    "seen": 1789036138.719271,
+    "ast_hash": "8a7ebc71018367e49b9fedbcb8280886",
+    "semantic_hash": "8a7ebc71018367e49b9fedbcb8280886"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/CampaignEntity.java": {
+    "mtime": 1743175216.3079407,
+    "seen": 1789036138.719272,
+    "ast_hash": "6e17551791f2734056a0fedae979fc45",
+    "semantic_hash": "6e17551791f2734056a0fedae979fc45"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ContextApproachEntity.java": {
+    "mtime": 1743175216.3081691,
+    "seen": 1789036138.719274,
+    "ast_hash": "7b6592eb805cdc1e9254e93eb562484b",
+    "semantic_hash": "7b6592eb805cdc1e9254e93eb562484b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/DishEntity.java": {
+    "mtime": 1743175216.3084059,
+    "seen": 1789036138.719275,
+    "ast_hash": "a2e5741cc137a768f6d151eb523aef67",
+    "semantic_hash": "a2e5741cc137a768f6d151eb523aef67"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/DishItemEntity.java": {
+    "mtime": 1743175216.3086333,
+    "seen": 1789036138.719276,
+    "ast_hash": "442b4faa2017674a2211c2e3f2c42e4c",
+    "semantic_hash": "442b4faa2017674a2211c2e3f2c42e4c"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/DishSlotEntity.java": {
+    "mtime": 1743175216.3088894,
+    "seen": 1789036138.719278,
+    "ast_hash": "ea682a867f45bd6867f23ed688c58b94",
+    "semantic_hash": "ea682a867f45bd6867f23ed688c58b94"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/FoodCategoryEntity.java": {
+    "mtime": 1743175216.3091197,
+    "seen": 1789036138.719279,
+    "ast_hash": "07a67770dc0576145e53b43d01f0a91e",
+    "semantic_hash": "07a67770dc0576145e53b43d01f0a91e"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/FoodCategoryMappingEntity.java": {
+    "mtime": 1743175216.3093524,
+    "seen": 1789036138.719281,
+    "ast_hash": "0e6eef8c9c7d661ec2beb0c8ad643523",
+    "semantic_hash": "0e6eef8c9c7d661ec2beb0c8ad643523"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/FoodConversionEntity.java": {
+    "mtime": 1743175216.3095713,
+    "seen": 1789036138.719282,
+    "ast_hash": "1b0b3a161be99ca79f3190e27035db7b",
+    "semantic_hash": "1b0b3a161be99ca79f3190e27035db7b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/FoodEntity.java": {
+    "mtime": 1743175216.3097942,
+    "seen": 1789036138.719284,
+    "ast_hash": "32d4c25c455b457e357fd5e98ef0d3b9",
+    "semantic_hash": "32d4c25c455b457e357fd5e98ef0d3b9"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ListItemDetailEntity.java": {
+    "mtime": 1770664375.887257,
+    "seen": 1789036138.719286,
+    "ast_hash": "c44e4c8748a2d7ff23904cbd40ebd057",
+    "semantic_hash": "c44e4c8748a2d7ff23904cbd40ebd057"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ListItemEntity.java": {
+    "mtime": 1784964309.6302605,
+    "seen": 1789036138.7192872,
+    "ast_hash": "e1b7fb28b557459dba64b4374bb094a2",
+    "semantic_hash": "e1b7fb28b557459dba64b4374bb094a2"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ListLayoutCategoryEntity.java": {
+    "mtime": 1782880448.2259076,
+    "seen": 1789036138.719289,
+    "ast_hash": "6f0505cd83b2c962678ee134bcaa8933",
+    "semantic_hash": "6f0505cd83b2c962678ee134bcaa8933"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ListLayoutEntity.java": {
+    "mtime": 1782880448.2262113,
+    "seen": 1789036138.71929,
+    "ast_hash": "6c42e582df6d5c05a27e2b7677abf3ec",
+    "semantic_hash": "6c42e582df6d5c05a27e2b7677abf3ec"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ListTagStatistic.java": {
+    "mtime": 1743175216.3107715,
+    "seen": 1789036138.719291,
+    "ast_hash": "f3706b96b11e7d83d6c7843f81ec4caa",
+    "semantic_hash": "f3706b96b11e7d83d6c7843f81ec4caa"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/MealPlanEntity.java": {
+    "mtime": 1743175216.3110077,
+    "seen": 1789036138.7192929,
+    "ast_hash": "24aa80f982d00af5048ea7870c31addc",
+    "semantic_hash": "24aa80f982d00af5048ea7870c31addc"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ModifierMappingEntity.java": {
+    "mtime": 1743175216.3112545,
+    "seen": 1789036138.719294,
+    "ast_hash": "621a2c5cdc03b70ba74b8c312d856b1c",
+    "semantic_hash": "621a2c5cdc03b70ba74b8c312d856b1c"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ProposalContextEntity.java": {
+    "mtime": 1743175216.311488,
+    "seen": 1789036138.719296,
+    "ast_hash": "841b4ad7faa65af95959d49b516e4679",
+    "semantic_hash": "841b4ad7faa65af95959d49b516e4679"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ProposalEntity.java": {
+    "mtime": 1743175216.3117266,
+    "seen": 1789036138.719297,
+    "ast_hash": "2c837a48fabd9f8e4d1d9030fe9b9ded",
+    "semantic_hash": "2c837a48fabd9f8e4d1d9030fe9b9ded"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ProposalSlotEntity.java": {
+    "mtime": 1743175216.3119893,
+    "seen": 1789036138.7192981,
+    "ast_hash": "37014a87dfa9e1773536e26bbe06bd70",
+    "semantic_hash": "37014a87dfa9e1773536e26bbe06bd70"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ShadowTags.java": {
+    "mtime": 1743175216.312231,
+    "seen": 1789036138.7193,
+    "ast_hash": "a90cb327bd84ed9ea2bfa69d4d00d27c",
+    "semantic_hash": "a90cb327bd84ed9ea2bfa69d4d00d27c"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ShoppingListEntity.java": {
+    "mtime": 1768588829.354826,
+    "seen": 1789036138.7193012,
+    "ast_hash": "f5753656305c63487ee59e0cd9c440ed",
+    "semantic_hash": "f5753656305c63487ee59e0cd9c440ed"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/SlotEntity.java": {
+    "mtime": 1743175216.3127303,
+    "seen": 1789036138.719303,
+    "ast_hash": "15dd3aff93dfdf92d742f03aefc59a7a",
+    "semantic_hash": "15dd3aff93dfdf92d742f03aefc59a7a"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/StatisticOperationType.java": {
+    "mtime": 1702536350.28099,
+    "seen": 1789036138.7193038,
+    "ast_hash": "5bda0fa38cbeee46cf5da9b407417a9c",
+    "semantic_hash": "5bda0fa38cbeee46cf5da9b407417a9c"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TagEntity.java": {
+    "mtime": 1768588829.3551018,
+    "seen": 1789036138.719305,
+    "ast_hash": "921d8b7dac94bdc73bad61e80860dbf9",
+    "semantic_hash": "921d8b7dac94bdc73bad61e80860dbf9"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TagInstructionEntity.java": {
+    "mtime": 1743175216.313232,
+    "seen": 1789036138.719307,
+    "ast_hash": "31576db3a0eb74a25b2cac9ed0acbc99",
+    "semantic_hash": "31576db3a0eb74a25b2cac9ed0acbc99"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TagRelationEntity.java": {
+    "mtime": 1743175216.313475,
+    "seen": 1789036138.7193081,
+    "ast_hash": "0f9066b1bebe72780ef18870ab3db33d",
+    "semantic_hash": "0f9066b1bebe72780ef18870ab3db33d"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TargetEntity.java": {
+    "mtime": 1743175216.3137429,
+    "seen": 1789036138.71931,
+    "ast_hash": "a85db325c9f311aea42f317e9e1b4341",
+    "semantic_hash": "a85db325c9f311aea42f317e9e1b4341"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TargetSlotEntity.java": {
+    "mtime": 1743175216.3139975,
+    "seen": 1789036138.719311,
+    "ast_hash": "947e366961f979534f23dca7e00c436b",
+    "semantic_hash": "947e366961f979534f23dca7e00c436b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TextInstructionEntity.java": {
+    "mtime": 1743175216.3142412,
+    "seen": 1789036138.719312,
+    "ast_hash": "425fd3a7dcd7714af8787d8792335393",
+    "semantic_hash": "425fd3a7dcd7714af8787d8792335393"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/TokenEntity.java": {
+    "mtime": 1743175216.3144832,
+    "seen": 1789036138.7193139,
+    "ast_hash": "2cf23fa36c724cf2025975a2b45a5b00",
+    "semantic_hash": "2cf23fa36c724cf2025975a2b45a5b00"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/AutoTagSubject.java": {
+    "mtime": 1702536350.2818751,
+    "seen": 1789036138.719315,
+    "ast_hash": "b4970f6053d7c8367a04638d237d1c86",
+    "semantic_hash": "b4970f6053d7c8367a04638d237d1c86"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/CategoryDTO.java": {
+    "mtime": 1780143344.0462432,
+    "seen": 1789036138.719316,
+    "ast_hash": "7ac187ab6fcd30a90e293309323239c3",
+    "semantic_hash": "7ac187ab6fcd30a90e293309323239c3"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/DishDTO.java": {
+    "mtime": 1780143344.046447,
+    "seen": 1789036138.719318,
+    "ast_hash": "0e24e50e119a5d8054629ca2d5779113",
+    "semantic_hash": "0e24e50e119a5d8054629ca2d5779113"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/DishItemDTO.java": {
+    "mtime": 1780143344.0466926,
+    "seen": 1789036138.71932,
+    "ast_hash": "bb822f25c434f5061ad745f5d6796718",
+    "semantic_hash": "bb822f25c434f5061ad745f5d6796718"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/FoodMappingDTO.java": {
+    "mtime": 1709488005.5228837,
+    "seen": 1789036138.719321,
+    "ast_hash": "a3467cf89eaf96d4d2cc669c1773b8a1",
+    "semantic_hash": "a3467cf89eaf96d4d2cc669c1773b8a1"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ICountResult.java": {
+    "mtime": 1702536350.2819767,
+    "seen": 1789036138.7193222,
+    "ast_hash": "4b3b44507f1d273e97023700dba9e703",
+    "semantic_hash": "4b3b44507f1d273e97023700dba9e703"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/IncludeType.java": {
+    "mtime": 1709488005.5235972,
+    "seen": 1789036138.7193239,
+    "ast_hash": "4b5f99eade3c40da8aaaf73ea0e90a93",
+    "semantic_hash": "4b5f99eade3c40da8aaaf73ea0e90a93"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/Instruction.java": {
+    "mtime": 1702536350.2820702,
+    "seen": 1789036138.7193248,
+    "ast_hash": "91059db2e6df07f8db572661177e5170",
+    "semantic_hash": "91059db2e6df07f8db572661177e5170"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ItemMappingDTO.java": {
+    "mtime": 1766819271.9120665,
+    "seen": 1789036138.719327,
+    "ast_hash": "a0437097c4ab8c5547493d557511ca5e",
+    "semantic_hash": "a0437097c4ab8c5547493d557511ca5e"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ItemMergeDTO.java": {
+    "mtime": 1784964309.630771,
+    "seen": 1789036138.719328,
+    "ast_hash": "7034e1186ed37b509b89566e8b0171cc",
+    "semantic_hash": "7034e1186ed37b509b89566e8b0171cc"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ItemToCategoryDTO.java": {
+    "mtime": 1780143344.0468156,
+    "seen": 1789036138.719329,
+    "ast_hash": "7ea2300cc6ce564af4fc88adcd0265c7",
+    "semantic_hash": "7ea2300cc6ce564af4fc88adcd0265c7"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/LayoutCategoryDTO.java": {
+    "mtime": 1782880448.226605,
+    "seen": 1789036138.719331,
+    "ast_hash": "c3655aeca05ee8642200929e720532a1",
+    "semantic_hash": "c3655aeca05ee8642200929e720532a1"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/LayoutDTO.java": {
+    "mtime": 1782880448.2268107,
+    "seen": 1789036138.719332,
+    "ast_hash": "8f9753e1b816fcc8dee4d31c93994e08",
+    "semantic_hash": "8f9753e1b816fcc8dee4d31c93994e08"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ListItemDTO.java": {
+    "mtime": 1784964309.6315942,
+    "seen": 1789036138.7193332,
+    "ast_hash": "82635f27f3a050760aad5aae8dcf3edd",
+    "semantic_hash": "82635f27f3a050760aad5aae8dcf3edd"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ListItemDetailDTO.java": {
+    "mtime": 1783400343.5444827,
+    "seen": 1789036138.7193348,
+    "ast_hash": "902861f7bc1f6ada70f1b213c4cb0ffc",
+    "semantic_hash": "902861f7bc1f6ada70f1b213c4cb0ffc"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/LongTagIdPairDTO.java": {
+    "mtime": 1702536350.282288,
+    "seen": 1789036138.719336,
+    "ast_hash": "f5905fd61b3896692ebd6e1ad09ce02c",
+    "semantic_hash": "f5905fd61b3896692ebd6e1ad09ce02c"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/RatingInfoDTO.java": {
+    "mtime": 1780143344.0470595,
+    "seen": 1789036138.719337,
+    "ast_hash": "140abf12211dd5eec017c3d21ba867a5",
+    "semantic_hash": "140abf12211dd5eec017c3d21ba867a5"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/ShoppingListDTO.java": {
+    "mtime": 1780143344.0472162,
+    "seen": 1789036138.719339,
+    "ast_hash": "4140aac3e16bcbe40a633e1440700389",
+    "semantic_hash": "4140aac3e16bcbe40a633e1440700389"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/SimpleListItemDTO.java": {
+    "mtime": 1784964309.632472,
+    "seen": 1789036138.71934,
+    "ast_hash": "0a9f3d0f20e323a6bc7b4ed4bc82e1ba",
+    "semantic_hash": "0a9f3d0f20e323a6bc7b4ed4bc82e1ba"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/SourceDTO.java": {
+    "mtime": 1780143344.047461,
+    "seen": 1789036138.719341,
+    "ast_hash": "e3073e8d06a72ca82cb3726fb251d991",
+    "semantic_hash": "e3073e8d06a72ca82cb3726fb251d991"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/StandardUserTagConflictDTO.java": {
+    "mtime": 1702536350.2823777,
+    "seen": 1789036138.7193432,
+    "ast_hash": "c16dee9edfdc6af93baec056edc85e1d",
+    "semantic_hash": "c16dee9edfdc6af93baec056edc85e1d"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/SuggestionDTO.java": {
+    "mtime": 1719760169.907158,
+    "seen": 1789036138.7193441,
+    "ast_hash": "98691a59a51bbbc8d02cb2acbb924d85",
+    "semantic_hash": "98691a59a51bbbc8d02cb2acbb924d85"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/TagInfoDTO.java": {
+    "mtime": 1780816020.4037905,
+    "seen": 1789036138.7193458,
+    "ast_hash": "e0b55628aedc49684cdad76696d79339",
+    "semantic_hash": "e0b55628aedc49684cdad76696d79339"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/TagInternalStatus.java": {
+    "mtime": 1709488005.5242558,
+    "seen": 1789036138.719347,
+    "ast_hash": "737c86c49c505a92f198633043d46bfe",
+    "semantic_hash": "737c86c49c505a92f198633043d46bfe"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/TagSearchCriteria.java": {
+    "mtime": 1709488005.5247304,
+    "seen": 1789036138.719349,
+    "ast_hash": "780014a0f519e41015956058a6c96841",
+    "semantic_hash": "780014a0f519e41015956058a6c96841"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/pojos/TargetServiceConstants.java": {
+    "mtime": 1702536350.2826822,
+    "seen": 1789036138.71935,
+    "ast_hash": "47ee484412cbff39889fa48ae03e67da",
+    "semantic_hash": "47ee484412cbff39889fa48ae03e67da"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/AmountRepository.java": {
+    "mtime": 1719760169.9077957,
+    "seen": 1789036138.719352,
+    "ast_hash": "803ac021464e6ebb0128b560bdcf9663",
+    "semantic_hash": "803ac021464e6ebb0128b560bdcf9663"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CampaignRepository.java": {
+    "mtime": 1702536350.2828286,
+    "seen": 1789036138.7193532,
+    "ast_hash": "c7b74ad0e0d79471f1a79948a49fd9e9",
+    "semantic_hash": "c7b74ad0e0d79471f1a79948a49fd9e9"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomAmountRepository.java": {
+    "mtime": 1719760169.908008,
+    "seen": 1789036138.7193549,
+    "ast_hash": "ffa4a8298294683ffa6e127461c7bd61",
+    "semantic_hash": "ffa4a8298294683ffa6e127461c7bd61"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomDishItemRepository.java": {
+    "mtime": 1719760169.9081354,
+    "seen": 1789036138.7193558,
+    "ast_hash": "d8dae5bf6d4a144fe6cee7a41a3b7b7f",
+    "semantic_hash": "d8dae5bf6d4a144fe6cee7a41a3b7b7f"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomFoodMappingRepository.java": {
+    "mtime": 1709488005.5251732,
+    "seen": 1789036138.719357,
+    "ast_hash": "73267873ee1333f44ff5040d1c5e795b",
+    "semantic_hash": "73267873ee1333f44ff5040d1c5e795b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomListLayoutRepository.java": {
+    "mtime": 1782880448.227274,
+    "seen": 1789036138.719359,
+    "ast_hash": "1602a5fdb252293141497ef934024c49",
+    "semantic_hash": "1602a5fdb252293141497ef934024c49"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomStatisticRepository.java": {
+    "mtime": 1766819271.9124508,
+    "seen": 1789036138.71936,
+    "ast_hash": "2a7bcdff8fd56fda098c73dc956f8d13",
+    "semantic_hash": "2a7bcdff8fd56fda098c73dc956f8d13"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomTagInfoRepository.java": {
+    "mtime": 1709488005.5254707,
+    "seen": 1789036138.719362,
+    "ast_hash": "47040e489c77fb74352f9b38810d0019",
+    "semantic_hash": "47040e489c77fb74352f9b38810d0019"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomTagRelationRepository.java": {
+    "mtime": 1702536350.2831242,
+    "seen": 1789036138.719363,
+    "ast_hash": "9ec7e18017fd269c226d4703d6358a47",
+    "semantic_hash": "9ec7e18017fd269c226d4703d6358a47"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/CustomTagRepository.java": {
+    "mtime": 1709488005.5258436,
+    "seen": 1789036138.7193651,
+    "ast_hash": "f0c3ca38e1dc51248c07a2de503eddc7",
+    "semantic_hash": "f0c3ca38e1dc51248c07a2de503eddc7"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/DishItemRepository.java": {
+    "mtime": 1780143344.0478287,
+    "seen": 1789036138.71937,
+    "ast_hash": "4ec39c26c4de9dccef7d6c66d123cef4",
+    "semantic_hash": "4ec39c26c4de9dccef7d6c66d123cef4"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/DishRepository.java": {
+    "mtime": 1780143344.048136,
+    "seen": 1789036138.719372,
+    "ast_hash": "af0cf38158241c7ac81f73af1438e0a6",
+    "semantic_hash": "af0cf38158241c7ac81f73af1438e0a6"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/DishSlotRepository.java": {
+    "mtime": 1702536350.2835,
+    "seen": 1789036138.719373,
+    "ast_hash": "96e859f25eb7c2431b8da64a8a560e07",
+    "semantic_hash": "96e859f25eb7c2431b8da64a8a560e07"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/FoodCategoryMappingRepository.java": {
+    "mtime": 1709488005.5263057,
+    "seen": 1789036138.7193751,
+    "ast_hash": "4ca9185156c300438e74fee317cc3922",
+    "semantic_hash": "4ca9185156c300438e74fee317cc3922"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/FoodCategoryRepository.java": {
+    "mtime": 1709488005.5267248,
+    "seen": 1789036138.7193768,
+    "ast_hash": "3e229155fd24a304a2c2eca6545104df",
+    "semantic_hash": "3e229155fd24a304a2c2eca6545104df"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/FoodConversionRepository.java": {
+    "mtime": 1719760169.9085333,
+    "seen": 1789036138.719378,
+    "ast_hash": "de131e3526061d178d301e98c4fdc518",
+    "semantic_hash": "de131e3526061d178d301e98c4fdc518"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/FoodRepository.java": {
+    "mtime": 1719760169.908729,
+    "seen": 1789036138.71938,
+    "ast_hash": "9d3e0937c9213beca4f582c562ae7f51",
+    "semantic_hash": "9d3e0937c9213beca4f582c562ae7f51"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ItemRepository.java": {
+    "mtime": 1784964309.633487,
+    "seen": 1789036138.719381,
+    "ast_hash": "e6ce6b40fc4950c568022618d56f4da2",
+    "semantic_hash": "e6ce6b40fc4950c568022618d56f4da2"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ListItemDetailRepository.java": {
+    "mtime": 1784964309.634359,
+    "seen": 1789036138.719382,
+    "ast_hash": "f4d64b56824b78416a44d61cfa108342",
+    "semantic_hash": "f4d64b56824b78416a44d61cfa108342"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ListItemRepository.java": {
+    "mtime": 1784964309.635187,
+    "seen": 1789036138.719384,
+    "ast_hash": "4d34442740568a95b42560c9ddd12d51",
+    "semantic_hash": "4d34442740568a95b42560c9ddd12d51"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ListLayoutCategoryRepository.java": {
+    "mtime": 1783400343.54487,
+    "seen": 1789036138.7193851,
+    "ast_hash": "79728d2470b2de142253fbe179ec28f0",
+    "semantic_hash": "79728d2470b2de142253fbe179ec28f0"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ListLayoutRepository.java": {
+    "mtime": 1782880448.228398,
+    "seen": 1789036138.7193868,
+    "ast_hash": "24d1f290b476d9dac2e6cab47c0c9c90",
+    "semantic_hash": "24d1f290b476d9dac2e6cab47c0c9c90"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ListMappingCustomRepository.java": {
+    "mtime": 1748760714.2136338,
+    "seen": 1789036138.719388,
+    "ast_hash": "b1006716b76cb123d7ca0e97523aa1db",
+    "semantic_hash": "b1006716b76cb123d7ca0e97523aa1db"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ListTagStatisticRepository.java": {
+    "mtime": 1702536350.2839496,
+    "seen": 1789036138.71939,
+    "ast_hash": "31158ffbeb22124f45d1b2d313245746",
+    "semantic_hash": "31158ffbeb22124f45d1b2d313245746"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/MealPlanRepository.java": {
+    "mtime": 1702536350.2840383,
+    "seen": 1789036138.7193909,
+    "ast_hash": "6a2ea1b9fc9d4551c0aad361b3a19be4",
+    "semantic_hash": "6a2ea1b9fc9d4551c0aad361b3a19be4"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ProposalContextRepository.java": {
+    "mtime": 1702536350.2841246,
+    "seen": 1789036138.719393,
+    "ast_hash": "45fba4771a38805898c818d72219654f",
+    "semantic_hash": "45fba4771a38805898c818d72219654f"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ProposalRepository.java": {
+    "mtime": 1702536350.2841997,
+    "seen": 1789036138.719394,
+    "ast_hash": "91fcb9759c32f5574475ef6a43690fe3",
+    "semantic_hash": "91fcb9759c32f5574475ef6a43690fe3"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ProposalSlotRepository.java": {
+    "mtime": 1702536350.284281,
+    "seen": 1789036138.7193952,
+    "ast_hash": "d86f455949e23ffe21a597b7aef1169d",
+    "semantic_hash": "d86f455949e23ffe21a597b7aef1169d"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ShadowTagRepository.java": {
+    "mtime": 1702536350.2843642,
+    "seen": 1789036138.719397,
+    "ast_hash": "51c587b0bfb11e31c9abd35ad025e090",
+    "semantic_hash": "51c587b0bfb11e31c9abd35ad025e090"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/ShoppingListRepository.java": {
+    "mtime": 1780143344.048954,
+    "seen": 1789036138.7193978,
+    "ast_hash": "6b77cc555085f7e72580cceec8b2fbbc",
+    "semantic_hash": "6b77cc555085f7e72580cceec8b2fbbc"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/SlotRepository.java": {
+    "mtime": 1702536350.28453,
+    "seen": 1789036138.7194,
+    "ast_hash": "decedd9c553553109c2393cae75f09cf",
+    "semantic_hash": "decedd9c553553109c2393cae75f09cf"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TagInstructionRepository.java": {
+    "mtime": 1702536350.2846959,
+    "seen": 1789036138.719401,
+    "ast_hash": "60cbdaa210dc34f57997e6db827b4cc3",
+    "semantic_hash": "60cbdaa210dc34f57997e6db827b4cc3"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TagRelationRepository.java": {
+    "mtime": 1702536350.2847888,
+    "seen": 1789036138.719402,
+    "ast_hash": "c2d18b03997c085b873c1d9e9241fcfb",
+    "semantic_hash": "c2d18b03997c085b873c1d9e9241fcfb"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TagRepository.java": {
+    "mtime": 1780143344.0491946,
+    "seen": 1789036138.719404,
+    "ast_hash": "5c7a3c18224d5d0d160e7326dccc9d0b",
+    "semantic_hash": "5c7a3c18224d5d0d160e7326dccc9d0b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TargetRepository.java": {
+    "mtime": 1702536350.2849596,
+    "seen": 1789036138.7194052,
+    "ast_hash": "f4696cf238609cae8abbf3b913aa5859",
+    "semantic_hash": "f4696cf238609cae8abbf3b913aa5859"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TargetSlotRepository.java": {
+    "mtime": 1702536350.2850375,
+    "seen": 1789036138.719407,
+    "ast_hash": "09f513c26200f96111b7a94c014e6508",
+    "semantic_hash": "09f513c26200f96111b7a94c014e6508"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TextInstructionRepository.java": {
+    "mtime": 1702536350.285121,
+    "seen": 1789036138.719408,
+    "ast_hash": "77bbcfd5a8843c974265c7654074f6cb",
+    "semantic_hash": "77bbcfd5a8843c974265c7654074f6cb"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/TokenRepository.java": {
+    "mtime": 1702536350.2852082,
+    "seen": 1789036138.71941,
+    "ast_hash": "5cb9c530830fa1d3281d96653a5dc35b",
+    "semantic_hash": "5cb9c530830fa1d3281d96653a5dc35b"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/UnitSearchCriteria.java": {
+    "mtime": 1719760169.9088943,
+    "seen": 1789036138.719411,
+    "ast_hash": "48e6abd3b3e097c9147eebba608e6b32",
+    "semantic_hash": "48e6abd3b3e097c9147eebba608e6b32"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomAmountRepositoryImpl.java": {
+    "mtime": 1743175216.3157554,
+    "seen": 1789036138.7194118,
+    "ast_hash": "8cf11cdf4bb6d297a9c4974b374ca40d",
+    "semantic_hash": "8cf11cdf4bb6d297a9c4974b374ca40d"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomDishItemRepositoryImpl.java": {
+    "mtime": 1743175216.3159971,
+    "seen": 1789036138.719414,
+    "ast_hash": "3be8b24bf1c2af609494acbca58db6b3",
+    "semantic_hash": "3be8b24bf1c2af609494acbca58db6b3"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomFoodMappingRepositoryImpl.java": {
+    "mtime": 1709488005.5283291,
+    "seen": 1789036138.719415,
+    "ast_hash": "ea5225d8d024bdc1084effc800bfe15a",
+    "semantic_hash": "ea5225d8d024bdc1084effc800bfe15a"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomListLayoutRepositoryImpl.java": {
+    "mtime": 1782880448.22891,
+    "seen": 1789036138.719417,
+    "ast_hash": "d9159f909e0d94a53aad583965aecc52",
+    "semantic_hash": "d9159f909e0d94a53aad583965aecc52"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomStatisticRepositoryImpl.java": {
+    "mtime": 1766819271.9137256,
+    "seen": 1789036138.719418,
+    "ast_hash": "8be3cfd05c37f30eb2ddf96676560abe",
+    "semantic_hash": "8be3cfd05c37f30eb2ddf96676560abe"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomTagRelationRepositoryImpl.java": {
+    "mtime": 1743175216.3167653,
+    "seen": 1789036138.7194188,
+    "ast_hash": "aa7b29e822a0b8bcaeae7e1c5539d2e1",
+    "semantic_hash": "aa7b29e822a0b8bcaeae7e1c5539d2e1"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomTagRepositoryImpl.java": {
+    "mtime": 1743175216.3170161,
+    "seen": 1789036138.719421,
+    "ast_hash": "182338bc35a66568e5807a8ae0772aef",
+    "semantic_hash": "182338bc35a66568e5807a8ae0772aef"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/ListMappingCustomRepositoryImpl.java": {
+    "mtime": 1766819271.914159,
+    "seen": 1789036138.7194219,
+    "ast_hash": "945bb3c8f199f9c7b9d1ba50222e83d6",
+    "semantic_hash": "945bb3c8f199f9c7b9d1ba50222e83d6"
+  },
+  "listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/TagInfoRepositoryImpl.java": {
+    "mtime": 1783400343.545454,
+    "seen": 1789036138.719424,
+    "ast_hash": "ee2f31307677f5c18ae8c6a737c6af79",
+    "semantic_hash": "ee2f31307677f5c18ae8c6a737c6af79"
+  },
+  "listshop-lmt/listshop-service/pom.xml": {
+    "mtime": 1783400343.5459857,
+    "seen": 1789036138.719425,
+    "ast_hash": "09bb48a4c185076fca3d1b5b5b656bc8",
+    "semantic_hash": "09bb48a4c185076fca3d1b5b5b656bc8"
+  },
+  "listshop-lmt/listshop-service/src/main/docker/initStaticFiles/staticfiles/celebrations.json": {
+    "mtime": 1702536350.28911,
+    "seen": 1789036138.7194262,
+    "ast_hash": "ee67941728d5916d5ffaff0a02ef80ea",
+    "semantic_hash": "ee67941728d5916d5ffaff0a02ef80ea"
+  },
+  "listshop-lmt/listshop-service/src/main/docker/initStaticFiles/staticfiles/copystaticfiles.sh": {
+    "mtime": 1702536350.2893014,
+    "seen": 1789036138.719427,
+    "ast_hash": "d980099046ab2b1eb97aa04ff7d3f2e6",
+    "semantic_hash": "d980099046ab2b1eb97aa04ff7d3f2e6"
+  },
+  "listshop-lmt/listshop-service/src/main/docker/initStaticFiles/staticfiles/features.json": {
+    "mtime": 1702536350.2893796,
+    "seen": 1789036138.719429,
+    "ast_hash": "c367de3d9dd0463d742313d4d5cd40a5",
+    "semantic_hash": "c367de3d9dd0463d742313d4d5cd40a5"
+  },
+  "listshop-lmt/listshop-service/src/main/docker/initStaticFiles/staticfiles/testCelebrations.json": {
+    "mtime": 1773514947.0483208,
+    "seen": 1789036138.71943,
+    "ast_hash": "7665cd7d89d449b47a9514c642e3d664",
+    "semantic_hash": "7665cd7d89d449b47a9514c642e3d664"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/Application.java": {
+    "mtime": 1780143544.1910362,
+    "seen": 1789036138.7194319,
+    "ast_hash": "7c55877450ee9a85d7b86b366e69544c",
+    "semantic_hash": "7c55877450ee9a85d7b86b366e69544c"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/admin/controller/AdminLayoutRestController.java": {
+    "mtime": 1782880448.2295856,
+    "seen": 1789036138.719433,
+    "ast_hash": "b1c56195e1907d6158280002b71ab6b3",
+    "semantic_hash": "b1c56195e1907d6158280002b71ab6b3"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/admin/controller/AdminTagRestController.java": {
+    "mtime": 1782880448.229993,
+    "seen": 1789036138.719434,
+    "ast_hash": "25f77a9a8d4b4c7b1b0cb7048db8d70f",
+    "semantic_hash": "25f77a9a8d4b4c7b1b0cb7048db8d70f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/admin/controller/AdminUserRestController.java": {
+    "mtime": 1768588829.356894,
+    "seen": 1789036138.719436,
+    "ast_hash": "d46fe71e5561e9b0b52ab91a89a2d972",
+    "semantic_hash": "d46fe71e5561e9b0b52ab91a89a2d972"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/entity/AdminUserDetailsEntity.java": {
+    "mtime": 1743175216.3182774,
+    "seen": 1789036138.7194371,
+    "ast_hash": "f5ce79775da07e16a19caeb6f553a240",
+    "semantic_hash": "f5ce79775da07e16a19caeb6f553a240"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/entity/AuthorityEntity.java": {
+    "mtime": 1743175216.3185253,
+    "seen": 1789036138.719439,
+    "ast_hash": "3b59ca18065aa3cc6b554ec704b403f6",
+    "semantic_hash": "3b59ca18065aa3cc6b554ec704b403f6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/entity/AuthorityName.java": {
+    "mtime": 1702536350.463825,
+    "seen": 1789036138.71944,
+    "ast_hash": "a76690d8524bb47038c64fecbb4517bf",
+    "semantic_hash": "a76690d8524bb47038c64fecbb4517bf"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/entity/UserDeviceEntity.java": {
+    "mtime": 1743175216.3187692,
+    "seen": 1789036138.719441,
+    "ast_hash": "ea8340b6a7a88538866392c7393efbb8",
+    "semantic_hash": "ea8340b6a7a88538866392c7393efbb8"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/entity/UserEntity.java": {
+    "mtime": 1743175216.3190312,
+    "seen": 1789036138.7194428,
+    "ast_hash": "d654a627e81bbb2a422c8615e6061642",
+    "semantic_hash": "d654a627e81bbb2a422c8615e6061642"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/entity/UserPropertyEntity.java": {
+    "mtime": 1743175216.319283,
+    "seen": 1789036138.719444,
+    "ast_hash": "17eba53d9b60e78fa10a935fb7ff7bcf",
+    "semantic_hash": "17eba53d9b60e78fa10a935fb7ff7bcf"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/AdminUserDetailsRepository.java": {
+    "mtime": 1702536350.4642909,
+    "seen": 1789036138.719445,
+    "ast_hash": "2f8342b4d722496f24aee5eed32df06b",
+    "semantic_hash": "2f8342b4d722496f24aee5eed32df06b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/AuthorityRepository.java": {
+    "mtime": 1743175216.3195448,
+    "seen": 1789036138.7194471,
+    "ast_hash": "369afc3fbecc383c09c2c2eba9d66a54",
+    "semantic_hash": "369afc3fbecc383c09c2c2eba9d66a54"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/CustomUserRepository.java": {
+    "mtime": 1702536350.4644973,
+    "seen": 1789036138.719448,
+    "ast_hash": "e70c8c2ef9d83b128128ffd6c82f5bb6",
+    "semantic_hash": "e70c8c2ef9d83b128128ffd6c82f5bb6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/UserDeviceRepository.java": {
+    "mtime": 1743175216.319784,
+    "seen": 1789036138.719449,
+    "ast_hash": "e0348a64413a72c411975004a2f293f0",
+    "semantic_hash": "e0348a64413a72c411975004a2f293f0"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/UserPropertyRepository.java": {
+    "mtime": 1702536350.4646773,
+    "seen": 1789036138.719451,
+    "ast_hash": "9ba5ea228e7b48e20c3cdccb809e93e6",
+    "semantic_hash": "9ba5ea228e7b48e20c3cdccb809e93e6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/UserRepository.java": {
+    "mtime": 1709488005.5328019,
+    "seen": 1789036138.719452,
+    "ast_hash": "54ed018cac67d5f78e075a3d4b326549",
+    "semantic_hash": "54ed018cac67d5f78e075a3d4b326549"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/data/repository/impl/CustomUserRepositoryImpl.java": {
+    "mtime": 1743175216.3200576,
+    "seen": 1789036138.7194529,
+    "ast_hash": "95aa807823b4de1002e38d64081f7af8",
+    "semantic_hash": "95aa807823b4de1002e38d64081f7af8"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/CustomUserDetails.java": {
+    "mtime": 1780143344.0499558,
+    "seen": 1789036138.719455,
+    "ast_hash": "3b8bf92eb4a899003161f51ee2b2cfd1",
+    "semantic_hash": "3b8bf92eb4a899003161f51ee2b2cfd1"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/JwtService.java": {
+    "mtime": 1743175216.3204248,
+    "seen": 1789036138.719456,
+    "ast_hash": "affa72ad0cbf6aebefdc605f2b7948a6",
+    "semantic_hash": "affa72ad0cbf6aebefdc605f2b7948a6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/UserPropertyChangeListener.java": {
+    "mtime": 1702536350.4651022,
+    "seen": 1789036138.719457,
+    "ast_hash": "de2e32933c6de82040071c26e7c88fdc",
+    "semantic_hash": "de2e32933c6de82040071c26e7c88fdc"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/UserPropertyKey.java": {
+    "mtime": 1719760169.9110801,
+    "seen": 1789036138.719459,
+    "ast_hash": "a63e01914751f819359d0c180c1c4d20",
+    "semantic_hash": "a63e01914751f819359d0c180c1c4d20"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/UserPropertyService.java": {
+    "mtime": 1770664375.8885422,
+    "seen": 1789036138.71946,
+    "ast_hash": "13a9fb9c3d9fa4ff07af84f07766db60",
+    "semantic_hash": "13a9fb9c3d9fa4ff07af84f07766db60"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/UserService.java": {
+    "mtime": 1780143344.0501568,
+    "seen": 1789036138.7194612,
+    "ast_hash": "9d1d9e03d4755947f3feafbfdd5e85c1",
+    "semantic_hash": "9d1d9e03d4755947f3feafbfdd5e85c1"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/BetaTestUserPropertyListener.java": {
+    "mtime": 1743175216.3207014,
+    "seen": 1789036138.7194629,
+    "ast_hash": "1cde580ffcc0f0b702c89b1b75c4c9f7",
+    "semantic_hash": "1cde580ffcc0f0b702c89b1b75c4c9f7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtAuthFilter.java": {
+    "mtime": 1780143344.0503933,
+    "seen": 1789036138.7194638,
+    "ast_hash": "c1bd6189f2887062ecfe48b7ee57fadd",
+    "semantic_hash": "c1bd6189f2887062ecfe48b7ee57fadd"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtAuthFilterDummyImpl.java": {
+    "mtime": 1780143344.050522,
+    "seen": 1789036138.719465,
+    "ast_hash": "6cfb958afa3ce43dc3a681119500fa40",
+    "semantic_hash": "6cfb958afa3ce43dc3a681119500fa40"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtAuthFilterImpl.java": {
+    "mtime": 1780143344.050641,
+    "seen": 1789036138.719467,
+    "ast_hash": "29f76674d1aea13237d41f0f127d95f7",
+    "semantic_hash": "29f76674d1aea13237d41f0f127d95f7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtServiceImpl.java": {
+    "mtime": 1780143344.050844,
+    "seen": 1789036138.719468,
+    "ast_hash": "ae44bbecfe0f793116a9fd7bf7b91206",
+    "semantic_hash": "ae44bbecfe0f793116a9fd7bf7b91206"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtUser.java": {
+    "mtime": 1727155224.3622892,
+    "seen": 1789036138.719469,
+    "ast_hash": "c5a578eb17f33c8e28fc4061e700a949",
+    "semantic_hash": "c5a578eb17f33c8e28fc4061e700a949"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/UserDetailsServiceImpl.java": {
+    "mtime": 1780143544.1919348,
+    "seen": 1789036138.7194712,
+    "ast_hash": "49b170745e383a514fb3791ce446a006",
+    "semantic_hash": "49b170745e383a514fb3791ce446a006"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/UserPropertyServiceImpl.java": {
+    "mtime": 1770664375.888911,
+    "seen": 1789036138.7194722,
+    "ast_hash": "38e4cf9e9e61b05b2f398dc460ec666b",
+    "semantic_hash": "38e4cf9e9e61b05b2f398dc460ec666b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/UserServiceImpl.java": {
+    "mtime": 1780143344.0510852,
+    "seen": 1789036138.7194738,
+    "ast_hash": "556e6b697c983f59c0de5c67a98e0992",
+    "semantic_hash": "556e6b697c983f59c0de5c67a98e0992"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/web/AuthenticationRestController.java": {
+    "mtime": 1768588829.3573892,
+    "seen": 1789036138.719475,
+    "ast_hash": "14179033be7b7db2319229a577cdc325",
+    "semantic_hash": "14179033be7b7db2319229a577cdc325"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/web/UserRestController.java": {
+    "mtime": 1780143344.0515296,
+    "seen": 1789036138.719476,
+    "ast_hash": "e0db4583c66813dd615af4f0aabcad40",
+    "semantic_hash": "e0db4583c66813dd615af4f0aabcad40"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/common/AmountTextBuilder.java": {
+    "mtime": 1782880448.2302916,
+    "seen": 1789036138.7194781,
+    "ast_hash": "e222bc01b866bea79ad295cbe9843636",
+    "semantic_hash": "e222bc01b866bea79ad295cbe9843636"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/common/CommonUtils.java": {
+    "mtime": 1770664375.8896642,
+    "seen": 1789036138.719479,
+    "ast_hash": "0e1f37bc57b97b188ddea46842a2a1e6",
+    "semantic_hash": "0e1f37bc57b97b188ddea46842a2a1e6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/common/ControllerUtils.java": {
+    "mtime": 1780143344.0520477,
+    "seen": 1789036138.719481,
+    "ast_hash": "d6c0e12f8b441b8ff43862dfa183f75c",
+    "semantic_hash": "d6c0e12f8b441b8ff43862dfa183f75c"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/common/FractionUtils.java": {
+    "mtime": 1780143344.0522702,
+    "seen": 1789036138.7194822,
+    "ast_hash": "5c3672ad75e5b7d192696c72f4ad8c8a",
+    "semantic_hash": "5c3672ad75e5b7d192696c72f4ad8c8a"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/PostofficeConfiguration.java": {
+    "mtime": 1780143344.0526195,
+    "seen": 1789036138.7194839,
+    "ast_hash": "1e8d24d6de6cd3ddc7ca18dc5df988d6",
+    "semantic_hash": "1e8d24d6de6cd3ddc7ca18dc5df988d6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/SecurityConfig.java": {
+    "mtime": 1783400343.546435,
+    "seen": 1789036138.719485,
+    "ast_hash": "4c192bbbc0d1534df19e143d3eaedebc",
+    "semantic_hash": "4c192bbbc0d1534df19e143d3eaedebc"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/SpringDocConfiguration.java": {
+    "mtime": 1771046374.3593314,
+    "seen": 1789036138.719487,
+    "ast_hash": "44c4c2d68250251f46c415a67ec57557",
+    "semantic_hash": "44c4c2d68250251f46c415a67ec57557"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/StartupApplicationListener.java": {
+    "mtime": 1702536350.4671373,
+    "seen": 1789036138.719488,
+    "ast_hash": "6e286098def57ee70b7c81417abf2ce1",
+    "semantic_hash": "6e286098def57ee70b7c81417abf2ce1"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/StaticResourceConfiguration.java": {
+    "mtime": 1702536350.4672744,
+    "seen": 1789036138.719489,
+    "ast_hash": "33af1cf6c144972ca00beb6d532d33e9",
+    "semantic_hash": "33af1cf6c144972ca00beb6d532d33e9"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/TestConfiguration.java": {
+    "mtime": 1702536350.4673855,
+    "seen": 1789036138.719491,
+    "ast_hash": "be7057bbbe001511c8291ae6c3170e4d",
+    "semantic_hash": "be7057bbbe001511c8291ae6c3170e4d"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/UITestContextInitializer.java": {
+    "mtime": 1768588829.3580525,
+    "seen": 1789036138.7194922,
+    "ast_hash": "9472aaed468d3a66ceb1a2a6364b408c",
+    "semantic_hash": "9472aaed468d3a66ceb1a2a6364b408c"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/UITestPostgresqlContainer.java": {
+    "mtime": 1702536350.4676077,
+    "seen": 1789036138.7194939,
+    "ast_hash": "76bcde29faba2885beaf5e82796cc238",
+    "semantic_hash": "76bcde29faba2885beaf5e82796cc238"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/WebConfiguration.java": {
+    "mtime": 1702536350.467707,
+    "seen": 1789036138.7194948,
+    "ast_hash": "b244b50d9462cdf25dd64e7da7352444",
+    "semantic_hash": "b244b50d9462cdf25dd64e7da7352444"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/model/ModelMapper.java": {
+    "mtime": 1782880448.231296,
+    "seen": 1789036138.719497,
+    "ast_hash": "81246087a8c8ece727bae6b1c12f6a67",
+    "semantic_hash": "81246087a8c8ece727bae6b1c12f6a67"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/model/ShoppingListItemComparator.java": {
+    "mtime": 1702536350.4682834,
+    "seen": 1789036138.719498,
+    "ast_hash": "0a148b168b1d42f79a054e73e69afd5f",
+    "semantic_hash": "0a148b168b1d42f79a054e73e69afd5f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/model/v2/V2ModelMapper.java": {
+    "mtime": 1784990762.1301682,
+    "seen": 1789036138.7195,
+    "ast_hash": "a2f6c2e8e4a65923eaa87700da1dbe18",
+    "semantic_hash": "a2f6c2e8e4a65923eaa87700da1dbe18"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/CampaignRestController.java": {
+    "mtime": 1743175216.3228846,
+    "seen": 1789036138.719501,
+    "ast_hash": "d84b6d350b5874515aba7c9c834dcb5d",
+    "semantic_hash": "d84b6d350b5874515aba7c9c834dcb5d"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/DishRestController.java": {
+    "mtime": 1788972748.86414,
+    "seen": 1789036138.719502,
+    "ast_hash": "0b3fd976d1b77e2c23b0c67fc63aa9a6",
+    "semantic_hash": "0b3fd976d1b77e2c23b0c67fc63aa9a6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/LayoutRestController.java": {
+    "mtime": 1782880448.2323148,
+    "seen": 1789036138.7195039,
+    "ast_hash": "3effab3d83b38a6ebad20c26495ae1ca",
+    "semantic_hash": "3effab3d83b38a6ebad20c26495ae1ca"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/LegacyShoppingListRestController.java": {
+    "mtime": 1784964309.6369655,
+    "seen": 1789036138.7195048,
+    "ast_hash": "473966fc443bfd739090c180840a043e",
+    "semantic_hash": "473966fc443bfd739090c180840a043e"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/MealPlanRestController.java": {
+    "mtime": 1780143344.054224,
+    "seen": 1789036138.719507,
+    "ast_hash": "270aea9985f9e114e36c2a48d0e41827",
+    "semantic_hash": "270aea9985f9e114e36c2a48d0e41827"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/ProposalRestController.java": {
+    "mtime": 1768588829.3588638,
+    "seen": 1789036138.719508,
+    "ast_hash": "ab9ae835d457bafe7ae0336cc8307bc8",
+    "semantic_hash": "ab9ae835d457bafe7ae0336cc8307bc8"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/StatisticRestController.java": {
+    "mtime": 1780143344.0550287,
+    "seen": 1789036138.71951,
+    "ast_hash": "049f803eee00b6cb06c07c66270a5c70",
+    "semantic_hash": "049f803eee00b6cb06c07c66270a5c70"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/TagRestController.java": {
+    "mtime": 1773564290.5015426,
+    "seen": 1789036138.719511,
+    "ast_hash": "cc2ec08c4887c30a6d27700d782fdd1b",
+    "semantic_hash": "cc2ec08c4887c30a6d27700d782fdd1b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/TargetRestController.java": {
+    "mtime": 1768588829.3597353,
+    "seen": 1789036138.719512,
+    "ast_hash": "cce13a3b5fe802ad88af903883c9e3df",
+    "semantic_hash": "cce13a3b5fe802ad88af903883c9e3df"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/v2/AmountRestController.java": {
+    "mtime": 1780143344.0553713,
+    "seen": 1789036138.7195141,
+    "ast_hash": "9d18905e75ee0e70e2d71ee7746aa62f",
+    "semantic_hash": "9d18905e75ee0e70e2d71ee7746aa62f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/v2/DishRestController.java": {
+    "mtime": 1788973518.6817,
+    "seen": 1789036138.7195148,
+    "ast_hash": "1c5be1301747f5cdf535181e01d2d6cc",
+    "semantic_hash": "1c5be1301747f5cdf535181e01d2d6cc"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/v2/ShoppingListRestController.java": {
+    "mtime": 1784990762.108525,
+    "seen": 1789036138.7195158,
+    "ast_hash": "1813974983783f20219f31161e3f0cc1",
+    "semantic_hash": "1813974983783f20219f31161e3f0cc1"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/v2/TagRestController.java": {
+    "mtime": 1783400343.5472507,
+    "seen": 1789036138.719518,
+    "ast_hash": "f6d84a153d8c29d44b460b1b778a240d",
+    "semantic_hash": "f6d84a153d8c29d44b460b1b778a240d"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/v2/V2LayoutRestController.java": {
+    "mtime": 1782880448.2326736,
+    "seen": 1789036138.719519,
+    "ast_hash": "7dd52673ef75cc7bc7e012b734adcc55",
+    "semantic_hash": "7dd52673ef75cc7bc7e012b734adcc55"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/error/RestResponseExceptionHandler.java": {
+    "mtime": 1780143344.0563889,
+    "seen": 1789036138.71952,
+    "ast_hash": "546e7cdc831a38755d3888e139119fb7",
+    "semantic_hash": "546e7cdc831a38755d3888e139119fb7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/conversion/BasicAmount.java": {
+    "mtime": 1770664375.8912375,
+    "seen": 1789036138.719522,
+    "ast_hash": "acbd51278c3034ed532700914087dc9a",
+    "semantic_hash": "acbd51278c3034ed532700914087dc9a"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/conversion/EntityConvertibleAmount.java": {
+    "mtime": 1770664375.8916063,
+    "seen": 1789036138.719523,
+    "ast_hash": "a39cfa0c05d80509b0e45c457e88df57",
+    "semantic_hash": "a39cfa0c05d80509b0e45c457e88df57"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/conversion/ListConversionService.java": {
+    "mtime": 1780143344.0568562,
+    "seen": 1789036138.7195241,
+    "ast_hash": "d4497c8ca3642767346516e57a68db29",
+    "semantic_hash": "d4497c8ca3642767346516e57a68db29"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/conversion/QuantityElements.java": {
+    "mtime": 1770664375.8922143,
+    "seen": 1789036138.7195258,
+    "ast_hash": "2013d2c90d9e5e6e1cfa8def9a55c894",
+    "semantic_hash": "2013d2c90d9e5e6e1cfa8def9a55c894"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/conversion/SummaryConvertibleAmount.java": {
+    "mtime": 1770664375.8925428,
+    "seen": 1789036138.719527,
+    "ast_hash": "15d3ac526c642d3bc2bcee03b0166408",
+    "semantic_hash": "15d3ac526c642d3bc2bcee03b0166408"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/conversion/impl/ListConversionServiceImpl.java": {
+    "mtime": 1782880448.2331424,
+    "seen": 1789036138.719528,
+    "ast_hash": "4e61f66282aeb1d26e215ae7ece8285b",
+    "semantic_hash": "4e61f66282aeb1d26e215ae7ece8285b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/data/ItemChangeRepository.java": {
+    "mtime": 1766819271.919758,
+    "seen": 1789036138.7195299,
+    "ast_hash": "8c5e3eb95ea6b93bcf58e1629a774bd3",
+    "semantic_hash": "8c5e3eb95ea6b93bcf58e1629a774bd3"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/data/impl/ListItemRepositoryImpl.java": {
+    "mtime": 1784964309.6389048,
+    "seen": 1789036138.719531,
+    "ast_hash": "cf1ded43fcbd1edcdb404715ac6a036c",
+    "semantic_hash": "cf1ded43fcbd1edcdb404715ac6a036c"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/dish/DishSearchCriteria.java": {
+    "mtime": 1766819271.9202254,
+    "seen": 1789036138.719533,
+    "ast_hash": "536005f8df1b44517fdeb701c51ad3ba",
+    "semantic_hash": "536005f8df1b44517fdeb701c51ad3ba"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/dish/DishSearchService.java": {
+    "mtime": 1766819271.920381,
+    "seen": 1789036138.7195342,
+    "ast_hash": "61aa136549ba909bb58d2fccc58a0d34",
+    "semantic_hash": "61aa136549ba909bb58d2fccc58a0d34"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/dish/DishService.java": {
+    "mtime": 1788972748.8722367,
+    "seen": 1789036138.719535,
+    "ast_hash": "42c2b550b9fc321144679eead50a8b45",
+    "semantic_hash": "42c2b550b9fc321144679eead50a8b45"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/dish/DishTagSearchResult.java": {
+    "mtime": 1766819271.9206977,
+    "seen": 1789036138.7195368,
+    "ast_hash": "83eaa8d3cf11a5139ed93ef0d19a7f8f",
+    "semantic_hash": "83eaa8d3cf11a5139ed93ef0d19a7f8f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/dish/impl/DishSearchServiceImpl.java": {
+    "mtime": 1780143344.0575686,
+    "seen": 1789036138.719538,
+    "ast_hash": "64154faaccae7f1e27bcfdacd5be7eaa",
+    "semantic_hash": "64154faaccae7f1e27bcfdacd5be7eaa"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/dish/impl/DishServiceImpl.java": {
+    "mtime": 1788972748.9241598,
+    "seen": 1789036138.719539,
+    "ast_hash": "cac8c55741367720e83b0ba075ae78ec",
+    "semantic_hash": "cac8c55741367720e83b0ba075ae78ec"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/BaseShoppingListService.java": {
+    "mtime": 1788613042.3225024,
+    "seen": 1789036138.719541,
+    "ast_hash": "8e6f57adc8ebffbb61f3a423c133ab93",
+    "semantic_hash": "8e6f57adc8ebffbb61f3a423c133ab93"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/LegacyShoppingListService.java": {
+    "mtime": 1784964309.6408334,
+    "seen": 1789036138.719542,
+    "ast_hash": "8d899f70ab96d39062d936bc0004c955",
+    "semantic_hash": "8d899f70ab96d39062d936bc0004c955"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/ListItemCollector.java": {
+    "mtime": 1770664375.8932521,
+    "seen": 1789036138.719543,
+    "ast_hash": "b76b60de27b1cc3ae17cc703510f9c36",
+    "semantic_hash": "b76b60de27b1cc3ae17cc703510f9c36"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/ListLayoutProperties.java": {
+    "mtime": 1766819271.921695,
+    "seen": 1789036138.7195451,
+    "ast_hash": "42db4f83aa64c31e254f6f01399741ca",
+    "semantic_hash": "42db4f83aa64c31e254f6f01399741ca"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/ListSearchService.java": {
+    "mtime": 1766819271.9218516,
+    "seen": 1789036138.719546,
+    "ast_hash": "fde031843ba8cd2caddb2cf596fd2194",
+    "semantic_hash": "fde031843ba8cd2caddb2cf596fd2194"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/ListTagStatisticService.java": {
+    "mtime": 1766819271.9220128,
+    "seen": 1789036138.719548,
+    "ast_hash": "2fcef9560f218fc35ae56a082e9261de",
+    "semantic_hash": "2fcef9560f218fc35ae56a082e9261de"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/ShoppingListException.java": {
+    "mtime": 1780143344.0584877,
+    "seen": 1789036138.71955,
+    "ast_hash": "bdb59cd0522e6b9a8f578154e860d5d5",
+    "semantic_hash": "bdb59cd0522e6b9a8f578154e860d5d5"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/ShoppingListProperties.java": {
+    "mtime": 1766819271.9223897,
+    "seen": 1789036138.719551,
+    "ast_hash": "da76d915ac1e0d637c54022a27ef9e5b",
+    "semantic_hash": "da76d915ac1e0d637c54022a27ef9e5b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/impl/LegacyShoppingListServiceImpl.java": {
+    "mtime": 1788613042.3075883,
+    "seen": 1789036138.719553,
+    "ast_hash": "e6160c2962e8303a86e013549a81fa38",
+    "semantic_hash": "e6160c2962e8303a86e013549a81fa38"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/impl/ListSearchServiceImpl.java": {
+    "mtime": 1766819271.9227788,
+    "seen": 1789036138.719554,
+    "ast_hash": "2a9100e46f518fc61fe5084fc101c9fb",
+    "semantic_hash": "2a9100e46f518fc61fe5084fc101c9fb"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/impl/ListTagStatisticServiceImpl.java": {
+    "mtime": 1784964309.6429498,
+    "seen": 1789036138.7195551,
+    "ast_hash": "c431e4d9abdcd32123322e9c1383d958",
+    "semantic_hash": "c431e4d9abdcd32123322e9c1383d958"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/AbstractTransition.java": {
+    "mtime": 1770664375.8940973,
+    "seen": 1789036138.719557,
+    "ast_hash": "8424e9d31d7392ea8bf66bdcf6e610b3",
+    "semantic_hash": "8424e9d31d7392ea8bf66bdcf6e610b3"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/ActiveTransition.java": {
+    "mtime": 1784964309.6441934,
+    "seen": 1789036138.719558,
+    "ast_hash": "42a09e9e0dfe4d00d57e737d2a47b445",
+    "semantic_hash": "42a09e9e0dfe4d00d57e737d2a47b445"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/CrossedOffTransition.java": {
+    "mtime": 1784964309.6449854,
+    "seen": 1789036138.71956,
+    "ast_hash": "2138f7cd2d8b9a3d5efe41d8a67b97d4",
+    "semantic_hash": "2138f7cd2d8b9a3d5efe41d8a67b97d4"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/DetailFilter.java": {
+    "mtime": 1770675443.4373837,
+    "seen": 1789036138.7195609,
+    "ast_hash": "c0da158d32f732c20c94fa25c0b462f7",
+    "semantic_hash": "c0da158d32f732c20c94fa25c0b462f7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/ItemStateContext.java": {
+    "mtime": 1784964309.6458566,
+    "seen": 1789036138.719563,
+    "ast_hash": "703950ea9ce35ad74a4569ca314945c5",
+    "semantic_hash": "703950ea9ce35ad74a4569ca314945c5"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/ListItemEvent.java": {
+    "mtime": 1784964309.646843,
+    "seen": 1789036138.719564,
+    "ast_hash": "48e263919728b529e01f42bf10679ad7",
+    "semantic_hash": "48e263919728b529e01f42bf10679ad7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/ListItemState.java": {
+    "mtime": 1766819271.9245021,
+    "seen": 1789036138.719566,
+    "ast_hash": "f55b860c8e13c3f10a39ebedbb99e4ae",
+    "semantic_hash": "f55b860c8e13c3f10a39ebedbb99e4ae"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/ListItemStateMachine.java": {
+    "mtime": 1784964309.6476421,
+    "seen": 1789036138.719567,
+    "ast_hash": "75151e407006d95d95ebda4215360b6a",
+    "semantic_hash": "75151e407006d95d95ebda4215360b6a"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/RemoveLinkTransition.java": {
+    "mtime": 1784964309.6482625,
+    "seen": 1789036138.719569,
+    "ast_hash": "50b18be11a532b70cbc6c2bc23c15140",
+    "semantic_hash": "50b18be11a532b70cbc6c2bc23c15140"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/RemovedTransition.java": {
+    "mtime": 1784964309.6493518,
+    "seen": 1789036138.71957,
+    "ast_hash": "40223ff4f51aa9c5c9b1025b256b0d92",
+    "semantic_hash": "40223ff4f51aa9c5c9b1025b256b0d92"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/state/StateTransition.java": {
+    "mtime": 1766819271.9250069,
+    "seen": 1789036138.719572,
+    "ast_hash": "dfcedf64fc31be48892e0dc60ac473cb",
+    "semantic_hash": "dfcedf64fc31be48892e0dc60ac473cb"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/v2/ShoppingListService.java": {
+    "mtime": 1784964309.650391,
+    "seen": 1789036138.719573,
+    "ast_hash": "c9c1393e4d8acb7153dfb6fe8127abd0",
+    "semantic_hash": "c9c1393e4d8acb7153dfb6fe8127abd0"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/v2/impl/ShoppingListServiceImpl.java": {
+    "mtime": 1784987482.221175,
+    "seen": 1789036138.719575,
+    "ast_hash": "65ddf52f770eb869aec91728cd104d32",
+    "semantic_hash": "65ddf52f770eb869aec91728cd104d32"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/AbstractItemCollector.java": {
+    "mtime": 1768588829.360656,
+    "seen": 1789036138.7195761,
+    "ast_hash": "5ec189556ac5d3a2f8aa3e26bfe99770",
+    "semantic_hash": "5ec189556ac5d3a2f8aa3e26bfe99770"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/AttemptGenerator.java": {
+    "mtime": 1702536350.4702682,
+    "seen": 1789036138.719578,
+    "ast_hash": "80bd493bf6b02b5a0bdd715461e3b06f",
+    "semantic_hash": "80bd493bf6b02b5a0bdd715461e3b06f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/CollectedItem.java": {
+    "mtime": 1784964309.6525416,
+    "seen": 1789036138.719579,
+    "ast_hash": "fb81f29c504208dc02cd4482af965c70",
+    "semantic_hash": "fb81f29c504208dc02cd4482af965c70"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/CollectedItemStatus.java": {
+    "mtime": 1702536350.4704564,
+    "seen": 1789036138.71958,
+    "ast_hash": "1d924beaab59ece586e1705390856c66",
+    "semantic_hash": "1d924beaab59ece586e1705390856c66"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/CollectorContext.java": {
+    "mtime": 1702536350.4705555,
+    "seen": 1789036138.7195818,
+    "ast_hash": "45ec30bad078efcdeb5a700fd25f2666",
+    "semantic_hash": "45ec30bad078efcdeb5a700fd25f2666"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/CollectorContextBuilder.java": {
+    "mtime": 1702536350.4706507,
+    "seen": 1789036138.719583,
+    "ast_hash": "c78c08b970cc396a38ac659372d79ca6",
+    "semantic_hash": "c78c08b970cc396a38ac659372d79ca6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/ItemCollector.java": {
+    "mtime": 1768588829.360867,
+    "seen": 1789036138.719584,
+    "ast_hash": "0df5078a946a60f8298396da51ba6c15",
+    "semantic_hash": "0df5078a946a60f8298396da51ba6c15"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/MealPlanService.java": {
+    "mtime": 1702536350.4716947,
+    "seen": 1789036138.7195861,
+    "ast_hash": "d6bb0f00c449151ba5ec59945147c5b7",
+    "semantic_hash": "d6bb0f00c449151ba5ec59945147c5b7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/MergeItemCollector.java": {
+    "mtime": 1784964309.653446,
+    "seen": 1789036138.719587,
+    "ast_hash": "6879852173102c4ce9ea3d9aad96770f",
+    "semantic_hash": "6879852173102c4ce9ea3d9aad96770f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/NewRawSlotResult.java": {
+    "mtime": 1766819271.9254866,
+    "seen": 1789036138.719588,
+    "ast_hash": "9fffdf98a3f239dbcc686bb4a7e76f37",
+    "semantic_hash": "9fffdf98a3f239dbcc686bb4a7e76f37"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/TargetProposalConfiguration.java": {
+    "mtime": 1702536350.4722521,
+    "seen": 1789036138.71959,
+    "ast_hash": "84642f8075ca32336ab010abce55ec78",
+    "semantic_hash": "84642f8075ca32336ab010abce55ec78"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/TargetProposalSettings.java": {
+    "mtime": 1702536350.4723513,
+    "seen": 1789036138.719591,
+    "ast_hash": "287b4bf28541a26f30a58885f697ee10",
+    "semantic_hash": "287b4bf28541a26f30a58885f697ee10"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/TargetService.java": {
+    "mtime": 1702536350.4724464,
+    "seen": 1789036138.7195919,
+    "ast_hash": "2b6560d95ed4771d3276bf899adce851",
+    "semantic_hash": "2b6560d95ed4771d3276bf899adce851"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/TokenService.java": {
+    "mtime": 1743175216.3256521,
+    "seen": 1789036138.719594,
+    "ast_hash": "76f58f77771864b14e769a638c4b580e",
+    "semantic_hash": "76f58f77771864b14e769a638c4b580e"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/campaign/CampaignService.java": {
+    "mtime": 1702536350.4726963,
+    "seen": 1789036138.719595,
+    "ast_hash": "96dac021784434f028c019548b1440ab",
+    "semantic_hash": "96dac021784434f028c019548b1440ab"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/campaign/impl/CampaignServiceImpl.java": {
+    "mtime": 1766819271.9257338,
+    "seen": 1789036138.719597,
+    "ast_hash": "4dbf9de9a5133a94688efdc2f9447698",
+    "semantic_hash": "4dbf9de9a5133a94688efdc2f9447698"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/categories/AbstractCategory.java": {
+    "mtime": 1702536350.4729996,
+    "seen": 1789036138.719598,
+    "ast_hash": "b74f86e17697218ba901dfa63d36cb60",
+    "semantic_hash": "b74f86e17697218ba901dfa63d36cb60"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/categories/ItemCategoryPojo.java": {
+    "mtime": 1702536350.473107,
+    "seen": 1789036138.719599,
+    "ast_hash": "cb98a5d199dcdebd723406acd6861b4f",
+    "semantic_hash": "cb98a5d199dcdebd723406acd6861b4f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/categories/ListLayoutCategoryPojo.java": {
+    "mtime": 1702536350.473217,
+    "seen": 1789036138.719601,
+    "ast_hash": "2dd72dbd2f97459162cefa8b223ac4e0",
+    "semantic_hash": "2dd72dbd2f97459162cefa8b223ac4e0"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/categories/ListShopCategory.java": {
+    "mtime": 1702536350.473313,
+    "seen": 1789036138.7196019,
+    "ast_hash": "a2d2c533c2cc670dd14ea6bc951c4ee2",
+    "semantic_hash": "a2d2c533c2cc670dd14ea6bc951c4ee2"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/food/AmountService.java": {
+    "mtime": 1719760169.9142473,
+    "seen": 1789036138.719603,
+    "ast_hash": "4c72f2edaffe2d6b6d3772b8b834fa49",
+    "semantic_hash": "4c72f2edaffe2d6b6d3772b8b834fa49"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/food/FoodService.java": {
+    "mtime": 1719760169.9146223,
+    "seen": 1789036138.719605,
+    "ast_hash": "f30724b637293fa6c28906f47b59b5d2",
+    "semantic_hash": "f30724b637293fa6c28906f47b59b5d2"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/food/impl/AmountServiceImpl.java": {
+    "mtime": 1719760169.9150136,
+    "seen": 1789036138.719606,
+    "ast_hash": "db8a8a49675ea93f7d9676b23860a82b",
+    "semantic_hash": "db8a8a49675ea93f7d9676b23860a82b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/food/impl/FactorHolderDTO.java": {
+    "mtime": 1709488005.5353806,
+    "seen": 1789036138.719608,
+    "ast_hash": "3b883ccfc892a7de197acd3e59e692b4",
+    "semantic_hash": "3b883ccfc892a7de197acd3e59e692b4"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImpl.java": {
+    "mtime": 1773564272.87775,
+    "seen": 1789036138.719609,
+    "ast_hash": "1bbbbda739456f8e11372c0aa35acbce",
+    "semantic_hash": "1bbbbda739456f8e11372c0aa35acbce"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/impl/FillInProposalProcessorImpl.java": {
+    "mtime": 1766819271.92605,
+    "seen": 1789036138.7196102,
+    "ast_hash": "000cc38cfc82919a2f0a72c4f4ba0acd",
+    "semantic_hash": "000cc38cfc82919a2f0a72c4f4ba0acd"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/impl/MealPlanServiceImpl.java": {
+    "mtime": 1766819271.9272027,
+    "seen": 1789036138.719612,
+    "ast_hash": "dd9baf02597e6e79a9e329d0a98b1425",
+    "semantic_hash": "dd9baf02597e6e79a9e329d0a98b1425"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/impl/TargetServiceImpl.java": {
+    "mtime": 1702536350.4744213,
+    "seen": 1789036138.7196128,
+    "ast_hash": "b4b03f69d5bb6ece42fede84e3caf364",
+    "semantic_hash": "b4b03f69d5bb6ece42fede84e3caf364"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/impl/TextProcessorImpl.java": {
+    "mtime": 1702536350.4745252,
+    "seen": 1789036138.719614,
+    "ast_hash": "5adac6f49e3f1e730ca2648140b513d7",
+    "semantic_hash": "5adac6f49e3f1e730ca2648140b513d7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/impl/TokenServiceImpl.java": {
+    "mtime": 1743175216.3275895,
+    "seen": 1789036138.719616,
+    "ast_hash": "87b4de89b4b580f4beb518f91db45842",
+    "semantic_hash": "87b4de89b4b580f4beb518f91db45842"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/layout/LayoutService.java": {
+    "mtime": 1783400343.5493891,
+    "seen": 1789036138.7196171,
+    "ast_hash": "006ab31d10b4a73ba3474c5e4559c743",
+    "semantic_hash": "006ab31d10b4a73ba3474c5e4559c743"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/layout/LegacyLayoutService.java": {
+    "mtime": 1782880448.2355218,
+    "seen": 1789036138.719618,
+    "ast_hash": "c7a956eb0ad5d923eb6d6a83dfcda84f",
+    "semantic_hash": "c7a956eb0ad5d923eb6d6a83dfcda84f"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/layout/impl/BaseLayoutServiceImpl.java": {
+    "mtime": 1783400343.5499802,
+    "seen": 1789036138.71962,
+    "ast_hash": "dff3590c210d06422485f0b533927a85",
+    "semantic_hash": "dff3590c210d06422485f0b533927a85"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/layout/impl/LegacyLayoutServiceImpl.java": {
+    "mtime": 1782880448.23629,
+    "seen": 1789036138.7196212,
+    "ast_hash": "76085183fd331b39379ed9a2982263e8",
+    "semantic_hash": "76085183fd331b39379ed9a2982263e8"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/layout/impl/V2LayoutServiceImpl.java": {
+    "mtime": 1783400343.5505612,
+    "seen": 1789036138.7196229,
+    "ast_hash": "3303ff728c017171ac9cc8c39d9ad258",
+    "semantic_hash": "3303ff728c017171ac9cc8c39d9ad258"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProcessInformation.java": {
+    "mtime": 1702536350.4747925,
+    "seen": 1789036138.719624,
+    "ast_hash": "c06b74887b08f5ac2a4cc5ced8212e3b",
+    "semantic_hash": "c06b74887b08f5ac2a4cc5ced8212e3b"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProcessResult.java": {
+    "mtime": 1702536350.474898,
+    "seen": 1789036138.719625,
+    "ast_hash": "349b4c62944b0ad46a99ebd883dedef2",
+    "semantic_hash": "349b4c62944b0ad46a99ebd883dedef2"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalAttempt.java": {
+    "mtime": 1766819271.9275079,
+    "seen": 1789036138.719627,
+    "ast_hash": "67fab644e1e8bb63bde299798a95bb8a",
+    "semantic_hash": "67fab644e1e8bb63bde299798a95bb8a"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalGeneratorService.java": {
+    "mtime": 1702536350.4750988,
+    "seen": 1789036138.719628,
+    "ast_hash": "458352f0c2a6386af4064031599a0b00",
+    "semantic_hash": "458352f0c2a6386af4064031599a0b00"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalProcessor.java": {
+    "mtime": 1702536350.4751942,
+    "seen": 1789036138.71963,
+    "ast_hash": "cf42ca9224d6882fd05ad1bf145c1a6c",
+    "semantic_hash": "cf42ca9224d6882fd05ad1bf145c1a6c"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalProcessorFactory.java": {
+    "mtime": 1702536350.475286,
+    "seen": 1789036138.7196312,
+    "ast_hash": "3d03c2cb3b6efec1acda7b5920605314",
+    "semantic_hash": "3d03c2cb3b6efec1acda7b5920605314"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalRequest.java": {
+    "mtime": 1702536350.475376,
+    "seen": 1789036138.719632,
+    "ast_hash": "878e8af0abc9045214a5852fda0dc5ef",
+    "semantic_hash": "878e8af0abc9045214a5852fda0dc5ef"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalRequestBuilder.java": {
+    "mtime": 1702536350.4754713,
+    "seen": 1789036138.7196338,
+    "ast_hash": "5d9eca3e61de0f4ef81a9f0d9a537b03",
+    "semantic_hash": "5d9eca3e61de0f4ef81a9f0d9a537b03"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalSearchType.java": {
+    "mtime": 1702536350.4755666,
+    "seen": 1789036138.719635,
+    "ast_hash": "0c21219214c31008db466cbe9d5200b4",
+    "semantic_hash": "0c21219214c31008db466cbe9d5200b4"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/ProposalService.java": {
+    "mtime": 1743175216.3278348,
+    "seen": 1789036138.719636,
+    "ast_hash": "c06ffb4ab354957fa8b9b970f12ec5b6",
+    "semantic_hash": "c06ffb4ab354957fa8b9b970f12ec5b6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/AbstractProposalProcessor.java": {
+    "mtime": 1780143544.19371,
+    "seen": 1789036138.719638,
+    "ast_hash": "ad4f13622baccbeb463ec81c63e1d1f7",
+    "semantic_hash": "ad4f13622baccbeb463ec81c63e1d1f7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/ProposalGeneratorServiceImpl.java": {
+    "mtime": 1766819271.928063,
+    "seen": 1789036138.719639,
+    "ast_hash": "d150594b649de6f3c6ba0be9b62f6676",
+    "semantic_hash": "d150594b649de6f3c6ba0be9b62f6676"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/ProposalProcessorFactoryImpl.java": {
+    "mtime": 1702536350.4761572,
+    "seen": 1789036138.71964,
+    "ast_hash": "fc5637374c3af063d2b1f08674fb0ff5",
+    "semantic_hash": "fc5637374c3af063d2b1f08674fb0ff5"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/ProposalServiceImpl.java": {
+    "mtime": 1743175216.328073,
+    "seen": 1789036138.7196422,
+    "ast_hash": "6040da9f149d1441c82806e0799583a7",
+    "semantic_hash": "6040da9f149d1441c82806e0799583a7"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/RefreshProposalProcessorImpl.java": {
+    "mtime": 1766819271.9284067,
+    "seen": 1789036138.7196429,
+    "ast_hash": "4cf3c0b71ccbf7422f7718ce1c89ccda",
+    "semantic_hash": "4cf3c0b71ccbf7422f7718ce1c89ccda"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/SearchProposalProcessorImpl.java": {
+    "mtime": 1766819271.9286923,
+    "seen": 1789036138.7196438,
+    "ast_hash": "b64b8e0ad307b032ca9cfa259746598a",
+    "semantic_hash": "b64b8e0ad307b032ca9cfa259746598a"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/proposal/impl/TargetProposalConfigurationImpl.java": {
+    "mtime": 1702536350.4765558,
+    "seen": 1789036138.719646,
+    "ast_hash": "979fa7657c9cb4b82b759f35ac6dc63d",
+    "semantic_hash": "979fa7657c9cb4b82b759f35ac6dc63d"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/AutoTagProcessor.java": {
+    "mtime": 1702536350.476716,
+    "seen": 1789036138.719647,
+    "ast_hash": "3dac7b402e024b9d621aacb94f088f71",
+    "semantic_hash": "3dac7b402e024b9d621aacb94f088f71"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/AutoTagService.java": {
+    "mtime": 1702536350.4768174,
+    "seen": 1789036138.719648,
+    "ast_hash": "2bb06bafc0e138c87abd73a19a9cc2a5",
+    "semantic_hash": "2bb06bafc0e138c87abd73a19a9cc2a5"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/TagChangeListener.java": {
+    "mtime": 1702536350.4769087,
+    "seen": 1789036138.71965,
+    "ast_hash": "094e5a442ecdde00ad8000c38a843df6",
+    "semantic_hash": "094e5a442ecdde00ad8000c38a843df6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/TagReplaceService.java": {
+    "mtime": 1702536350.4770067,
+    "seen": 1789036138.719651,
+    "ast_hash": "2fc85c47e3c60e95a324bf3cb0ae6c41",
+    "semantic_hash": "2fc85c47e3c60e95a324bf3cb0ae6c41"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/TagService.java": {
+    "mtime": 1788972748.854854,
+    "seen": 1789036138.7196522,
+    "ast_hash": "b201b275531bc0526cd9d824e50a799e",
+    "semantic_hash": "b201b275531bc0526cd9d824e50a799e"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/TagStructureService.java": {
+    "mtime": 1702536350.477188,
+    "seen": 1789036138.7196538,
+    "ast_hash": "4149067ec49dfd4d3d9658373d2c6b81",
+    "semantic_hash": "4149067ec49dfd4d3d9658373d2c6b81"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/TagSwapout.java": {
+    "mtime": 1702536350.4772813,
+    "seen": 1789036138.7196548,
+    "ast_hash": "488426eba72a5e660301fe7da554c6bb",
+    "semantic_hash": "488426eba72a5e660301fe7da554c6bb"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/AbstractAutoTagProcessor.java": {
+    "mtime": 1780143544.1941442,
+    "seen": 1789036138.719656,
+    "ast_hash": "ec8ffa7744035fb4ac9779cbc76b4131",
+    "semantic_hash": "ec8ffa7744035fb4ac9779cbc76b4131"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/AutoTagServiceImpl.java": {
+    "mtime": 1766819271.929001,
+    "seen": 1789036138.719658,
+    "ast_hash": "a59e719262a2aff0121d2e303c6cd2c6",
+    "semantic_hash": "a59e719262a2aff0121d2e303c6cd2c6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/DishRatingBuilder.java": {
+    "mtime": 1702536350.4776514,
+    "seen": 1789036138.719659,
+    "ast_hash": "6e2545f6126bfc86aa12c025ed7188c6",
+    "semantic_hash": "6e2545f6126bfc86aa12c025ed7188c6"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/RatingStructureTree.java": {
+    "mtime": 1702536350.4777627,
+    "seen": 1789036138.719661,
+    "ast_hash": "a8fd530b9ed82485733c6b102c08454c",
+    "semantic_hash": "a8fd530b9ed82485733c6b102c08454c"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/TagChangeToCategoryListener.java": {
+    "mtime": 1782880448.2371368,
+    "seen": 1789036138.7196622,
+    "ast_hash": "2659d8a43697b600f2718e248bf44212",
+    "semantic_hash": "2659d8a43697b600f2718e248bf44212"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/TagProcessorImpl.java": {
+    "mtime": 1702536350.4779363,
+    "seen": 1789036138.7196631,
+    "ast_hash": "d64c5292bb0996efd68ce900c2941458",
+    "semantic_hash": "d64c5292bb0996efd68ce900c2941458"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/TagReplaceServiceImpl.java": {
+    "mtime": 1743175216.329049,
+    "seen": 1789036138.7196648,
+    "ast_hash": "7a770fc6fd397f0d21a7e2818178b622",
+    "semantic_hash": "7a770fc6fd397f0d21a7e2818178b622"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImpl.java": {
+    "mtime": 1788973518.6680095,
+    "seen": 1789036138.719666,
+    "ast_hash": "3478b18ac497cf74c711c3b81f8d29fd",
+    "semantic_hash": "3478b18ac497cf74c711c3b81f8d29fd"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/tag/impl/TagStructureServiceImpl.java": {
+    "mtime": 1702536350.4782608,
+    "seen": 1789036138.719668,
+    "ast_hash": "71ed4ec9ed50891cff4161299abaebad",
+    "semantic_hash": "71ed4ec9ed50891cff4161299abaebad"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/task/AutoTaggerTask.java": {
+    "mtime": 1702536350.478391,
+    "seen": 1789036138.719669,
+    "ast_hash": "cff9ad827fab1b9670422503efd45b31",
+    "semantic_hash": "cff9ad827fab1b9670422503efd45b31"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/task/ExpiredTokenCleanupTask.java": {
+    "mtime": 1743175216.330021,
+    "seen": 1789036138.71967,
+    "ast_hash": "9c8523067e6fc0feeaa2f0ee8c9be7c8",
+    "semantic_hash": "9c8523067e6fc0feeaa2f0ee8c9be7c8"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/task/StaleItemCleanupTask.java": {
+    "mtime": 1702536350.478579,
+    "seen": 1789036138.719672,
+    "ast_hash": "03eb3088f9220b132944dc32f0e852e8",
+    "semantic_hash": "03eb3088f9220b132944dc32f0e852e8"
+  },
+  "listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/service/task/UserMetricsTask.java": {
+    "mtime": 1702536350.4786913,
+    "seen": 1789036138.7196732,
+    "ast_hash": "90d880973ee0509c9a2f81d11c852573",
+    "semantic_hash": "90d880973ee0509c9a2f81d11c852573"
+  },
+  "listshop-lmt/listshop-service/src/main/resources/maintenance/release/1.20.x/reset_flyway/2.baseline_command.sh": {
+    "mtime": 1770664375.8997443,
+    "seen": 1789036138.7196748,
+    "ast_hash": "3b7635d0ba4d6c32e210a8c6d98e481e",
+    "semantic_hash": "3b7635d0ba4d6c32e210a8c6d98e481e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/admin/controller/AdminTagRestControllerTest.java": {
+    "mtime": 1780143344.0657208,
+    "seen": 1789036138.719676,
+    "ast_hash": "4618aa1ee467addeb7c6f74120a094b0",
+    "semantic_hash": "4618aa1ee467addeb7c6f74120a094b0"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/admin/controller/AdminUserRestControllerTest.java": {
+    "mtime": 1783400343.551381,
+    "seen": 1789036138.719677,
+    "ast_hash": "c8e23117cccb6c7a1fa2c4f71b340750",
+    "semantic_hash": "c8e23117cccb6c7a1fa2c4f71b340750"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/service/impl/UserPropertyServiceImplMockTest.java": {
+    "mtime": 1766819271.9364157,
+    "seen": 1789036138.7196789,
+    "ast_hash": "2dd3b58c73b89f858294609fd3c11ae5",
+    "semantic_hash": "2dd3b58c73b89f858294609fd3c11ae5"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/service/impl/UserServiceImplMockTest.java": {
+    "mtime": 1780143344.0664124,
+    "seen": 1789036138.71968,
+    "ast_hash": "7809ad16594eb39857189d3cf0fad43c",
+    "semantic_hash": "7809ad16594eb39857189d3cf0fad43c"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/web/AuthenticationRestControllerTest.java": {
+    "mtime": 1780143344.0668054,
+    "seen": 1789036138.719682,
+    "ast_hash": "76a22a108b0767f19f6af410fd2295ba",
+    "semantic_hash": "76a22a108b0767f19f6af410fd2295ba"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/web/UserRestControllerTest.java": {
+    "mtime": 1780143344.0671284,
+    "seen": 1789036138.7196832,
+    "ast_hash": "44cef554ffb91499ad96552cad4d9ee6",
+    "semantic_hash": "44cef554ffb91499ad96552cad4d9ee6"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/configuration/ListShopPostgresqlContainer.java": {
+    "mtime": 1702536350.4888644,
+    "seen": 1789036138.7196841,
+    "ast_hash": "2e1a0962156d8fe6c40374e24beb1f8e",
+    "semantic_hash": "2e1a0962156d8fe6c40374e24beb1f8e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/configuration/MailPropertiesTestConfiguration.java": {
+    "mtime": 1702536350.4889657,
+    "seen": 1789036138.7196858,
+    "ast_hash": "de29ede08e2b4e982b6420ed01a59cdc",
+    "semantic_hash": "de29ede08e2b4e982b6420ed01a59cdc"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/configuration/PostofficeTestConfiguration.java": {
+    "mtime": 1768588829.36138,
+    "seen": 1789036138.719687,
+    "ast_hash": "ac9a620280357bacab56407c6777c817",
+    "semantic_hash": "ac9a620280357bacab56407c6777c817"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/CampaignRestControllerTest.java": {
+    "mtime": 1766819271.9380622,
+    "seen": 1789036138.719688,
+    "ast_hash": "d7ad9e9bce09c199337f253c458caca0",
+    "semantic_hash": "d7ad9e9bce09c199337f253c458caca0"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/DishRestControllerTest.java": {
+    "mtime": 1780143344.0675762,
+    "seen": 1789036138.71969,
+    "ast_hash": "c2f3853af63163f44734226fe5e0c742",
+    "semantic_hash": "c2f3853af63163f44734226fe5e0c742"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/LayoutRestControllerTest.java": {
+    "mtime": 1780143344.0680397,
+    "seen": 1789036138.719691,
+    "ast_hash": "e5227e8c29ba0d6028481884ebf9493b",
+    "semantic_hash": "e5227e8c29ba0d6028481884ebf9493b"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/LegacyShoppingListRestControllerTest.java": {
+    "mtime": 1784964309.6550572,
+    "seen": 1789036138.719692,
+    "ast_hash": "09cb086f2e4ff042f78917daf72d2215",
+    "semantic_hash": "09cb086f2e4ff042f78917daf72d2215"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/MealPlanRestControllerTest.java": {
+    "mtime": 1780143344.0683417,
+    "seen": 1789036138.719693,
+    "ast_hash": "f97b187ebc1b1554ec9a681382739d4e",
+    "semantic_hash": "f97b187ebc1b1554ec9a681382739d4e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/ProposalRestControllerTest.java": {
+    "mtime": 1770207816.1250165,
+    "seen": 1789036138.719695,
+    "ast_hash": "603387f06b347115bf1136821d89fef5",
+    "semantic_hash": "603387f06b347115bf1136821d89fef5"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/StatisticRestControllerTest.java": {
+    "mtime": 1780143344.0692315,
+    "seen": 1789036138.7196958,
+    "ast_hash": "826d6fe42fff5c691040195ac4c6b73b",
+    "semantic_hash": "826d6fe42fff5c691040195ac4c6b73b"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/TagRestControllerTest.java": {
+    "mtime": 1782880448.238714,
+    "seen": 1789036138.719698,
+    "ast_hash": "2e031d5fa5af31109359e53438d57da8",
+    "semantic_hash": "2e031d5fa5af31109359e53438d57da8"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/TargetRestControllerTest.java": {
+    "mtime": 1766819271.9410665,
+    "seen": 1789036138.7196999,
+    "ast_hash": "488cb644506ffa271f28a485b19d3369",
+    "semantic_hash": "488cb644506ffa271f28a485b19d3369"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/v2/ShoppingListRestControllerTest.java": {
+    "mtime": 1784990762.073055,
+    "seen": 1789036138.719701,
+    "ast_hash": "5d5da14b5c791940c67dc9a14a069a60",
+    "semantic_hash": "5d5da14b5c791940c67dc9a14a069a60"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/v2/V2DishRestControllerTest.java": {
+    "mtime": 1782880448.239304,
+    "seen": 1789036138.719703,
+    "ast_hash": "25228e1e38ddd38db3a376d00867808d",
+    "semantic_hash": "25228e1e38ddd38db3a376d00867808d"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/v2/V2LayoutRestControllerTest.java": {
+    "mtime": 1784964309.6561058,
+    "seen": 1789036138.7197042,
+    "ast_hash": "024b02707b1bede381f828c7e0ac323e",
+    "semantic_hash": "024b02707b1bede381f828c7e0ac323e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/api/v2/V2TagRestControllerTest.java": {
+    "mtime": 1782926515.2443376,
+    "seen": 1789036138.719705,
+    "ast_hash": "4ea00328c59e7d5d07d497383cefe477",
+    "semantic_hash": "4ea00328c59e7d5d07d497383cefe477"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/data/ListItemRepositoryTest.java": {
+    "mtime": 1766819271.9418204,
+    "seen": 1789036138.7197068,
+    "ast_hash": "a6fb6b765c8ec95aaf09d861ae3d30d5",
+    "semantic_hash": "a6fb6b765c8ec95aaf09d861ae3d30d5"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/dish/DishTestBuilder.java": {
+    "mtime": 1766819271.9420464,
+    "seen": 1789036138.719708,
+    "ast_hash": "42e2d8025b007eee454b7d877228c816",
+    "semantic_hash": "42e2d8025b007eee454b7d877228c816"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/dish/impl/DishSearchServiceImplTest.java": {
+    "mtime": 1766819271.9422715,
+    "seen": 1789036138.719709,
+    "ast_hash": "cbe68abb4d80fb298090fda66a575356",
+    "semantic_hash": "cbe68abb4d80fb298090fda66a575356"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/dish/impl/DishServiceImplMockTest.java": {
+    "mtime": 1780143344.0714357,
+    "seen": 1789036138.719711,
+    "ast_hash": "31809ca6bfef2e830bb1c2a8391f5275",
+    "semantic_hash": "31809ca6bfef2e830bb1c2a8391f5275"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/list/impl/ListItemCollectorTest.java": {
+    "mtime": 1768588829.3623374,
+    "seen": 1789036138.719712,
+    "ast_hash": "8ca57e4a2bf56eaa5ffaef8d93da181d",
+    "semantic_hash": "8ca57e4a2bf56eaa5ffaef8d93da181d"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/list/impl/MergeItemCollectorTest.java": {
+    "mtime": 1784964309.658579,
+    "seen": 1789036138.719713,
+    "ast_hash": "7968ee1e9da2393528039077cd1b9a4e",
+    "semantic_hash": "7968ee1e9da2393528039077cd1b9a4e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/list/state/StateMachineActiveTransitionTest.java": {
+    "mtime": 1782880448.2410173,
+    "seen": 1789036138.719715,
+    "ast_hash": "faee3d9db42363359f528c309d06f42f",
+    "semantic_hash": "faee3d9db42363359f528c309d06f42f"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/list/state/StateMachineCrossedOffTransitionTest.java": {
+    "mtime": 1770664375.902134,
+    "seen": 1789036138.719716,
+    "ast_hash": "3cbffc46aabc0b19e379636f32ae2e84",
+    "semantic_hash": "3cbffc46aabc0b19e379636f32ae2e84"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/list/state/StateMachineRemoveLinkTransitionTest.java": {
+    "mtime": 1784964309.6593337,
+    "seen": 1789036138.719718,
+    "ast_hash": "2dd0e0303fdb955909a5e53524ec179e",
+    "semantic_hash": "2dd0e0303fdb955909a5e53524ec179e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/list/state/StateMachineRemovedTransitionTest.java": {
+    "mtime": 1782880448.2414834,
+    "seen": 1789036138.719719,
+    "ast_hash": "74bcca9f98d2adc21c36f2899bad0f8d",
+    "semantic_hash": "74bcca9f98d2adc21c36f2899bad0f8d"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/CollectedItemTest.java": {
+    "mtime": 1766819271.9443123,
+    "seen": 1789036138.71972,
+    "ast_hash": "c3080e901a5a2f850881bdf61ccffc24",
+    "semantic_hash": "c3080e901a5a2f850881bdf61ccffc24"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/PostofficeLibraryTest.java": {
+    "mtime": 1780143344.0726113,
+    "seen": 1789036138.719722,
+    "ast_hash": "fe81519f3e844f1f6e2736a8a4f081ba",
+    "semantic_hash": "fe81519f3e844f1f6e2736a8a4f081ba"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/ServiceTestUtils.java": {
+    "mtime": 1780143344.0729456,
+    "seen": 1789036138.719723,
+    "ast_hash": "18904c6004f8d0e1e33366a278e307f5",
+    "semantic_hash": "18904c6004f8d0e1e33366a278e307f5"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/TagTestBuilder.java": {
+    "mtime": 1702536350.491144,
+    "seen": 1789036138.719724,
+    "ast_hash": "4d4fffabee1dd44562a1f8f067ef6129",
+    "semantic_hash": "4d4fffabee1dd44562a1f8f067ef6129"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/AddAmountTest.java": {
+    "mtime": 1780143544.1980824,
+    "seen": 1789036138.719726,
+    "ast_hash": "9761af0910c38122b7a0cbe94a9b8647",
+    "semantic_hash": "9761af0910c38122b7a0cbe94a9b8647"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/ConversionCanFactorsTest.java": {
+    "mtime": 1766819271.945743,
+    "seen": 1789036138.719727,
+    "ast_hash": "1a9b34ebe2149380f6dee9d170af3997",
+    "semantic_hash": "1a9b34ebe2149380f6dee9d170af3997"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/ConversionHybridFactorsTest.java": {
+    "mtime": 1766819271.946194,
+    "seen": 1789036138.719729,
+    "ast_hash": "f157d231a051cbb5bcbcb9976e94cf0f",
+    "semantic_hash": "f157d231a051cbb5bcbcb9976e94cf0f"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/ConversionMetricFactorsTest.java": {
+    "mtime": 1782880448.2418423,
+    "seen": 1789036138.71973,
+    "ast_hash": "fefcab3cfeaa3222678e708cbc8629bd",
+    "semantic_hash": "fefcab3cfeaa3222678e708cbc8629bd"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/ConversionTest.java": {
+    "mtime": 1782880448.2424242,
+    "seen": 1789036138.7197309,
+    "ast_hash": "f4071799d6de178fa97c1ee5f346ef74",
+    "semantic_hash": "f4071799d6de178fa97c1ee5f346ef74"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/ConversionUKFactorsTest.java": {
+    "mtime": 1766819271.9489129,
+    "seen": 1789036138.719733,
+    "ast_hash": "393a4da290aa01054073bfac1fcd094f",
+    "semantic_hash": "393a4da290aa01054073bfac1fcd094f"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/ConversionUSFactorsTest.java": {
+    "mtime": 1766819271.9492338,
+    "seen": 1789036138.719734,
+    "ast_hash": "fc5e76e30972542441bb92a8227a970a",
+    "semantic_hash": "fc5e76e30972542441bb92a8227a970a"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/NewConversionCanFactorsTest.java": {
+    "mtime": 1780143544.1990907,
+    "seen": 1789036138.719736,
+    "ast_hash": "0d13ae99b89643c715d3a8397f7f5a2e",
+    "semantic_hash": "0d13ae99b89643c715d3a8397f7f5a2e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/NewConversionHybridFactorsTest.java": {
+    "mtime": 1780143544.1993294,
+    "seen": 1789036138.719737,
+    "ast_hash": "45355549437544b89441d2ff7ede786d",
+    "semantic_hash": "45355549437544b89441d2ff7ede786d"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/NewConversionMetricFactorsTest.java": {
+    "mtime": 1780143544.1999085,
+    "seen": 1789036138.719738,
+    "ast_hash": "3bf440b11c2f5dbfe7b31f80bea411af",
+    "semantic_hash": "3bf440b11c2f5dbfe7b31f80bea411af"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/NewConversionTest.java": {
+    "mtime": 1782880448.2430058,
+    "seen": 1789036138.71974,
+    "ast_hash": "531da7591764aa88efb1bf2d258ccfaf",
+    "semantic_hash": "531da7591764aa88efb1bf2d258ccfaf"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/NewConversionUKFactorsTest.java": {
+    "mtime": 1780143544.2012327,
+    "seen": 1789036138.7197409,
+    "ast_hash": "d37270ab3a0a4aa467ea99512e265a33",
+    "semantic_hash": "d37270ab3a0a4aa467ea99512e265a33"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/NewConversionUSFactorsTest.java": {
+    "mtime": 1780143544.2018611,
+    "seen": 1789036138.719743,
+    "ast_hash": "4b5f3697a05105ee14c999d8cd2ffa1a",
+    "semantic_hash": "4b5f3697a05105ee14c999d8cd2ffa1a"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/conversion/client/ConversionFactorRepositoryTest.java": {
+    "mtime": 1780143544.2023997,
+    "seen": 1789036138.719744,
+    "ast_hash": "0132d93d1a3433a2a76e7c614aeabf7a",
+    "semantic_hash": "0132d93d1a3433a2a76e7c614aeabf7a"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/AmountServiceImplMockTest.java": {
+    "mtime": 1719760169.9283323,
+    "seen": 1789036138.719746,
+    "ast_hash": "ae69a933a48916b9d8d7ba1c9e08c1a2",
+    "semantic_hash": "ae69a933a48916b9d8d7ba1c9e08c1a2"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java": {
+    "mtime": 1780143344.074098,
+    "seen": 1789036138.719747,
+    "ast_hash": "53032dadab3c2c0ab2f675e38cb3fb98",
+    "semantic_hash": "53032dadab3c2c0ab2f675e38cb3fb98"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/AttemptGeneratorTest.java": {
+    "mtime": 1766819271.9495757,
+    "seen": 1789036138.719748,
+    "ast_hash": "f0ebd71d838dfd3df274fd9640f5dcd3",
+    "semantic_hash": "f0ebd71d838dfd3df274fd9640f5dcd3"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/FillInProposalProcessorImplTest.java": {
+    "mtime": 1766819271.9498844,
+    "seen": 1789036138.71975,
+    "ast_hash": "b633c2fbd3fbec1fbf8d0e3be8c69e0f",
+    "semantic_hash": "b633c2fbd3fbec1fbf8d0e3be8c69e0f"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/LayoutServiceImplMockTest.java": {
+    "mtime": 1782880448.2434669,
+    "seen": 1789036138.719751,
+    "ast_hash": "d201f6a5ba03530f3fec63dd3fa568f2",
+    "semantic_hash": "d201f6a5ba03530f3fec63dd3fa568f2"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ListTagStatisticServiceImplTest.java": {
+    "mtime": 1780143344.0748265,
+    "seen": 1789036138.7197518,
+    "ast_hash": "ea1648f99700c70db249d79a5501e0d5",
+    "semantic_hash": "ea1648f99700c70db249d79a5501e0d5"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/MealPlanServiceImplMockTest.java": {
+    "mtime": 1766819271.9515684,
+    "seen": 1789036138.719754,
+    "ast_hash": "c98363f38e478697400427f83d1b6b30",
+    "semantic_hash": "c98363f38e478697400427f83d1b6b30"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ProcessorTestUtils.java": {
+    "mtime": 1766819271.9519417,
+    "seen": 1789036138.719755,
+    "ast_hash": "2dd71ac8a59eb7df4758bf6bb039c76b",
+    "semantic_hash": "2dd71ac8a59eb7df4758bf6bb039c76b"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ProposalGeneratorServiceImplIntTest.java": {
+    "mtime": 1766819271.952232,
+    "seen": 1789036138.7197561,
+    "ast_hash": "840e96980052eb18c06bfc1d27a039db",
+    "semantic_hash": "840e96980052eb18c06bfc1d27a039db"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ProposalGeneratorServiceImplTest.java": {
+    "mtime": 1780143344.0751207,
+    "seen": 1789036138.719758,
+    "ast_hash": "98f882ee11ec47f0657959586309408e",
+    "semantic_hash": "98f882ee11ec47f0657959586309408e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TargetServiceImplMockTest.java": {
+    "mtime": 1766819271.952838,
+    "seen": 1789036138.719759,
+    "ast_hash": "9763055d9d7eb6c3c0dc0876dc97207e",
+    "semantic_hash": "9763055d9d7eb6c3c0dc0876dc97207e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TextProcessorImplTest.java": {
+    "mtime": 1766819271.9531293,
+    "seen": 1789036138.71976,
+    "ast_hash": "d99538d5de6d986ebef1a41ea5fd1bca",
+    "semantic_hash": "d99538d5de6d986ebef1a41ea5fd1bca"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TokenServiceImplTest.java": {
+    "mtime": 1766819271.9534461,
+    "seen": 1789036138.7197618,
+    "ast_hash": "fdc07b984af0b827704e8cbfae1f7cbc",
+    "semantic_hash": "fdc07b984af0b827704e8cbfae1f7cbc"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/V2LayoutServiceImplMockTest.java": {
+    "mtime": 1782880448.2438383,
+    "seen": 1789036138.719763,
+    "ast_hash": "a0dc1c5e9153319d48071475104e8e1d",
+    "semantic_hash": "a0dc1c5e9153319d48071475104e8e1d"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/AutoTagServiceImplMockTest.java": {
+    "mtime": 1766819271.9537828,
+    "seen": 1789036138.719765,
+    "ast_hash": "a08c78948056526fa2e8a8d767fc41f4",
+    "semantic_hash": "a08c78948056526fa2e8a8d767fc41f4"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagProcessorImplTest.java": {
+    "mtime": 1766819271.9540799,
+    "seen": 1789036138.719766,
+    "ast_hash": "853e80dbccd1b4c9b375866d7156ee77",
+    "semantic_hash": "853e80dbccd1b4c9b375866d7156ee77"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagReplaceServiceImplTest.java": {
+    "mtime": 1766819271.954334,
+    "seen": 1789036138.719767,
+    "ast_hash": "171b0f85c2567e318ba9c49b2d90de8b",
+    "semantic_hash": "171b0f85c2567e318ba9c49b2d90de8b"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java": {
+    "mtime": 1782880448.2442534,
+    "seen": 1789036138.719769,
+    "ast_hash": "118bd06d982b8167dda7b431bf347acc",
+    "semantic_hash": "118bd06d982b8167dda7b431bf347acc"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagStructureServiceImplMockTest.java": {
+    "mtime": 1766819271.9550803,
+    "seen": 1789036138.7197702,
+    "ast_hash": "1bcf968fa49e0bc3ebbda609fdf31d0a",
+    "semantic_hash": "1bcf968fa49e0bc3ebbda609fdf31d0a"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/task/AutoTaggerTaskTest.java": {
+    "mtime": 1766819271.9553363,
+    "seen": 1789036138.719771,
+    "ast_hash": "aebc97980805a824b840c38c9ff69c8e",
+    "semantic_hash": "aebc97980805a824b840c38c9ff69c8e"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/task/ExpiredTokenCleanupTaskTest.java": {
+    "mtime": 1766819271.955595,
+    "seen": 1789036138.7197728,
+    "ast_hash": "9ab57c664d677f3b17ce807f24901355",
+    "semantic_hash": "9ab57c664d677f3b17ce807f24901355"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/task/StaleItemCleanupTaskTest.java": {
+    "mtime": 1770206938.776088,
+    "seen": 1789036138.719774,
+    "ast_hash": "dd17f0ae85ed78607244dfe7e9b01eeb",
+    "semantic_hash": "dd17f0ae85ed78607244dfe7e9b01eeb"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/templatetests/BetaTestInformationSendTest.java": {
+    "mtime": 1766819271.9562013,
+    "seen": 1789036138.719775,
+    "ast_hash": "469e4e62d9af25c8e590979fb7887ec5",
+    "semantic_hash": "469e4e62d9af25c8e590979fb7887ec5"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/templatetests/ResetPasswordSendTest.java": {
+    "mtime": 1766819271.9565403,
+    "seen": 1789036138.719777,
+    "ast_hash": "4ecdbcde8156a43d08b237638d45a169",
+    "semantic_hash": "4ecdbcde8156a43d08b237638d45a169"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/test/TestConstants.java": {
+    "mtime": 1784964309.6605074,
+    "seen": 1789036138.719778,
+    "ast_hash": "ebb16ea7da3ae9f403692f35a82f5f55",
+    "semantic_hash": "ebb16ea7da3ae9f403692f35a82f5f55"
+  },
+  "listshop-lmt/listshop-service/src/test/java/com/meg/listshop/test/TestUtils.java": {
+    "mtime": 1780143344.0757568,
+    "seen": 1789036138.7197802,
+    "ast_hash": "cf0b9c8386753dde814f7cb748de88fa",
+    "semantic_hash": "cf0b9c8386753dde814f7cb748de88fa"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/shoppingListRestControllerTest_mergeList.json": {
+    "mtime": 1784964309.6638172,
+    "seen": 1789036138.7197812,
+    "ast_hash": "f5003341d38eb2945531d438fe212d57",
+    "semantic_hash": "f5003341d38eb2945531d438fe212d57"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/shoppingListRestControllerTest_mergeListEmpty.json": {
+    "mtime": 1702536350.4952924,
+    "seen": 1789036138.7197819,
+    "ast_hash": "492dd35df9eef6bf76615342f7676557",
+    "semantic_hash": "492dd35df9eef6bf76615342f7676557"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/shoppingListRestControllerTest_mergeListStale.json": {
+    "mtime": 1784008173.1183376,
+    "seen": 1789036138.719784,
+    "ast_hash": "f89aacbfacb089b43b713710cea66723",
+    "semantic_hash": "f89aacbfacb089b43b713710cea66723"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/shoppingListRestControllerTest_mergeListWithConflicts.json": {
+    "mtime": 1702536350.4954746,
+    "seen": 1789036138.719785,
+    "ast_hash": "32ac277a9ab331f508ed03a8928870cc",
+    "semantic_hash": "32ac277a9ab331f508ed03a8928870cc"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/shoppingListRestControllerTest_noMergeList.json": {
+    "mtime": 1702536350.4955657,
+    "seen": 1789036138.7197871,
+    "ast_hash": "6c3b96bbb19b52d7fc44ff4e4c304c54",
+    "semantic_hash": "6c3b96bbb19b52d7fc44ff4e4c304c54"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/statisticRestControllerTest_createStatistic.json": {
+    "mtime": 1702536350.4956837,
+    "seen": 1789036138.719788,
+    "ast_hash": "282fe91239bbeba7664520aaeaadb037",
+    "semantic_hash": "282fe91239bbeba7664520aaeaadb037"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/v2shoppingListRestControllerTest_mergeList.json": {
+    "mtime": 1784964309.6643183,
+    "seen": 1789036138.71979,
+    "ast_hash": "db3c6960be0ff2ca5b0af7b3c1c75519",
+    "semantic_hash": "db3c6960be0ff2ca5b0af7b3c1c75519"
+  },
+  "listshop-lmt/listshop-service/src/test/resources/data/v2shoppingListRestControllerTest_mergeListStale.json": {
+    "mtime": 1784964309.6647565,
+    "seen": 1789036138.7197912,
+    "ast_hash": "7e070641678f025561500f1aa74c9dad",
+    "semantic_hash": "7e070641678f025561500f1aa74c9dad"
+  },
+  "listshop-lmt/pom.xml": {
+    "mtime": 1780143344.082914,
+    "seen": 1789036138.7197928,
+    "ast_hash": "dfe6c97fce0b36ef3b273c6bb836ded8",
+    "semantic_hash": "dfe6c97fce0b36ef3b273c6bb836ded8"
+  },
+  "pom.xml": {
+    "mtime": 1783400343.5528135,
+    "seen": 1789036138.719794,
+    "ast_hash": "d11c88b85d4767bc401061d165f24a9f",
+    "semantic_hash": "d11c88b85d4767bc401061d165f24a9f"
+  },
+  "postoffice/pom.xml": {
+    "mtime": 1780143344.0836291,
+    "seen": 1789036138.719795,
+    "ast_hash": "4c7d40eb957d345981e97b8534e22ec8",
+    "semantic_hash": "4c7d40eb957d345981e97b8534e22ec8"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/api/model/EmailParameters.java": {
+    "mtime": 1647073212.8780134,
+    "seen": 1789036138.719797,
+    "ast_hash": "d9569fb397504bc88c2bec02043ef7a1",
+    "semantic_hash": "d9569fb397504bc88c2bec02043ef7a1"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/api/model/EmailType.java": {
+    "mtime": 1689112587.7544193,
+    "seen": 1789036138.719798,
+    "ast_hash": "2264113cfce5e1285303ac9ba239c84f",
+    "semantic_hash": "2264113cfce5e1285303ac9ba239c84f"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/config/MailConfiguration.java": {
+    "mtime": 1684876784.9587514,
+    "seen": 1789036138.719799,
+    "ast_hash": "215a2068cd93f091744fb8c7543350e7",
+    "semantic_hash": "215a2068cd93f091744fb8c7543350e7"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/service/MailService.java": {
+    "mtime": 1780143344.084395,
+    "seen": 1789036138.7198012,
+    "ast_hash": "61feb649c9a5368efe847392b653fd7a",
+    "semantic_hash": "61feb649c9a5368efe847392b653fd7a"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/service/content/AbstractContentBuilder.java": {
+    "mtime": 1647073212.8784351,
+    "seen": 1789036138.7198029,
+    "ast_hash": "461c2a71b170e2ea7bb308e5f1c71690",
+    "semantic_hash": "461c2a71b170e2ea7bb308e5f1c71690"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/service/content/ContentBuilder.java": {
+    "mtime": 1647073212.878483,
+    "seen": 1789036138.7198038,
+    "ast_hash": "1d463d5344516c1e1c8eefc9864f63a5",
+    "semantic_hash": "1d463d5344516c1e1c8eefc9864f63a5"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/service/content/ContentBuilderFactory.java": {
+    "mtime": 1647073212.8785307,
+    "seen": 1789036138.719805,
+    "ast_hash": "48f12900e87aa8d98bded37a3a060025",
+    "semantic_hash": "48f12900e87aa8d98bded37a3a060025"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/service/content/ContentMap.java": {
+    "mtime": 1647073212.8785827,
+    "seen": 1789036138.719807,
+    "ast_hash": "f2d8b51ddebbb6715ff5fe7bb21d8181",
+    "semantic_hash": "f2d8b51ddebbb6715ff5fe7bb21d8181"
+  },
+  "postoffice/src/main/java/com/meg/postoffice/service/content/SimpleContentBuilder.java": {
+    "mtime": 1647073212.8786287,
+    "seen": 1789036138.719808,
+    "ast_hash": "0475dab772dea5cc30c17e2810d84bfa",
+    "semantic_hash": "0475dab772dea5cc30c17e2810d84bfa"
+  },
+  "postoffice/src/test/java/com/meg/postoffice/service/MailServiceTest.java": {
+    "mtime": 1766819271.96235,
+    "seen": 1789036138.719809,
+    "ast_hash": "a986ab206e65a7f250399ce469816fe5",
+    "semantic_hash": "a986ab206e65a7f250399ce469816fe5"
+  },
+  "test.json": {
+    "mtime": 1784964309.670035,
+    "seen": 1789036138.71981,
+    "ast_hash": "4750f7ab0fccce4c77df34532e8b053c",
+    "semantic_hash": "4750f7ab0fccce4c77df34532e8b053c"
+  }
+}

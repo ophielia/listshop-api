@@ -1,6 +1,14 @@
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
+import com.meg.listshop.lmt.data.pojos.ListItemDTO;
 
 import java.time.Duration;
 import java.util.Date;
@@ -74,6 +82,7 @@ public class MergeItemCollector extends AbstractItemCollector {
         }
 
     }
+
 
     private CollectedItem mergeChangedItems(CollectedItem serverItem, CollectedItem mergeItem) {
         Duration period = Duration.between(serverItem.getStatusDate(), mergeItem.getStatusDate());

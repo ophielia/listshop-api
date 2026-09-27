@@ -1,6 +1,11 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.pojos;
 
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 
@@ -8,13 +13,13 @@ import java.util.List;
 
 public class DishDTO {
 
+
     private DishEntity dish;
     private List<DishItemDTO> ingredients;
     private List<DishItemEntity> tags;
-    private RatingUpdateInfo ratings;
+    private List<RatingInfoDTO> ratings;
 
-
-    public DishDTO(DishEntity dish, List<DishItemDTO> ingredients, List<DishItemEntity> tags, RatingUpdateInfo ratings) {
+    public DishDTO(DishEntity dish, List<DishItemDTO> ingredients, List<DishItemEntity> tags, List<RatingInfoDTO> ratings) {
         this.dish = dish;
         this.ingredients = ingredients;
         this.tags = tags;
@@ -33,9 +38,10 @@ public class DishDTO {
         return tags;
     }
 
-    public RatingUpdateInfo getRatings() {
+    public List<RatingInfoDTO> getRatings() {
         return ratings;
     }
+
 
     @Override
     public String toString() {

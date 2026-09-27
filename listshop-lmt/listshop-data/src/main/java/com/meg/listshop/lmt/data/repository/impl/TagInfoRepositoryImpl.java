@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository.impl;
 
 import com.meg.listshop.lmt.api.model.TagType;
@@ -105,7 +111,9 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<TagInfoDTO> cq = cb.createQuery(TagInfoDTO.class);
         Root<TagRelationEntity> tagRelationRoot = cq.from(TagRelationEntity.class);
+        Subquery<Integer> groupSubquery = createGroupSubquery(cb, cq,tagRelationRoot);
 
+        Expression<Boolean> isGroup = cb.exists(groupSubquery);
         cq.select(cb.construct(
                 TagInfoDTO.class,
                 tagRelationRoot.get("child").get("tagId"),
@@ -114,7 +122,7 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
                 tagRelationRoot.get("child").get("power"),
                 tagRelationRoot.get("child").get("userId"),
                 tagRelationRoot.get("child").get("tagType"),
-                tagRelationRoot.get("child").get("isGroup"),
+                isGroup,
                 tagRelationRoot.get("parent").get("tagId"),
                 tagRelationRoot.get("child").get("toDelete")
         ));
@@ -231,6 +239,14 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
 
         }
         return typedQuery.getResultList();
+    }
+
+    private Subquery<Integer> createGroupSubquery(CriteriaBuilder cb, CriteriaQuery<TagInfoDTO> cq, Root<TagRelationEntity> tagRelationRoot) {
+        Subquery<Integer> groupSubquery = cq.subquery(Integer.class);
+        Root<TagRelationEntity> groupRoot = groupSubquery.from(TagRelationEntity.class);
+        groupSubquery.select(cb.literal(1))
+                .where(cb.equal(groupRoot.get("parent"), tagRelationRoot.get("child")));
+        return groupSubquery;
     }
 
     public List<TagInfoDTO> retrieveRatingInfoForDish(Long dishId) {

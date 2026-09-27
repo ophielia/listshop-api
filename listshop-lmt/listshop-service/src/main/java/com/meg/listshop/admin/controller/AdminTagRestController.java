@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
@@ -12,13 +18,14 @@ import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,7 +57,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     @Autowired
     AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
-                           FoodService foodService, LayoutService layoutService) {
+                           FoodService foodService,@Qualifier("V2LayoutService") LayoutService layoutService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
         this.foodService = foodService;
@@ -127,20 +134,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
-    public ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm) {
-        List<FoodEntity> foodEntities = foodService.getSuggestedFoods(searchTerm);
-        Map<Long, List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
-        List<FoodResource> resourceList = new ArrayList<>();
-        for (FoodEntity foodEntity : foodEntities) {
-            List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
-            Food food = ModelMapper.toModel(foodEntity, factors);
-            resourceList.add(new FoodResource(food));
-        }
-
-        var returnValue = new FoodListResource(resourceList);
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
-    }
-
 
     public ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId,
                                                   @PathVariable("foodId") Long foodId) {
@@ -158,27 +151,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
-    public ResponseEntity<CategoryMappingListResource> getFoodCategoryMappings() {
-
-        List<FoodCategoryMappingResource> resourceList = foodService.getFoodCategoryMappings().stream()
-                .map(ModelMapper::toModel)
-                .map(FoodCategoryMappingResource::new)
-                .collect(Collectors.toList());
-
-        var returnValue = new CategoryMappingListResource(resourceList);
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
-    }
-
-
-    public ResponseEntity<FoodCategoryListResource> getFoodCategories() {
-        // @GetMapping(value = "/food/category")
-        List<FoodCategoryResource> resourceList = foodService.getFoodCategories().stream()
-                .map(ModelMapper::toModel)
-                .map(FoodCategoryResource::new)
-                .collect(Collectors.toList());
-        var returnValue = new FoodCategoryListResource(resourceList);
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
-    }
 
     @Override
     public ResponseEntity<Object> assignFoodCategory(Long tagId, Long categoryId) {

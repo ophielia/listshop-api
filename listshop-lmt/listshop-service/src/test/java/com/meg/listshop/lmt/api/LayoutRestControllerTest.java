@@ -1,51 +1,44 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.data.entity.UserEntity;
-import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.test.TestConstants;
+import com.meg.listshop.test.TestUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import jakarta.annotation.PostConstruct;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static io.restassured.RestAssured.given;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@WebAppConfiguration
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/LayoutRestControlleTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -56,77 +49,25 @@ class LayoutRestControllerTest {
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-    private static UserDetails baseUserDetails;
+    @LocalServerPort
+    public int serverPort;
 
-    private static UserDetails emptyUserDetails;
-    private static UserDetails newUserDetails;
+    private static final String baseUserToken = "token99999";
+    private static final String emptyUserToken = "token101010";
+    private static final String newUserToken = "token121212";
 
     private static final String tagIdApple = "65";
     private static final String tagIdOrange = "45";
     private static final String tagIdLemon = "357";
 
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype());
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    @Autowired
-    private UserService userService;
-    private MockMvc mockMvc;
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        HttpMessageConverter mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-                .findAny()
-                .orElse(null);
-
-        Assertions.assertNotNull(mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
+    @PostConstruct
+    public void initRestAssured() {
+        RestAssured.port = serverPort;
+        RestAssured.urlEncodingEnabled = false;
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
-
-    @BeforeEach
-    @WithMockUser
-    public void setup() throws Exception {
-
-        this.mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
-        String baseUserEmail = "username@testitytest.com";
-        UserEntity baseUserAccount = userService.getUserByUserEmail(baseUserEmail);
-        baseUserDetails = new CustomUserDetails(baseUserAccount.getId(),
-                baseUserEmail,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-        Long emptyUserId = 101010L;
-        String emptyUserEmail = "user@emptyuser.com";
-        emptyUserDetails = new CustomUserDetails(emptyUserId,
-                emptyUserEmail,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-
-        Long newUserId = 121212L;
-        String newUserEmail = "user@brandnewuser.com";
-        newUserDetails = new CustomUserDetails(newUserId,
-                newUserEmail,
-                null,
-                null,
-                null,
-                true,
-                null);
-    }
-
 
     @Test
-    @WithMockUser
     void testDefaultLayoutAssignment() throws Exception {
         String categoryTemplateId = "998901";  // Forbidden Area
         String tagIdEliza = "1000124";
@@ -141,11 +82,14 @@ class LayoutRestControllerTest {
 
         // make call
         String url = "/layout/user/mapping";
-        this.mockMvc.perform(post(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(200);
 
         // New User creates new tag as child of hamilton (1000123)
         String newTagUlr = "/tag/1000123/child";
@@ -154,13 +98,17 @@ class LayoutRestControllerTest {
         tag = tag.tagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
-        MvcResult resultNewTag = this.mockMvc.perform(post(newTagUlr)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-        String newTagId = extractResultId(resultNewTag);
+        Response response = given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(newTagUlr)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .response();
+        String newTagId = extractResultId(response);
 
         // New user creates new list
         ListGenerateProperties properties = new ListGenerateProperties();
@@ -170,29 +118,37 @@ class LayoutRestControllerTest {
         String jsonProperties = json(properties);
 
         String createListUrl = "/shoppinglist";
-        MvcResult resultNewList = this.mockMvc.perform(post(createListUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
-        String newListId = extractResultId(resultNewList);
+        response = given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post(createListUrl)
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+        String newListId = extractResultId(response);
 
         // New user adds new tag to list
         String addToListUrl = String.format("/shoppinglist/%s/tag/%s", newListId, newTagId);
-        this.mockMvc.perform(post(addToListUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post(addToListUrl);
 
         // New user retrieves list
         String retrieveList = String.format("/shoppinglist/%s", newListId);
-        MvcResult listResultsAfter = this.mockMvc.perform(get(retrieveList)
-                        .with(user(newUserDetails)))
-                .andReturn();
+        String jsonList = given()
+                .header(TestUtils.authToken(newUserToken))
+                .when()
+                .get(retrieveList)
+                .then()
+                .extract()
+                .body().asString();
         com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
         ShoppingList resultList = afterList.getShoppingList();
 
@@ -203,7 +159,6 @@ class LayoutRestControllerTest {
 
 
     @Test
-    @WithMockUser
     void testPostUserMappingsExisting() throws Exception {
         // create mapping post - map apples and oranges to default category Frozen
         // 10, 'Frozen'
@@ -216,23 +171,29 @@ class LayoutRestControllerTest {
 
         // make call
         String url = "/layout/user/mapping";
-        this.mockMvc.perform(post(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(200);
 
         // retrieve user layouts
         String getResultUrl = "/layout/user";
-        MvcResult result = this.mockMvc.perform(get(getResultUrl)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(getResultUrl)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
         // get default layout
-        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
+        ListLayoutListResource resource = parseResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
@@ -264,22 +225,28 @@ class LayoutRestControllerTest {
         payload = json(mapping);
 
         // make the call
-        this.mockMvc.perform(post(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(200);
 
         // retrieve user layouts
-        result = this.mockMvc.perform(get(getResultUrl)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        responseContent = given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(getResultUrl)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
         // get default layout
-        resource = parseResourceFromString(result.getResponse().getContentAsString());
+        resource = parseResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
@@ -312,7 +279,6 @@ class LayoutRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testPostUserMappingsNewUser() throws Exception {
         // do mappings with user which doesn't have any layout or categoriew
         String categoryTemplateId = "10";
@@ -324,23 +290,29 @@ class LayoutRestControllerTest {
 
         // make call
         String url = "/layout/user/mapping";
-        this.mockMvc.perform(post(url)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(200);
 
         // retrieve user layouts
         String getResultUrl = "/layout/user";
-        MvcResult result = this.mockMvc.perform(get(getResultUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(getResultUrl)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
         // get default layout
-        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
+        ListLayoutListResource resource = parseResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
@@ -372,22 +344,28 @@ class LayoutRestControllerTest {
         payload = json(mapping);
 
         // make the call
-        this.mockMvc.perform(post(url)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(200);
 
         // retrieve user layouts
-        result = this.mockMvc.perform(get(getResultUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        responseContent = given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(getResultUrl)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
         // get default layout
-        resource = parseResourceFromString(result.getResponse().getContentAsString());
+        resource = parseResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
@@ -420,37 +398,41 @@ class LayoutRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testGetUserLayoutsEmpty() throws Exception {
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/user";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(emptyUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(emptyUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
+        ListLayoutListResource resource = parseResourceFromString(responseContent);
         Assertions.assertNotNull(resource.getEmbeddedList().getListLayoutResourceList());
         Assertions.assertEquals(0, resource.getEmbeddedList().getListLayoutResourceList().size(), "empty list should be returned");
     }
 
 
     @Test
-    @WithMockUser
     void testGetUserLayouts() throws Exception {
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/user";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.list_layout_list", Matchers.hasSize(2)))
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .body("_embedded.list_layout_list", Matchers.hasSize(2))
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
+        ListLayoutListResource resource = parseResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         Map<Long, ListLayout> resultMap = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
@@ -472,13 +454,16 @@ class LayoutRestControllerTest {
     void testGetDefaultUserLayoutNotLoggedIn() throws Exception {
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/default";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
+        ListLayoutResource resource = parseSingleResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         ListLayout defaultLayout = resource.getListLayout();
         Assertions.assertTrue(defaultLayout.isDefault(), "default layout is marked as such");
@@ -497,7 +482,6 @@ class LayoutRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testGetDefaultLayoutLoggedIn() throws Exception {
         // New User creates new tag as child of hamilton (1000123)
         String newTagUlr = "/tag/1000123/child";
@@ -506,23 +490,29 @@ class LayoutRestControllerTest {
         tag = tag.tagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
-        this.mockMvc.perform(post(newTagUlr)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(newTagUlr)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))));
 
 
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/default";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
+        ListLayoutResource resource = parseSingleResourceFromString(responseContent);
         Assertions.assertNotNull(resource);
         ListLayout defaultLayout = resource.getListLayout();
         Assertions.assertTrue(defaultLayout.isDefault(), "default layout is marked as such");
@@ -543,14 +533,17 @@ class LayoutRestControllerTest {
     @Test
     void testGetUserCategories() throws Exception {
         String url = "/layout/user/categories";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(emptyUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(emptyUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
+        CategoryListResource categoryList = parseCategoryListResourceFromString(responseContent);
         // the empty user should contain only the default categories
         // note - the layout id isn't included in the category resource, so we have to test with ids.
         Assertions.assertEquals(7, categoryList.getEmbeddedList().getCategoryResourceList().size());
@@ -574,23 +567,28 @@ class LayoutRestControllerTest {
 
         // make call
         String mapUrl = "/layout/user/mapping";
-        this.mockMvc.perform(post(mapUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(mapUrl)
+                .then()
+                .statusCode(200);
 
         // retrieve categories, and verify that category Meat does not have the id 10
         String url = "/layout/user/categories";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(newUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(newUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
+        CategoryListResource categoryList = parseCategoryListResourceFromString(responseContent);
         // the base user will overlap categories - the category Meat exists in both the default, and the user categories
         Map<String, Category> categoryMap = categoryList.getEmbeddedList().getCategoryResourceList().stream()
                 .map(CategoryResource::getCategory)
@@ -606,14 +604,17 @@ class LayoutRestControllerTest {
     @Test
     void testGetUserCategoriesWithUserLayout() throws Exception {
         String url = "/layout/user/categories";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        String responseContent = given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
 
-        Assertions.assertNotNull(result);
-        CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
+        CategoryListResource categoryList = parseCategoryListResourceFromString(responseContent);
         // the base user will contain their categories, as well as the default categories
         // but there aren't any overlaps in the names - the use categories are distinct
         // note - the layout id isn't included in the category resource, so we have to test with ids.
@@ -630,35 +631,30 @@ class LayoutRestControllerTest {
     @Test
     void testRetrieveUserDefaultLayout() throws Exception {
         String url = "/layout/user/categories";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        Assertions.assertNotNull(result);
+        given()
+                .header(TestUtils.authToken(baseUserToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200);
     }
 
 
-    private String extractResultId(MvcResult result) {
-        List<String> headers = result.getResponse().getHeaders("Location");
-        String[] locationParts = headers.get(0).split("/");
+    private String extractResultId(Response response) {
+        String location = response.getHeader("Location");
+        String[] locationParts = location.split("/");
         return locationParts[locationParts.length - 1];
     }
 
     private String json(Object o) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        //objectMapper.setPropertyNamingStrategy();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         return objectMapper.writeValueAsString(o);
-
-        //MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        //this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        //return mockHttpOutputMessage.getBodyAsString();
     }
 
     private ListLayoutListResource parseResourceFromString(String resultString) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         ListLayoutListResource afterList = objectMapper.readValue(resultString, ListLayoutListResource.class);
         Assertions.assertNotNull(afterList);
@@ -666,7 +662,7 @@ class LayoutRestControllerTest {
     }
 
     private ListLayoutResource parseSingleResourceFromString(String resultString) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         ListLayoutResource afterList = objectMapper.readValue(resultString, ListLayoutResource.class);
         Assertions.assertNotNull(afterList);
@@ -674,7 +670,7 @@ class LayoutRestControllerTest {
     }
 
     private CategoryListResource parseCategoryListResourceFromString(String resultString) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         CategoryListResource afterList = objectMapper.readValue(resultString, CategoryListResource.class);
         Assertions.assertNotNull(afterList);

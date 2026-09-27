@@ -1,19 +1,20 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.controller.v2;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.v2.DishListResource;
-import com.meg.listshop.lmt.api.model.v2.DishResource;
-import com.meg.listshop.lmt.api.model.v2.IngredientListResource;
-import com.meg.listshop.lmt.api.model.v2.IngredientPut;
+import com.meg.listshop.lmt.api.model.v2.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
 
-/**
- * Created by margaretmartin on 13/05/2017.
- */
 
 @RestController
 @RequestMapping("/v2/dish")
@@ -21,23 +22,43 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface V2DishRestControllerApi {
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<DishListResource> retrieveDishes(HttpServletRequest request,
-                                                    Authentication authentication,
-                                                    @RequestParam(value = "searchFragment", required = false) String searchFragment,
-                                                    @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                    @RequestParam(value = "excludedTags", required = false) String excludedTags,
-                                                    @RequestParam(value = "sortKey", required = false) String sortKey,
-                                                    @RequestParam(value = "sortDirection", required = false) String sortDirection
+    ResponseEntity<DishList> retrieveDishes(HttpServletRequest request,
+                                            Authentication authentication,
+                                            @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                            @RequestParam(value = "includedTags", required = false) String includedTags,
+                                            @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                            @RequestParam(value = "sortKey", required = false) String sortKey,
+                                            @RequestParam(value = "sortDirection", required = false) String sortDirection
     );
 
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createDish(HttpServletRequest request, Authentication authentication, @RequestBody Dish input) throws MalformedURLException;
+
     @GetMapping(value = "/{dishId}", produces = "application/json")
-    ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
+    ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
+
+    @PutMapping(value = "/{dishId}", consumes = "application/json")
+    ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody PutDish dishUpdateInfo) throws BadParameterException;
+
 
     @GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
-    ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;
+    ResponseEntity<IngredientList> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;
+
+    @DeleteMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable("dishId") Long dishId, @PathVariable("tagId") Long tagId);
+
+    @PutMapping(value = "/{dishId}/rating/{ratingId}/{step}", produces = "application/json")
+    ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                            @PathVariable("ratingId") Long ratingId,
+                                            @PathVariable("step") Integer step);
+
 
     @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);
+
+    @PostMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                        @PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> updateIngredientInDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);

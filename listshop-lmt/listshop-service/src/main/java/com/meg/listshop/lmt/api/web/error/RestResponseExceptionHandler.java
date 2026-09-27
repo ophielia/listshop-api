@@ -1,12 +1,12 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api.web.error;
 
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.lmt.api.exception.*;
 import com.meg.listshop.lmt.api.model.ApiError;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.net.MalformedURLException;
 
 
 @ControllerAdvice
@@ -33,6 +35,25 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error(message, ex);
         //
         var apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({MalformedURLException.class})
+    public ResponseEntity<Object> handleBadLocationException(final Exception ex, final WebRequest request) {
+        logger.info(ex.getClass().getName());
+        logger.error("error", ex);
+        //
+        var apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "couldn't build location from request");
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({UserCreateException.class})
+    public ResponseEntity<Object> handleUserCreateException(final Exception ex, final WebRequest request) {
+        var message = "Unable to create and initialize user.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        //
+        var apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), message);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -20,6 +26,7 @@ import com.meg.listshop.lmt.dish.DishTestBuilder;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.food.FoodService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -30,10 +37,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,35 +49,35 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class TagServiceImplMockTest {
     private TagService tagService;
 
-    @MockBean
+    @Mock
     private DishService dishService;
-    @MockBean
+    @Mock
     private DishSearchService dishSearchService;
-    @MockBean
+    @Mock
     private ListTagStatisticService tagStatisticService;
-    @MockBean
+    @Mock
     private TagReplaceService tagReplaceService;
-    @MockBean
+    @Mock
     private TagRepository tagRepository;
-    @MockBean
+    @Mock
     private TagStructureService tagStructureService;
-    @MockBean
+    @Mock
     private UserService userService;
-    @MockBean
+    @Mock
     private DishItemRepository dishItemRepository;
 
-    @MockBean
+    @Mock
     CustomTagInfoRepository tagInfoCustomRepository;
-    @MockBean
+    @Mock
     FoodService foodService;
-    @MockBean
+    @Mock
     ListLayoutCategoryRepository listLayoutCategoryRepository;
-    @MockBean
+    @Mock
     LayoutService listLayoutService;
 
 
@@ -264,10 +271,7 @@ class TagServiceImplMockTest {
         List<DishEntity> testDishes = Arrays.asList(dish1, dish2, dish3);
 
 
-        Mockito.when(dishService.getDishes(userName, Arrays.asList(1L, 2L, 3L)))
-                .thenReturn(testDishes);
         Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(null, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
-        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
 
         RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(Arrays.asList(1L, 2L, 3L));
 
@@ -373,7 +377,7 @@ class TagServiceImplMockTest {
         Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(newTag));
 
         // tested call
-        tagService.addTagToDish(userId, dishId, tagId);
+        tagService.addTagToDish(userId, dishId, tagId, false);
 
         Mockito.verify(dishService, times(1)).save(argumentCaptor.capture(), anyBoolean());
         Mockito.verify(tagStatisticService, times(1)).countTagAddedToDish(userId, tagId);
@@ -601,6 +605,7 @@ class TagServiceImplMockTest {
         dishTags.add(tag3);
         dishTags.add(tag4);
         testDish.setItems(dishTags.stream().map(t -> {
+            t.setTagType(TagType.Ingredient);
             DishItemEntity item = new DishItemEntity();
             item.setTag(t);
             return item;
@@ -608,6 +613,8 @@ class TagServiceImplMockTest {
 
         Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(testDish);
+        Mockito.when(tagRepository.countRemainingDishTypeTags(dishId, tagIds))
+                .thenReturn(Collections.singletonList(new CountResult(1)));
 
         // call under test
         tagService.removeTagsFromDish(userId, dishId, tagIds);
@@ -636,15 +643,22 @@ class TagServiceImplMockTest {
 
         DishTestBuilder testBuilder = new DishTestBuilder()
                 .withDishId(dishId);
-
         existingTagIds.forEach(id -> testBuilder.withTag(id, TagType.DishType));
-
         DishEntity testDish = testBuilder.build();
+
+        List<TagEntity> tagsToDelete = tagIdsToDelete.stream()
+                .map(id -> {
+                    TagEntity testTag =new TagEntity(id);
+                    testTag.setTagType(TagType.DishType);
+                    return testTag;
+                })
+                .collect(Collectors.toList());
+
         ArgumentCaptor<DishEntity> savedDish = ArgumentCaptor.forClass(DishEntity.class);
 
         Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(testDish);
-        Mockito.when(tagRepository.countRemainingDishTypeTags(dishId, existingTagIds))
+        Mockito.when(tagRepository.countRemainingDishTypeTags(dishId, tagIdsToDelete))
                 .thenReturn(Collections.singletonList(new CountResult(1)));
         Mockito.when(dishService.save(savedDish.capture(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(new DishEntity());
@@ -808,8 +822,6 @@ class TagServiceImplMockTest {
         afterDishTags.add(toTag);
         afterDishTags.add(parentTag);
 
-        Mockito.when(userService.getUserByUserEmail(userName))
-                .thenReturn(user);
         Mockito.when(tagRepository.findById(toTagId))
                 .thenReturn(Optional.of(toTag));
         Mockito.when(dishSearchService.findDishes(any(DishSearchCriteria.class)))

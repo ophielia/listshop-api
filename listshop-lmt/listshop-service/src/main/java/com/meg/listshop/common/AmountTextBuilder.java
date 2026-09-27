@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.common;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
@@ -37,10 +43,10 @@ public class AmountTextBuilder {
             noAmount = true;
             return this;
         }
-        if (detail.getUnitId().equals(UNIT_UNIT_ID)) {
+        if (detail.getUnitId().equals(UNIT_UNIT_ID) || detail.getQuantity() > 10) {
             calculationQuantity = RoundingUtils.roundUpToNearestWholeNumber(detail.getQuantity());
         } else {
-            calculationQuantity = RoundingUtils.roundUpToNearestFraction(detail.getQuantity());
+            calculationQuantity = RoundingUtils.roundUpToNearestRoundingType(detail.getQuantity());
         }
         QuantityElements quantityElements = FractionUtils.splitQuantityIntoElements(calculationQuantity);
         quantity = quantityElements.quantity();

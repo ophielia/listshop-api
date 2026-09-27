@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.conversion.data.pojo.DomainType;
@@ -17,6 +23,8 @@ public class ItemStateContext {
     private boolean isCrossedOff;
     private BasicAmount tagAmount;
     private DomainType userDomain;
+    private String tagEntry;
+    private Long removeListLinkId;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -110,5 +118,21 @@ public class ItemStateContext {
 
     public DomainType getUserDomain() {
         return userDomain;
+    }
+
+    public String getTagRawEntry() {
+        return tagEntry;
+    }
+
+    public void setTagRawEntry(String tagEntry) {
+        this.tagEntry = tagEntry;
+    }
+
+    public Long getRemoveLinkId() {
+        return removeListLinkId;
+    }
+
+    public void setRemoveListLinkId(Long removeListLinkId) {
+        this.removeListLinkId = removeListLinkId;
     }
 }

@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.postoffice.service;
@@ -14,12 +13,12 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-
 
 import java.io.IOException;
 
@@ -51,7 +50,7 @@ public class MailService {
 
         var subject = getEmailSubject(emailParameters);
         var recipient = getEmailRecipient(emailParameters);
-        var mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         var helper = new MimeMessageHelper(mimeMessage);
         helper.setFrom(new InternetAddress("support@the-list-shop.com", "List Shop Support"));
 

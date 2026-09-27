@@ -39,6 +39,16 @@ values (nextval('dish_item_sequence'), 9999999, 18);
 insert into dish_items (dish_item_id, dish_id, tag_id)
 values (nextval('dish_item_sequence'), 9999999, 452);
 
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+-- insert user devices for authentication
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+values (99920, 20, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token20user', now());
+
 
 
 

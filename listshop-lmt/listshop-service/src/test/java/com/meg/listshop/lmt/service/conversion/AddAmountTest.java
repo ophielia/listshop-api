@@ -1,13 +1,13 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -72,14 +72,16 @@ class AddAmountTest {
         UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
 
         // add one tomato to another - no sizes given
-        ConvertibleAmount mediumTomato = new SimpleAmount(1.0, unit, TOMATO_CONVERSION_ID, false, null, null, false);
-        ConvertibleAmount largeTomato = new SimpleAmount(1.0, unit, TOMATO_CONVERSION_ID, false, null, null, false);
+        ConvertibleAmount mediumTomato = new SimpleAmount(1.0, unit, TOMATO_CONVERSION_ID, false, null, "medium", false);
+        ConvertibleAmount largeTomato = new SimpleAmount(1.0, unit, TOMATO_CONVERSION_ID, false, null, "large", false);
 
         AddScaleRequest addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         ConvertibleAmount added = converterService.add(mediumTomato, largeTomato, addRequest);
+        System.out.println("Added amount: " + added);
         assertNotNull(added);
-        Assertions.assertEquals(2.00, added.getQuantityRoundedUp(), 0.0);
-        Assertions.assertEquals("medium", added.getUnitSize());
+        Assertions.assertEquals(1.813, RoundingUtils.roundToThousandths(added.getQuantity()), 0.0);
+        Assertions.assertEquals(2.0, added.getQuantityRoundedUp(), 0.0);
+        Assertions.assertEquals("large", added.getUnitSize());
 
         // add one medium tomato to one large tomato - large tomato is user size
         mediumTomato = new SimpleAmount(1.0, unit, TOMATO_CONVERSION_ID, false, null, "medium", false);
@@ -88,8 +90,10 @@ class AddAmountTest {
         // list context
         addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         added = converterService.add(mediumTomato, largeTomato, addRequest);
+        System.out.println("Added amount: " + added);
         assertNotNull(added);
-        Assertions.assertEquals(1.875, added.getQuantityRoundedUp(), 0.0);
+        Assertions.assertEquals(1.813, RoundingUtils.roundToThousandths(added.getQuantity()), 0.0);
+        Assertions.assertEquals(2.0, added.getQuantityRoundedUp(), 0.0);
         Assertions.assertEquals("large", added.getUnitSize());
         assertTrue(added.getUserSize());
 
@@ -100,7 +104,7 @@ class AddAmountTest {
         addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         added = converterService.add(mediumTomato, largeTomato, addRequest);
         assertNotNull(added);
-        Assertions.assertEquals(2.25, added.getQuantityRoundedUp(), 0.0);
+        Assertions.assertEquals(3.0, added.getQuantityRoundedUp(), 0.0);
         Assertions.assertEquals("medium", added.getUnitSize());
     }
 

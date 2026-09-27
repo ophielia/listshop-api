@@ -1,18 +1,25 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
-import com.meg.listshop.lmt.api.model.Tag;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@JsonPropertyOrder({ "dish_id","name", "description", "reference", "user_id","last_added", "tags", "ingredients", "ratings"  })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Dish {
 
     @JsonProperty("dish_id")
-    private Long dishId;
+    private String dishId;
 
     @JsonProperty("name")
     private String dishName;
@@ -21,133 +28,105 @@ public class Dish {
 
     private String reference;
 
-    private List<Tag> tags = new ArrayList<>();
+    private List<NestedTag> tags = new ArrayList<>();
 
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    private RatingUpdateInfo ratings;
+    @JsonProperty("ratings")
+    private List<RatingInfo> dishRatings = new ArrayList<>();
 
-    private Long userId;
+    @JsonProperty("user_id")
+    private String userId;
 
     @JsonProperty("last_added")
     private Date lastAdded;
 
-    public Dish(Long userId, String dishName) {
-        this.userId = userId;
-        this.dishName = dishName;
-    }
-
     public Dish() {
-        // empty constructor
+        // for jackson
     }
 
-    public Dish(Long userId, String dishName, String description) {
-        this.userId = userId;
-        this.dishName = dishName;
-        this.description = description;
+    public Dish(Long dishId) {
+        this.dishId = String.valueOf(dishId);
     }
 
-    public Dish(Long id) {
-        this.dishId = id;
+    public Dish withDishId(String dishId) {
+        this.dishId = dishId;
+        return this;
     }
 
-    @JsonIgnore
-    public Long getId() {
-        return dishId;
-    }
-
-
-    public String getDishName() {
-        return dishName;
-    }
-
-    public void setDishName(String dishName) {
-        this.dishName = dishName;
-    }
-
-    public Dish dishName(String dishName) {
+    public Dish withDishName(String dishName) {
         this.dishName = dishName;
         return this;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public Dish withDescription(String description) {
+        this.description = description;
+        return this;
     }
 
-    public Dish tags(List<Tag> tags) {
+    public Dish withReference(String reference) {
+        this.reference = reference;
+        return this;
+    }
+
+    public Dish withTags(List<NestedTag> tags) {
         this.tags = tags;
         return this;
     }
 
-    @SuppressWarnings("unused")
-    public Long getUserId() {
-        return userId;
+    public Dish withIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+        return this;
     }
 
-    @JsonProperty("user_id")
-    public Dish userId(Long userId) {
+    public Dish withRatings(List<RatingInfo> dishRatings) {
+        this.dishRatings = dishRatings;
+        return this;
+    }
+
+    public Dish withUserId(String userId) {
         this.userId = userId;
         return this;
+    }
+
+    public Dish withLastAdded(Date lastAdded) {
+        this.lastAdded = lastAdded;
+        return this;
+    }
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public String getDishName() {
+        return dishName;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public Dish description(String description) {
-        this.description = description;
-        return this;
-    }
-
-    @SuppressWarnings("unused")
-    public Date getLastAdded() {
-        return lastAdded;
-    }
-
-    public Dish lastAdded(Date date) {
-        this.lastAdded = date;
-        return this;
-    }
-
     public String getReference() {
         return reference;
     }
 
-    public Dish reference(String reference) {
-        this.reference = reference;
-        return this;
+    public List<NestedTag> getTags() {
+        return tags;
     }
 
     public List<Ingredient> getIngredients() {
         return ingredients;
     }
 
-    public Dish ingredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-        return this;
+    public List<RatingInfo> getRatings() {
+        return dishRatings;
     }
 
-    public RatingUpdateInfo getRatings() {
-        return ratings;
+    public String getUserId() {
+        return userId;
     }
 
-    public Dish ratings(RatingUpdateInfo ratings) {
-        this.ratings = ratings;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Dish{" +
-                "dish_id=" + dishId +
-                ", dishName='" + dishName + '\'' +
-                ", description='" + description + '\'' +
-                ", reference='" + reference + '\'' +
-                ", tags=" + tags +
-                ", ingredients=" + ingredients +
-                ", ratings=" + ratings +
-                ", userId=" + userId +
-                ", lastAdded=" + lastAdded +
-                '}';
+    public Date getLastAdded() {
+        return lastAdded;
     }
 }

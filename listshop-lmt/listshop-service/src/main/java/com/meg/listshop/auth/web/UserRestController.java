@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.auth.web;
@@ -11,14 +10,12 @@ import com.meg.listshop.auth.api.controller.UserRestControllerApi;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.JwtService;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.exception.ProcessingException;
-import com.meg.listshop.lmt.api.exception.TokenException;
+import com.meg.listshop.lmt.api.exception.*;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.service.TokenService;
@@ -76,7 +73,7 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> createUser(@RequestBody PutCreateUser inputPut) throws BadParameterException {
+    public ResponseEntity<Object> createUser(@RequestBody PutCreateUser inputPut) throws BadParameterException, UserCreateException {
         LOG.debug("Begin creating new user");
         decodeAndValidateCreateUserInput(inputPut);
 
@@ -87,10 +84,10 @@ public class UserRestController implements UserRestControllerApi {
         // get email and password
         String email = user.getEmail();
         String password = user.getPassword();
-
+        boolean createList = inputPut.getCreateList();
 
         // call service to create user
-        UserEntity newUser = userService.createUser(email, password);
+        UserEntity newUser = userService.createUser(email, password, createList);
 
         // authenticate new user
         var authentication = authenticationManager.authenticate(
@@ -145,6 +142,9 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteUser(Authentication authentication) {
+        if (authentication == null) {
+            throw new ObjectNotFoundException("User not found");
+        }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.info("Begin delete user [{}]", userDetails.getUsername());
         this.userService.deleteUser(userDetails.getUsername());

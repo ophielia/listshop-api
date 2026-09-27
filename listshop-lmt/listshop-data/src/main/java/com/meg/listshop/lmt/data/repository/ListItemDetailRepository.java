@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository;
 
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
@@ -15,4 +21,7 @@ public interface ListItemDetailRepository extends JpaRepository<ListItemDetailEn
     @EntityGraph("detail-item-tag-entity-graph")
     @Query("select d from ListItemDetailEntity d where d.item.listId = ?1")
     List<ListItemDetailEntity> findDetailsByListId(Long listId);
+
+    @Query("select d from ListItemDetailEntity d where d.item.itemId in (?1)")
+    List<ListItemDetailEntity> findDetailsByItemIds(List<Long> itemIdList);
 }

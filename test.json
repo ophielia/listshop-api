@@ -1,0 +1,273 @@
+{
+  "list_id": "509992",
+  "created": "2026-07-08T05:12:58.589+00:00",
+  "layout_id": "1",
+  "item_count": 6,
+  "legend": [
+    {
+      "display": "Israeli Couscous",
+      "related_id": "5099901",
+      "source_type": "DISH"
+    },
+    {
+      "display": "four vegetable soup",
+      "related_id": "50999010",
+      "source_type": "DISH"
+    },
+    {
+      "display": "crispy cucumber salad",
+      "related_id": "509990100",
+      "source_type": "DISH"
+    },
+    {
+      "display": "crockpot corn chowder",
+      "related_id": "509990101",
+      "source_type": "DISH"
+    },
+    {
+      "display": "list operations - source",
+      "related_id": "6666",
+      "source_type": "LIST"
+    },
+    {
+      "display": "list operations - source",
+      "related_id": "7777",
+      "source_type": "LIST"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Produce",
+      "category_id": "6",
+      "display_order": 6,
+      "items": [
+        {
+          "tag": {
+            "tag_id": "500",
+            "name": "tag1"
+          },
+          "amount": {
+            "quantity": 0.5,
+            "whole_quantity": 0,
+            "fractional_quantity": "OneHalf",
+            "rounded_quantity": 0.5,
+            "quantity_display": "0 1/2",
+            "unit_id": "1008",
+            "unit_display": "lb",
+            "display": "0.5 lb"
+          },
+          "details": [
+            {
+              "amount": {
+                "quantity": 0.5,
+                "rounded_quantity": 0.5,
+                "quantity_display": "",
+                "unit_id": "1008",
+                "unit_display": "lb",
+                "display": "0.5 lb"
+              },
+              "dish_id": "50999010",
+              "contains_unspecified": false
+            }
+          ],
+          "item_id": "5099923",
+          "added": "2026-07-08T05:12:58.589+00:00",
+          "list_id": "509992",
+          "used_count": 1,
+          "sources": [
+            "DISH50999010"
+          ],
+          "amount_type": "NONE"
+        },
+        {
+          "tag": {
+            "tag_id": "501",
+            "name": "tag2"
+          },
+          "amount": {
+            "quantity": 1.5,
+            "whole_quantity": 1,
+            "fractional_quantity": "OneHalf",
+            "rounded_quantity": 1.5,
+            "quantity_display": "1 1/2",
+            "unit_id": "1000",
+            "unit_display": "cup",
+            "display": "1.5 cups"
+          },
+          "details": [
+            {
+              "amount": {
+                "quantity": 1.5,
+                "rounded_quantity": 1.5,
+                "quantity_display": "",
+                "unit_id": "1000",
+                "unit_display": "cup",
+                "display": "1.5 cups"
+              },
+              "list_id": "7777",
+              "contains_unspecified": false
+            }
+          ],
+          "item_id": "5099920",
+          "added": "2026-07-08T05:12:58.589+00:00",
+          "list_id": "509992",
+          "used_count": 1,
+          "sources": [
+            "LIST7777"
+          ],
+          "amount_type": "NONE"
+        },
+        {
+          "tag": {
+            "tag_id": "502",
+            "name": "tag3"
+          },
+          "amount": {
+            "quantity": 2.0,
+            "whole_quantity": 2,
+            "rounded_quantity": 2.0,
+            "quantity_display": "2",
+            "unit_id": "1011",
+            "unit_display": "unit",
+            "display": "2 units"
+          },
+          "details": [
+            {
+              "amount": {
+                "quantity": 2.0,
+                "rounded_quantity": 2.0,
+                "quantity_display": "",
+                "unit_id": "1011",
+                "unit_display": "unit",
+                "display": "2 units"
+              },
+              "list_id": "6666",
+              "contains_unspecified": false
+            }
+          ],
+          "item_id": "5099921",
+          "added": "2026-07-08T05:12:58.589+00:00",
+          "list_id": "509992",
+          "used_count": 1,
+          "sources": [
+            "LIST6666"
+          ],
+          "amount_type": "NONE"
+        },
+        {
+          "tag": {
+            "tag_id": "503",
+            "name": "tag4"
+          },
+          "amount": {
+            "quantity": 1.0,
+            "whole_quantity": 1,
+            "rounded_quantity": 1.0,
+            "quantity_display": "1",
+            "unit_id": "1001",
+            "unit_display": "tablespoon",
+            "display": "1 tablespoon"
+          },
+          "details": [
+            {
+              "amount": {
+                "quantity": 1.0,
+                "rounded_quantity": 1.0,
+                "quantity_display": "",
+                "unit_id": "1001",
+                "unit_display": "tablespoon",
+                "display": "1 tablespoon"
+              },
+              "dish_id": "5099901",
+              "contains_unspecified": false
+            }
+          ],
+          "item_id": "5099922",
+          "added": "2026-07-08T05:12:58.589+00:00",
+          "list_id": "509992",
+          "used_count": 1,
+          "sources": [
+            "DISH5099901"
+          ],
+          "amount_type": "NONE"
+        },
+        {
+          "tag": {
+            "tag_id": "504",
+            "name": "tag5"
+          },
+          "amount": {
+            "quantity": 1.0,
+            "whole_quantity": 1,
+            "rounded_quantity": 1.0,
+            "quantity_display": "1",
+            "unit_id": "1041",
+            "unit_display": "package",
+            "display": "1 package"
+          },
+          "details": [
+            {
+              "amount": {
+                "quantity": 1.0,
+                "rounded_quantity": 1.0,
+                "quantity_display": "",
+                "unit_id": "1041",
+                "unit_display": "package",
+                "display": "1 package"
+              },
+              "dish_id": "509990100",
+              "contains_unspecified": false
+            }
+          ],
+          "item_id": "5099924",
+          "added": "2026-07-08T05:12:58.589+00:00",
+          "list_id": "509992",
+          "used_count": 1,
+          "sources": [
+            "DISH509990100"
+          ],
+          "amount_type": "NONE"
+        },
+        {
+          "tag": {
+            "tag_id": "504",
+            "name": "tag5"
+          },
+          "amount": {
+            "quantity": 3.0,
+            "whole_quantity": 3,
+            "rounded_quantity": 3.0,
+            "quantity_display": "3",
+            "unit_id": "1013",
+            "unit_display": "gram",
+            "display": "3 grams"
+          },
+          "details": [
+            {
+              "amount": {
+                "quantity": 3.0,
+                "rounded_quantity": 3.0,
+                "quantity_display": "",
+                "unit_id": "1013",
+                "unit_display": "gram",
+                "display": "3 grams"
+              },
+              "dish_id": "509990101",
+              "contains_unspecified": false
+            }
+          ],
+          "item_id": "5099925",
+          "added": "2026-07-08T05:12:58.589+00:00",
+          "list_id": "509992",
+          "used_count": 1,
+          "sources": [
+            "DISH509990101"
+          ],
+          "amount_type": "NONE"
+        }
+      ]
+    }
+  ],
+  "is_starter_list": false,
+  "name": "list with amounts"
+}

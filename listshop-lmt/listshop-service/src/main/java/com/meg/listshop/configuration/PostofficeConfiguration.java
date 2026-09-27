@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.configuration;
 
 import com.meg.postoffice.config.MailConfiguration;
@@ -11,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+
+import java.util.Properties;
 
 @Configuration
 public class PostofficeConfiguration {
@@ -34,28 +42,33 @@ public class PostofficeConfiguration {
     @Bean
     public JavaMailSender javaMailSender(MailConfiguration mailConfiguration) {
 
-        var mailSender = new JavaMailSenderImpl();
+
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         if (mailConfiguration.getUsername() == null) {
             return mailSender;
         }
+
         mailSender.setHost(mailConfiguration.getHost());
         mailSender.setPort(mailConfiguration.getPort());
-
 
         mailSender.setUsername(mailConfiguration.getUsername());
         mailSender.setPassword(mailConfiguration.getPassword());
 
-        var props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", mailConfiguration.getProtocol());
-        props.put("mail.smtp.auth", mailConfiguration.getSmtpAuth());
-        props.put("mail.debug", mailConfiguration.getDebug());
+
+        Properties props = mailSender.getJavaMailProperties();
         if (mailConfiguration.getEnableSSL()) {
             props.put("mail.smtp.ssl.enable", mailConfiguration.getEnableSSL());
+            //props.put("mail.smtp.ssl.checkserveridentity", "true");
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.put("mail.smtp.timeout", 25000);
         } else {
             props.put("mail.smtp.starttls.enable", mailConfiguration.getEnableStartTls());
         }
+        props.put("mail.transport.protocol", mailConfiguration.getProtocol());
+        props.put("mail.smtp.auth", mailConfiguration.getSmtpAuth());
+        props.put("mail.debug", "true");
+
+
 
         return mailSender;
     }

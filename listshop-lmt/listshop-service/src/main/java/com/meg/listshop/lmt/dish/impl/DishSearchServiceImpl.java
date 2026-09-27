@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.dish.impl;
 
 import com.meg.listshop.lmt.api.model.DishSortDirection;
@@ -91,7 +97,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         if (criteria.hasSorting()) {
             // sort key or default
             DishSortKey key = criteria.getSortKey() != null ? criteria.getSortKey() : DishSortKey.CreatedOn;
-            DishSortDirection direction = criteria.getSortDirection() != null ? criteria.getSortDirection() : DishSortDirection.ASC;
+            DishSortDirection direction = criteria.getSortDirection() != null ? criteria.getSortDirection() : DishSortDirection.DESC;
             sortClause.append(" order by ");
             sortClause.append(columnForSortKey(key));
             sortClause.append(" ");

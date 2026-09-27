@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository;
 
 
@@ -89,8 +95,12 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
 
     @Query(value = "select t from TagEntity t where lower(trim(t.name)) = :name " +
             " and t.isGroup = :isGroup and t.tagType = :tagType and t.userId = :userId")
-    Optional<TagEntity> findTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup,
-                                         @Param("userId") Long userId);
+    Optional<TagEntity> findUserTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup,
+                                             @Param("userId") Long userId);
+
+    @Query(value = "select t from TagEntity t where lower(trim(t.name)) = :name " +
+            " and t.isGroup = :isGroup and t.tagType = :tagType")
+    Optional<TagEntity> findStandardTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup);
 
     @Query(value = "select count(*) as countResult  " +
             "from dish_items dt  " +

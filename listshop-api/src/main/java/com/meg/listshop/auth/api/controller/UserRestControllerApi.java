@@ -1,14 +1,15 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.auth.api.controller;
 
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,7 @@ import java.security.Principal;
 public interface UserRestControllerApi {
 
     @PostMapping(produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createUser(@RequestBody PutCreateUser input) throws BadParameterException;
+    ResponseEntity<Object> createUser(@RequestBody PutCreateUser input) throws BadParameterException, UserCreateException;
 
     @DeleteMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> deleteUser(Authentication authentication) ;

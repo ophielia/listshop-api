@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -6,8 +12,11 @@ package com.meg.listshop.lmt.service.food.impl;
 import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
+import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
@@ -44,20 +53,14 @@ import java.util.stream.Collectors;
 public class FoodServiceImpl implements FoodService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodServiceImpl.class);
-
-    FoodCategoryMappingRepository foodCategoryMappingRepo;
-    FoodRepository foodRepository;
     private final FoodCategoryRepository foodCategoryRepository;
-
     private final FoodConversionRepository foodConversionRepository;
-
     private final UnitRepository unitRepository;
-
     private final TagService tagService;
-
     private final TagStructureService tagStructureService;
     private final ConversionService conversionService;
-
+    FoodCategoryMappingRepository foodCategoryMappingRepo;
+    FoodRepository foodRepository;
     @Value("${conversionservice.single.unit.id:1011}")
     private Long SINGLE_UNIT_ID;
 
@@ -66,6 +69,7 @@ public class FoodServiceImpl implements FoodService {
 
     @Value("#{'${conversionservice.generic.ids:1000,1001,1002,1053}'.split(',')}")
     private Set<Long> GENERIC_IDS;
+    private final ConversionFactorRepository conversionFactorRepository;
 
 
     @Autowired
@@ -75,7 +79,8 @@ public class FoodServiceImpl implements FoodService {
                            TagStructureService tagStructureService,
                            FoodConversionRepository foodConversionRepository,
                            ConversionService conversionService,
-                           UnitRepository unitRepository) {
+                           UnitRepository unitRepository,
+                           ConversionFactorRepository conversionFactorRepository) {
         this.foodCategoryMappingRepo = foodCategoryMappingRepo;
         this.foodRepository = foodRepository;
         this.foodCategoryRepository = foodCategoryRepository;
@@ -84,6 +89,7 @@ public class FoodServiceImpl implements FoodService {
         this.foodConversionRepository = foodConversionRepository;
         this.conversionService = conversionService;
         this.unitRepository = unitRepository;
+        this.conversionFactorRepository = conversionFactorRepository;
     }
 
     @Override
@@ -215,6 +221,46 @@ public class FoodServiceImpl implements FoodService {
         }
     }
 
+    public List<UnitEntity> getUnits() {
+        return unitRepository.findAll();
+    }
+
+    public void assignFactorToTag(Long tagId, Long fromUnitId, Double fromQuantity, Long toUnitId, Double toQuantity) {
+        TagEntity tag = tagService.getTagById(tagId);
+
+        // get conversionId
+        if (tag.getConversionId() == null) {
+            throw new ObjectNotFoundException("No food information found for tag Id [" + tagId + "]");
+        }
+
+        // create  simple conversion from input
+        UnitEntity fromUnit = unitRepository.findById(fromUnitId).orElse(null);
+        UnitEntity toUnit = unitRepository.findById(toUnitId).orElse(null);
+        double factor = toQuantity / fromQuantity;
+
+        SimpleConversionFactor toAdd = new SimpleConversionFactor();
+        toAdd.setFromUnit(fromUnit);
+        toAdd.setToUnit(toUnit);
+        toAdd.setFactor(factor);
+
+        // add this factor
+
+        // return
+        conversionService.addManualConversionFactor(tag.getConversionId(), toAdd);
+    }
+
+    public void removeManualFactors(Long tagId) {
+        TagEntity tag = tagService.getTagById(tagId);
+
+        // get conversionId
+        if (tag == null || tag.getConversionId() == null) {
+            throw new ObjectNotFoundException("No food information found for tag Id [" + tagId + "]");
+        }
+
+        // return
+        conversionService.removeManualConversionFactors(tag.getConversionId());
+    }
+
 
     public void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin) {
         // get tag
@@ -230,7 +276,7 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public List<ConversionSampleDTO> samplesForConversionId(Long conversionId, Boolean isLiquid) {
         List<ConversionSampleDTO> result = new ArrayList<>();
-        if (conversionId == null || (isLiquid != null && isLiquid)) {
+        if (conversionId == null) {
             return result;
         }
 
@@ -272,8 +318,22 @@ public class FoodServiceImpl implements FoodService {
             }
         }
 
+        result.addAll(manualFactorSamples(conversionId));
         // return results
         return result;
+    }
+
+    private Collection<? extends ConversionSampleDTO> manualFactorSamples(Long conversionId) {
+         List<ConversionFactorEntity> factors = conversionService.manualConversionFactorsForConversionId(conversionId);
+
+        List<ConversionSampleDTO> samples = new ArrayList<>();
+        for (ConversionFactorEntity factor : factors) {
+            ConvertibleAmount fromAmount = new SimpleAmount(1.0, factor.getFromUnit());
+            ConvertibleAmount toAmount = new SimpleAmount(factor.getFactor(), factor.getToUnit());
+            ConversionSampleDTO sample = ConversionSampleDTO.manualSample(fromAmount, toAmount);
+            samples.add(sample);
+        }
+        return samples;
     }
 
     private Set<Long> pullSingleUnitIds(List<FoodConversionEntity> factors) {

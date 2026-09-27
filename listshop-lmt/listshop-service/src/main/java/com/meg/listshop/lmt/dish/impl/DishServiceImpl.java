@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.dish.impl;
@@ -12,16 +11,19 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.v2.PutDish;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.pojos.RatingInfoDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.dish.DishService;
@@ -338,13 +340,13 @@ public class DishServiceImpl implements DishService {
         // tags
         List<DishItemEntity> tags = dish.getItems().stream()
                 .filter(di -> includedInStandard.contains(di.getTag().getTagType()))
-                .collect(Collectors.toList());
-        tags.sort(Comparator.comparing(functionGetTagName));
+                .sorted(Comparator.comparing(functionGetTagName))
+                .toList();
 
         // ratings
-        RatingUpdateInfo ratings = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
+        List<RatingInfoDTO> ratingTags = dishItemRepository.getRatingsForDish(dishId);
 
-        return new DishDTO(dish, ingredients, tags, ratings);
+        return new DishDTO(dish, ingredients, tags, ratingTags);
     }
 
     @Override
@@ -374,6 +376,25 @@ public class DishServiceImpl implements DishService {
         });
         ingredients.sort(Comparator.comparing(DishItemDTO::getTagDisplay));
         return ingredients;
+    }
+
+    @Override
+    public void updateDishInfo(Long userId, PutDish dishUpdateInfo) throws BadParameterException {
+        if (dishUpdateInfo == null || dishUpdateInfo.getDishId() == null) {
+            throw new BadParameterException("no dish information in request");
+        }
+        Long dishId = StringTools.stringToLong(dishUpdateInfo.getDishId());
+        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(userId, dishId);
+        if (!dishOpt.isPresent()) {
+            String message = String.format("no dish found for id [%s]", dishUpdateInfo.getDishId());
+            throw new ObjectNotFoundException(message);
+        }
+        DishEntity dish = dishOpt.get();
+        dish.setDescription(dishUpdateInfo.getDescription());
+        dish.setDishName(dishUpdateInfo.getDishName());
+        dish.setReference(dishUpdateInfo.getReference());
+        save(dish, true);
+
     }
 
     public void doAddOrUpdateIngredient(DishEntity dish, DishItemEntity dishItemEntity, DishItemDTO dishItemDTO, boolean updateStatistics) {
@@ -455,15 +476,13 @@ public class DishServiceImpl implements DishService {
     private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity, TagEntity tag) {
         List<String> rawModifiers = dishItemDTO.getRawModifiers();
         if (rawModifiers == null || rawModifiers.isEmpty()) {
-
-
             dishItemEntity.setRawModifiers(null);
             dishItemEntity.setMarker(null);
-            dishItemEntity.setUnitSize(DEFAULT_UNIT_SIZE);
+            //all other code underneath doesn't run because of this - dishItemEntity.setUnitSize(DEFAULT_UNIT_SIZE);
             dishItemEntity.setModifiersProcessed(true);
             return;
         }
-        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers, "|"));
+        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers, "\\|"));
         if (tag.getConversionId() != null) {
             fillIngredientModifiers(tag.getConversionId(), rawModifiers, dishItemEntity);
             dishItemEntity.setModifiersProcessed(true);

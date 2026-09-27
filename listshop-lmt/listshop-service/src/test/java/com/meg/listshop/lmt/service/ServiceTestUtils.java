@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -6,6 +12,7 @@ import com.meg.listshop.lmt.api.model.RatingInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import org.junit.jupiter.api.Assertions;
 
 import java.time.LocalDateTime;
@@ -97,6 +104,11 @@ public class ServiceTestUtils {
         shoppingList.setUserId(userId);
         shoppingList.setItems(new ArrayList<>());
         return shoppingList;
+    }
+
+
+    public static ShoppingListDTO buildShoppingListDTO(Long listId, Long userId) {
+        return new ShoppingListDTO(listId, null, null, null, userId, false, null,1);
     }
 
     public static UserEntity buildUser(Long userId, String userName) {

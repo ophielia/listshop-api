@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -6,7 +12,7 @@ import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.LayoutRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LegacyLayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +33,13 @@ public class LayoutRestController implements LayoutRestControllerApi {
 
     private final UserService userService;
 
-    private final LayoutService layoutService;
+    private final LegacyLayoutService layoutService;
 
     private static final Logger LOG = LoggerFactory.getLogger(LayoutRestController.class);
 
     @Autowired
-    public LayoutRestController(UserService userService, LayoutService layoutService) {
+    public LayoutRestController(UserService userService,
+                                LegacyLayoutService layoutService) {
         this.userService = userService;
         this.layoutService = layoutService;
     }

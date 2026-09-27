@@ -1,0 +1,610 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] listshop-parent                                                    [pom]
+[INFO] postoffice-service                                                 [jar]
+[INFO] conversion                                                         [pom]
+[INFO] conversion-common                                                  [jar]
+[INFO] common                                                             [pom]
+[INFO] listshop-common                                                    [jar]
+[INFO] listshop-common-data                                               [jar]
+[INFO] conversion-data                                                    [jar]
+[INFO] conversion-api                                                     [jar]
+[INFO] conversion-service                                                 [jar]
+[INFO] listshop-api                                                       [jar]
+[INFO] listshop-lmt                                                       [pom]
+[INFO] listshop-data                                                      [jar]
+[INFO] listshop-service                                                   [jar]
+[INFO] 
+[INFO] ------------------< com.meg.listshop:listshop-parent >------------------
+[INFO] Building listshop-parent 1.21.0-SNAPSHOT                          [1/14]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-parent >>>
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-parent <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-parent ---
+[INFO] Skipping pom project
+[INFO] 
+[INFO] ---------------< com.meg.postoffice:postoffice-service >----------------
+[INFO] Building postoffice-service 1.21.0-SNAPSHOT                       [2/14]
+[INFO]   from postoffice/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ postoffice-service >>>
+[INFO] 
+[INFO] --- resources:3.0.2:copy-resources (copy-resource-one) @ postoffice-service ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/postoffice/src/main/resources/emailtemplates
+[INFO] 
+[INFO] --- resources:3.0.2:resources (default-resources) @ postoffice-service ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/postoffice/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ postoffice-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- copy-rename:1.0:copy (copy-file) @ postoffice-service ---
+[ERROR] sourceFile /Users/margaretmartin/projects/listshop-api/postoffice/src/main/resources/emailtemplates does not exist
+[INFO] 
+[INFO] --- resources:3.0.2:testResources (default-testResources) @ postoffice-service ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/postoffice/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ postoffice-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ postoffice-service <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ postoffice-service ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.eclipse.angus:jakarta.mail:jar:2.0.5:compile
+[WARNING]    org.freemarker:freemarker:jar:2.3.34:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-freemarker:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot:jar:3.5.7:compile
+[WARNING]    org.springframework:spring-context:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-mail:jar:3.5.7:compile
+[WARNING]    org.assertj:assertj-core:jar:3.27.6:compile
+[WARNING]    org.springframework:spring-beans:jar:6.2.12:compile
+[WARNING]    org.springframework:spring-test:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-autoconfigure:jar:3.5.7:compile
+[WARNING]    org.slf4j:jul-to-slf4j:jar:2.0.17:compile
+[INFO] 
+[INFO] ----------------< com.meg.listshop:listshop-conversion >----------------
+[INFO] Building conversion 1.21.0-SNAPSHOT                               [3/14]
+[INFO]   from listshop-conversion/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-conversion >>>
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-conversion <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-conversion ---
+[INFO] Skipping pom project
+[INFO] 
+[INFO] -----------------< com.meg.listshop:conversion-common >-----------------
+[INFO] Building conversion-common 1.21.0-SNAPSHOT                        [4/14]
+[INFO]   from listshop-conversion/conversion-common/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ conversion-common >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ conversion-common ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-common/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ conversion-common ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ conversion-common ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-common/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ conversion-common ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ conversion-common <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ conversion-common ---
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot:jar:3.5.7:compile
+[WARNING]    org.springframework:spring-context:jar:6.2.12:compile
+[WARNING]    org.springframework:spring-beans:jar:6.2.12:compile
+[WARNING]    junit:junit:jar:4.13.2:compile
+[WARNING]    org.springframework:spring-context-support:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-autoconfigure:jar:3.5.7:compile
+[WARNING]    org.slf4j:slf4j-api:jar:2.0.17:compile
+[INFO] 
+[INFO] ----------------------< com.meg.listshop:common >-----------------------
+[INFO] Building common 1.21.0-SNAPSHOT                                   [5/14]
+[INFO]   from common/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ common >>>
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ common <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ common ---
+[INFO] Skipping pom project
+[INFO] 
+[INFO] ------------------< com.meg.listshop:listshop-common >------------------
+[INFO] Building listshop-common 1.21.0-SNAPSHOT                          [6/14]
+[INFO]   from common/listshop-common/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-common >>>
+[INFO] 
+[INFO] --- resources:3.0.2:copy-resources (copy-resource-one) @ listshop-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/common/listshop-common/src/main/resources/emailtemplates
+[INFO] 
+[INFO] --- resources:3.0.2:resources (default-resources) @ listshop-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/common/listshop-common/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ listshop-common ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- copy-rename:1.0:copy (copy-file) @ listshop-common ---
+[ERROR] sourceFile /Users/margaretmartin/projects/listshop-api/common/listshop-common/src/main/resources/emailtemplates does not exist
+[INFO] 
+[INFO] --- resources:3.0.2:testResources (default-testResources) @ listshop-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/common/listshop-common/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ listshop-common ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-common <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-common ---
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.slf4j:jul-to-slf4j:jar:2.0.17:compile
+[INFO] 
+[INFO] ---------------< com.meg.listshop:listshop-common-data >----------------
+[INFO] Building listshop-common-data 1.21.0-SNAPSHOT                     [7/14]
+[INFO]   from common/listshop-common-data/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-common-data >>>
+[INFO] 
+[INFO] --- resources:3.0.2:copy-resources (copy-resource-one) @ listshop-common-data ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/common/listshop-common-data/src/main/resources/emailtemplates
+[INFO] 
+[INFO] --- resources:3.0.2:resources (default-resources) @ listshop-common-data ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ listshop-common-data ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- copy-rename:1.0:copy (copy-file) @ listshop-common-data ---
+[ERROR] sourceFile /Users/margaretmartin/projects/listshop-api/common/listshop-common-data/src/main/resources/emailtemplates does not exist
+[INFO] 
+[INFO] --- resources:3.0.2:testResources (default-testResources) @ listshop-common-data ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/common/listshop-common-data/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ listshop-common-data ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-common-data <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-common-data ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.springframework.data:spring-data-jpa:jar:3.5.5:compile
+[WARNING]    jakarta.persistence:jakarta.persistence-api:jar:3.1.0:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework:spring-test:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-data-jpa:jar:3.5.7:compile
+[INFO] 
+[INFO] ------------------< com.meg.listshop:conversion-data >------------------
+[INFO] Building conversion-data 1.21.0-SNAPSHOT                          [8/14]
+[INFO]   from listshop-conversion/conversion-data/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ conversion-data >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ conversion-data ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-data/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ conversion-data ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ conversion-data ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-data/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ conversion-data ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ conversion-data <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ conversion-data ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    jakarta.persistence:jakarta.persistence-api:jar:3.1.0:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    com.meg.listshop:conversion-common:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot:jar:3.5.7:compile
+[WARNING]    org.springframework:spring-context:jar:6.2.12:compile
+[WARNING]    org.springframework:spring-beans:jar:6.2.12:compile
+[WARNING]    junit:junit:jar:4.13.2:compile
+[WARNING]    org.springframework:spring-context-support:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-autoconfigure:jar:3.5.7:compile
+[WARNING]    org.slf4j:slf4j-api:jar:2.0.17:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-data-jpa:jar:3.5.7:compile
+[WARNING]    io.hypersistence:hypersistence-utils-hibernate-63:jar:3.8.1:compile
+[INFO] 
+[INFO] ------------------< com.meg.listshop:conversion-api >-------------------
+[INFO] Building conversion-api 1.21.0-SNAPSHOT                           [9/14]
+[INFO]   from listshop-conversion/conversion-api/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ conversion-api >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ conversion-api ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-api/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ conversion-api ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ conversion-api ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-api/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ conversion-api ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ conversion-api <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ conversion-api ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    com.meg.listshop:listshop-common:jar:1.21.0-SNAPSHOT:compile
+[INFO] 
+[INFO] ----------------< com.meg.listshop:conversion-service >-----------------
+[INFO] Building conversion-service 1.21.0-SNAPSHOT                      [10/14]
+[INFO]   from listshop-conversion/conversion-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ conversion-service >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ conversion-service ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-service/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ conversion-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ conversion-service ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-conversion/conversion-service/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ conversion-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ conversion-service <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ conversion-service ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.springframework:spring-test:jar:6.2.12:compile
+[WARNING]    com.meg.listshop:listshop-common-data:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    org.mockito:mockito-core:jar:5.17.0:test
+[WARNING]    com.meg.listshop:conversion-common:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    org.springframework.boot:spring-boot-test:jar:3.5.7:test
+[WARNING]    org.springframework.data:spring-data-jpa:jar:3.5.5:compile
+[WARNING]    jakarta.persistence:jakarta.persistence-api:jar:3.1.0:compile
+[WARNING]    jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-test:jar:3.5.7:test
+[WARNING]    org.springframework:spring-context-support:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-autoconfigure:jar:3.5.7:compile
+[WARNING]    org.slf4j:jul-to-slf4j:jar:2.0.17:compile
+[WARNING]    ch.qos.logback:logback-classic:jar:1.5.26:compile
+[WARNING] Non-test scoped test only dependencies found:
+[WARNING]    org.springframework:spring-test:jar:6.2.12:compile
+[INFO] 
+[INFO] -------------------< com.meg.listshop:listshop-api >--------------------
+[INFO] Building listshop-api 1.21.0-SNAPSHOT                            [11/14]
+[INFO]   from listshop-api/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-api >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ listshop-api ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-api/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ listshop-api ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 188 source files with javac [debug target 17] to target/classes
+[WARNING] system modules path not set in conjunction with -source 17
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-api/src/main/java/com/meg/listshop/lmt/api/model/AbstractListShopResource.java: /Users/margaretmartin/projects/listshop-api/listshop-api/src/main/java/com/meg/listshop/lmt/api/model/AbstractListShopResource.java uses or overrides a deprecated API.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-api/src/main/java/com/meg/listshop/lmt/api/model/AbstractListShopResource.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ listshop-api ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-api/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ listshop-api ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-api <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-api ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.slf4j:slf4j-api:jar:2.0.17:compile
+[WARNING]    jakarta.validation:jakarta.validation-api:jar:3.0.2:compile
+[WARNING]    org.springframework.security:spring-security-core:jar:6.5.6:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework.boot:spring-boot-starter-security:jar:3.5.7:compile
+[WARNING]    org.springdoc:springdoc-openapi-starter-webmvc-ui:jar:2.7.0:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-validation:jar:3.5.7:compile
+[INFO] 
+[INFO] -------------------< com.meg.listshop:listshop-lmt >--------------------
+[INFO] Building listshop-lmt 1.21.0-SNAPSHOT                            [12/14]
+[INFO]   from listshop-lmt/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-lmt >>>
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-lmt <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-lmt ---
+[INFO] Skipping pom project
+[INFO] 
+[INFO] -------------------< com.meg.listshop:listshop-data >-------------------
+[INFO] Building listshop-data 1.21.0-SNAPSHOT                           [13/14]
+[INFO]   from listshop-lmt/listshop-data/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-data >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ listshop-data ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-data/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ listshop-data ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 102 source files with javac [debug target 17] to target/classes
+[WARNING] system modules path not set in conjunction with -source 17
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ProposalSlotEntity.java: Some input files use or override a deprecated API.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/entity/ProposalSlotEntity.java: Recompile with -Xlint:deprecation for details.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomAmountRepositoryImpl.java: Some input files use unchecked or unsafe operations.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-data/src/main/java/com/meg/listshop/lmt/data/repository/impl/CustomAmountRepositoryImpl.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ listshop-data ---
+[INFO] skip non existing resourceDirectory /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-data/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ listshop-data ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-data <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-data ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.springframework:spring-jdbc:jar:6.2.12:compile
+[WARNING]    com.meg.listshop:conversion-common:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    org.hibernate.orm:hibernate-core:jar:6.6.33.Final:compile
+[WARNING]    org.springframework.data:spring-data-commons:jar:3.5.5:compile
+[WARNING]    org.springframework:spring-beans:jar:6.2.12:compile
+[WARNING]    org.springframework.data:spring-data-jpa:jar:3.5.5:compile
+[WARNING]    org.springframework:spring-context:jar:6.2.12:compile
+[WARNING]    jakarta.persistence:jakarta.persistence-api:jar:3.1.0:compile
+[WARNING]    com.fasterxml.jackson.core:jackson-annotations:jar:2.19.2:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    org.springframework.boot:spring-boot-starter:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-data-jpa:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-web:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-validation:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-security:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-freemarker:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-test:jar:3.5.7:test
+[WARNING]    org.springframework.mobile:spring-mobile-starter:jar:2.0.0.M2:compile
+[WARNING]    org.springframework.boot:spring-boot-devtools:jar:3.5.7:runtime
+[WARNING]    io.micrometer:micrometer-registry-prometheus:jar:1.11.1:compile
+[WARNING]    io.hypersistence:hypersistence-utils-hibernate-63:jar:3.8.1:compile
+[WARNING]    org.testcontainers:testcontainers-postgresql:jar:2.0.2:test
+[WARNING]    net.java.dev.jna:jna:jar:5.7.0:test
+[WARNING]    io.jsonwebtoken:jjwt-api:jar:0.12.6:compile
+[WARNING]    org.flywaydb:flyway-core:jar:9.22.3:compile
+[WARNING]    me.atrox.haikunator:Haikunator:jar:1.3:compile
+[WARNING]    commons-beanutils:commons-beanutils:jar:1.9.4:compile
+[WARNING]    com.google.guava:guava:jar:32.0.1-jre:compile
+[WARNING]    org.apache.commons:commons-lang3:jar:3.18.0:compile
+[WARNING]    org.slf4j:jul-to-slf4j:jar:2.0.17:compile
+[WARNING]    org.junit.jupiter:junit-jupiter-api:jar:5.12.2:compile
+[WARNING]    org.jetbrains:annotations:jar:16.0.3:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-actuator:jar:3.5.7:compile
+[WARNING]    com.meg.listshop:conversion-data:jar:1.21.0-SNAPSHOT:compile
+[INFO] 
+[INFO] -----------------< com.meg.listshop:listshop-service >------------------
+[INFO] Building listshop-service 1.21.0-SNAPSHOT                        [14/14]
+[INFO]   from listshop-lmt/listshop-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> dependency:3.7.0:analyze (default-cli) > test-compile @ listshop-service >>>
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ listshop-service ---
+[INFO] Copying 92 resources
+[INFO] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ listshop-service ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 170 source files with javac [debug target 17] to target/classes
+[WARNING] system modules path not set in conjunction with -source 17
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/SecurityConfig.java:[57,17] csrf() in org.springframework.security.config.annotation.web.builders.HttpSecurity has been deprecated and marked for removal
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtServiceImpl.java: Some input files use or override a deprecated API.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/main/java/com/meg/listshop/auth/service/impl/JwtServiceImpl.java: Recompile with -Xlint:deprecation for details.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/UITestContextInitializer.java: Some input files use unchecked or unsafe operations.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/main/java/com/meg/listshop/configuration/UITestContextInitializer.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ listshop-service ---
+[INFO] Copying 44 resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ listshop-service ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 66 source files with javac [debug target 17] to target/test-classes
+[WARNING] system modules path not set in conjunction with -source 17
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/service/impl/UserPropertyServiceImplMockTest.java:[37,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/service/impl/UserPropertyServiceImplMockTest.java:[40,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/AmountServiceImplMockTest.java:[22,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/AmountServiceImplMockTest.java:[24,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[44,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[46,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[49,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[51,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[53,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[56,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[59,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/food/impl/FoodServiceImplMockTest.java:[62,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/FillInProposalProcessorImplTest.java:[45,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/FillInProposalProcessorImplTest.java:[48,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ProposalGeneratorServiceImplTest.java:[52,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ProposalGeneratorServiceImplTest.java:[56,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/ProposalGeneratorServiceImplTest.java:[60,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TargetServiceImplMockTest.java:[39,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TargetServiceImplMockTest.java:[42,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TargetServiceImplMockTest.java:[45,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TargetServiceImplMockTest.java:[48,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TargetServiceImplMockTest.java:[51,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TokenServiceImplTest.java:[47,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TokenServiceImplTest.java:[50,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/impl/TokenServiceImplTest.java:[53,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[50,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[52,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[54,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[56,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[58,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[60,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[62,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[64,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[67,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[69,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[71,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagServiceImplMockTest.java:[73,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagStructureServiceImplMockTest.java:[28,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/tag/impl/TagStructureServiceImplMockTest.java:[31,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/lmt/service/task/AutoTaggerTaskTest.java:[24,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/configuration/ListShopPostgresqlContainer.java: Some input files use or override a deprecated API.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/configuration/ListShopPostgresqlContainer.java: Recompile with -Xlint:deprecation for details.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/service/impl/UserPropertyServiceImplMockTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /Users/margaretmartin/projects/listshop-api/listshop-lmt/listshop-service/src/test/java/com/meg/listshop/auth/service/impl/UserPropertyServiceImplMockTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] <<< dependency:3.7.0:analyze (default-cli) < test-compile @ listshop-service <<<
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.7.0:analyze (default-cli) @ listshop-service ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.springframework:spring-test:jar:6.2.12:compile
+[WARNING]    org.springframework.security:spring-security-web:jar:6.5.6:compile
+[WARNING]    org.springframework.security:spring-security-config:jar:6.5.6:compile
+[WARNING]    com.fasterxml.jackson.core:jackson-core:jar:2.19.2:compile
+[WARNING]    org.springframework.boot:spring-boot-test-autoconfigure:jar:3.5.7:test
+[WARNING]    org.springframework.data:spring-data-commons:jar:3.5.5:compile
+[WARNING]    com.github.docker-java:docker-java-api:jar:3.7.0:compile
+[WARNING]    io.micrometer:micrometer-core:jar:1.15.5:compile
+[WARNING]    org.freemarker:freemarker:jar:2.3.34:compile
+[WARNING]    io.swagger.core.v3:swagger-models-jakarta:jar:2.2.25:compile
+[WARNING]    org.springframework:spring-tx:jar:6.2.12:compile
+[WARNING]    org.springframework.security:spring-security-crypto:jar:6.5.6:compile
+[WARNING]    org.apache.tomcat:tomcat-annotations-api:jar:10.1.48:compile
+[WARNING]    org.springframework.boot:spring-boot-test:jar:3.5.7:test
+[WARNING]    org.testcontainers:testcontainers-jdbc:jar:2.0.2:compile
+[WARNING]    org.springframework:spring-beans:jar:6.2.12:compile
+[WARNING]    com.fasterxml.jackson.core:jackson-databind:jar:2.19.2:compile
+[WARNING]    org.springframework:spring-jcl:jar:6.2.12:compile
+[WARNING]    org.springframework.boot:spring-boot-autoconfigure:jar:3.5.7:compile
+[WARNING]    org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.48:compile
+[WARNING]    org.springframework:spring-web:jar:6.2.12:compile
+[WARNING]    org.springframework:spring-jdbc:jar:6.2.12:compile
+[WARNING]    com.meg.listshop:listshop-common-data:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    org.mockito:mockito-core:jar:5.17.0:test
+[WARNING]    org.springframework:spring-context-support:jar:6.2.12:compile
+[WARNING]    org.hibernate.orm:hibernate-core:jar:6.6.33.Final:compile
+[WARNING]    org.eclipse.angus:jakarta.mail:jar:2.0.5:compile
+[WARNING]    junit:junit:jar:4.13.2:compile
+[WARNING]    org.springframework.data:spring-data-jpa:jar:3.5.5:compile
+[WARNING]    org.springframework:spring-core:jar:6.2.12:compile
+[WARNING]    org.springframework:spring-context:jar:6.2.12:compile
+[WARNING]    org.springframework:spring-webmvc:jar:6.2.12:compile
+[WARNING]    jakarta.persistence:jakarta.persistence-api:jar:3.1.0:compile
+[WARNING]    org.springframework.boot:spring-boot:jar:3.5.7:compile
+[WARNING]    com.fasterxml.jackson.core:jackson-annotations:jar:2.19.2:compile
+[WARNING]    org.springframework.security:spring-security-core:jar:6.5.6:compile
+[WARNING]    com.google.code.gson:gson:jar:2.13.2:compile
+[WARNING]    jakarta.transaction:jakarta.transaction-api:jar:2.0.1:compile
+[WARNING]    jakarta.validation:jakarta.validation-api:jar:3.0.2:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    com.meg.listshop:conversion-data:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    com.meg.listshop:conversion-service:jar:1.21.0-SNAPSHOT:compile
+[WARNING]    org.springframework.boot:spring-boot-starter:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-logging:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-data-jpa:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-web:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-validation:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-security:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-freemarker:jar:3.5.7:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-test:jar:3.5.7:test
+[WARNING]    org.springframework.mobile:spring-mobile-starter:jar:2.0.0.M2:compile
+[WARNING]    org.springframework.boot:spring-boot-devtools:jar:3.5.7:runtime
+[WARNING]    org.postgresql:postgresql:jar:42.7.2:compile
+[WARNING]    io.micrometer:micrometer-registry-prometheus:jar:1.11.1:compile
+[WARNING]    org.springdoc:springdoc-openapi-ui:jar:1.7.0:compile
+[WARNING]    io.jsonwebtoken:jjwt-impl:jar:0.12.6:runtime
+[WARNING]    io.jsonwebtoken:jjwt-jackson:jar:0.12.6:runtime
+[WARNING]    commons-beanutils:commons-beanutils:jar:1.9.4:compile
+[WARNING]    org.slf4j:jul-to-slf4j:jar:2.0.17:compile
+[WARNING]    org.junit.jupiter:junit-jupiter-engine:jar:5.12.2:test
+[WARNING]    org.jetbrains:annotations:jar:16.0.3:compile
+[WARNING]    org.springframework.boot:spring-boot-starter-actuator:jar:3.5.7:compile
+[WARNING]    io.hypersistence:hypersistence-utils-hibernate-63:jar:3.8.1:compile
+[WARNING]    ch.qos.logback:logback-classic:jar:1.5.26:compile
+[WARNING]    ch.qos.logback:logback-core:jar:1.5.26:compile
+[WARNING]    ch.qos.logback.access:logback-access-common:jar:2.0.7:compile
+[WARNING] Non-test scoped test only dependencies found:
+[WARNING]    org.springframework:spring-test:jar:6.2.12:compile
+[WARNING]    org.junit.jupiter:junit-jupiter-api:jar:5.12.2:compile
+[WARNING]    com.fasterxml.jackson.core:jackson-core:jar:2.19.2:compile
+[WARNING]    junit:junit:jar:4.13.2:compile
+[WARNING]    org.hamcrest:hamcrest:jar:2.1:compile
+[WARNING]    com.google.code.gson:gson:jar:2.13.2:compile
+[WARNING]    com.fasterxml.jackson.core:jackson-databind:jar:2.19.2:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for listshop-parent 1.21.0-SNAPSHOT:
+[INFO] 
+[INFO] listshop-parent .................................... SUCCESS [  3.959 s]
+[INFO] postoffice-service ................................. SUCCESS [  2.907 s]
+[INFO] conversion ......................................... SUCCESS [  0.092 s]
+[INFO] conversion-common .................................. SUCCESS [  1.182 s]
+[INFO] common ............................................. SUCCESS [  0.027 s]
+[INFO] listshop-common .................................... SUCCESS [  0.138 s]
+[INFO] listshop-common-data ............................... SUCCESS [  0.882 s]
+[INFO] conversion-data .................................... SUCCESS [  0.398 s]
+[INFO] conversion-api ..................................... SUCCESS [  0.246 s]
+[INFO] conversion-service ................................. SUCCESS [  0.653 s]
+[INFO] listshop-api ....................................... SUCCESS [  9.161 s]
+[INFO] listshop-lmt ....................................... SUCCESS [  0.040 s]
+[INFO] listshop-data ...................................... SUCCESS [  8.011 s]
+[INFO] listshop-service ................................... SUCCESS [ 20.821 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  52.925 s
+[INFO] Finished at: 2026-03-14T19:44:32+01:00
+[INFO] ------------------------------------------------------------------------

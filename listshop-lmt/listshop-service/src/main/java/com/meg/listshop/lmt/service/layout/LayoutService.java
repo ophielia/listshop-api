@@ -1,0 +1,47 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+package com.meg.listshop.lmt.service.layout;
+
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
+import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
+import com.meg.listshop.lmt.data.pojos.LayoutDTO;
+
+import java.util.List;
+
+/**
+ * Created by margaretmartin on 06/11/2017.
+ */
+public interface LayoutService {
+
+    ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId);
+
+    ListLayoutEntity getDefaultUserLayout(Long userId);
+
+    void addDefaultUserMappings(Long id, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException;
+
+    void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign);
+
+    void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign);
+
+    List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId);
+
+    List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId);
+
+    List<LayoutCategoryDTO> getDefaultCategories();
+
+    void addTagToCategory(Long layoutCategoryId, TagEntity tag);
+
+    void moveTagToDefaultCategory(Long tagId, Long categoryId);
+
+    ListLayoutCategoryEntity getCategoryForTag(Long userId, Long tagId);
+
+    LayoutDTO getDefaultLayout(Long userId);
+
+}

@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
@@ -47,7 +53,7 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
             subject.addToTagIdsToAssign(tagId);
         }
 
-        // mark processor as done
+        // mark processors as done
         subject.addProcessedBy(getProcessIdentifier());
         return subject;
     }

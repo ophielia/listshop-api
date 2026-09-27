@@ -1,14 +1,20 @@
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.ListItemDTO;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -36,6 +42,8 @@ public class CollectedItem {
         item = listItemEntity;
         isRemoved = item.getRemovedOn() != null;
     }
+
+
     
     //** Item Accessors **/
 
@@ -121,7 +129,6 @@ public class CollectedItem {
         }
         return new java.sql.Timestamp(
                 item.getCrossedOff().getTime()).toLocalDateTime();
-
     }
 
     public void setCrossedOff(LocalDateTime crossedOff) {
@@ -133,14 +140,11 @@ public class CollectedItem {
     }
 
     public LocalDateTime getRemovedOn() {
-
             if (item.getRemovedOn() == null) {
                 return null;
             }
             return new java.sql.Timestamp(
                     item.getRemovedOn().getTime()).toLocalDateTime();
-
-
     }
 
     public void setRemovedOn(LocalDateTime removedOn) {
@@ -156,11 +160,10 @@ public class CollectedItem {
 
             if ( item.getUpdatedOn() == null) {
                 return null;
-            }
+    }
             return new java.sql.Timestamp(item.getUpdatedOn().getTime()).toLocalDateTime();
 
-
-        }
+    }
 
 
     public void setUpdatedOn(LocalDateTime updatedOn)
@@ -268,6 +271,7 @@ public class CollectedItem {
 
 
     public ListItemEntity getItem() {
+
         return item;
     }
 
@@ -474,4 +478,5 @@ public class CollectedItem {
         long days = period.toDays();
         return days > 7; // removed items are purged after 7 days.
     }
+
 }

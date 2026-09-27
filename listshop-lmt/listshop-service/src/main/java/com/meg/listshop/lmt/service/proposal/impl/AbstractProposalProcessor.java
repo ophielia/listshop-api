@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.proposal.impl;
 
 import com.meg.listshop.common.FlatStringUtils;
@@ -37,7 +43,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     @Value("${proposal.processor.dish.result.count.standard:5}")
     protected int SEARCH_DISH_RESULT_COUNT;
 
-    @Value("${proposal.processor.dish.result.count.pickup:10}")
+    @Value("${proposal.processors.dish.result.count.pickup:10}")
     protected int SEARCH_DISH_RESULT_COUNT_PICKUP;
 
     @Value("${proposal.processor.dish.empty.count:5}")

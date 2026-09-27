@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -30,7 +36,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -84,8 +89,8 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public int deleteTagFromDish(Long userId, Long dishId, Long tagId) {
-        return removeTagsFromDish(userId, dishId, Collections.singleton(tagId));
+    public int deleteTagFromDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients) {
+        return doRemoveTagsFromDish(userId, dishId, Collections.singleton(tagId), true);
     }
 
     @Override
@@ -240,6 +245,20 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
+    public TagInfoDTO getTagInfoList(Long userId, Long tagId) {
+        TagSearchCriteria criteria = new TagSearchCriteria();
+        criteria.setTagIds(Collections.singletonList(tagId));
+        criteria.setUserId(userId);
+        List<TagInfoDTO> allFound = getTagInfoList(criteria);
+        if (allFound == null || allFound.isEmpty()) {
+            criteria.setUserId(null);
+            return getTagInfoList(criteria).stream()
+                    .findFirst()
+                    .orElse(null);
+        }
+        return allFound.get(0);
+    }
+
     public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
@@ -288,8 +307,13 @@ public class TagServiceImpl implements TagService {
     }
 
     private TagEntity getExistingTag(TagEntity newtag, Long userId) {
-        Optional<TagEntity> tag = tagRepository.findTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId);
-        return tag.orElse(null);
+        if (userId == null) {
+            return tagRepository.findStandardTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup())
+                    .orElse(null);
+        }
+        return tagRepository.findUserTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId)
+                .orElse(null);
+
     }
 
     @Override
@@ -354,7 +378,7 @@ public class TagServiceImpl implements TagService {
             nextTag = tagRepository.getNextRatingDown(ratingId, currentTagId);
         }
         // assign new tag
-        addTagToDish(dish, nextTag);
+        addTagToDish(dish, nextTag, false);
 
     }
 
@@ -375,7 +399,7 @@ public class TagServiceImpl implements TagService {
             throw new ObjectNotFoundException("Shouldn't happen: Can't retrieve tag for tag_id [" + newTagId + "]");
         }
         // assign new tag
-        addTagToDish(dish, tag.get());
+        addTagToDish(dish, tag.get(), false);
     }
 
 
@@ -427,7 +451,7 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public void addTagToDish(Long userId, Long dishId, Long tagId) {
+    public void addTagToDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients) {
         TagEntity tag = getTagById(tagId);
         if (dishId == null || tagId == null) {
             return;
@@ -436,7 +460,7 @@ public class TagServiceImpl implements TagService {
         // get dish
         DishEntity dish = dishService.getDishForUserById(userId, dishId);
 
-        addTagToDish(dish, tag);
+        addTagToDish(dish, tag, excludeIngredients);
     }
 
     @Override
@@ -517,12 +541,16 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public int removeTagsFromDish(Long userId, Long dishId, Set<Long> tagIds) {
+        return doRemoveTagsFromDish(userId, dishId, tagIds, false);
+    }
+
+    public int doRemoveTagsFromDish(Long userId, Long dishId, Set<Long> tagIds, boolean excludeIngredients) {
         // get dish
         DishEntity dish = dishService.getDishForUserById(userId, dishId);
         if (dish == null) {
             return 0;
         }
-        Set<Long> validatedRemovals = determineValidTagsToRemove(dishId, tagIds);
+        Set<Long> validatedRemovals = determineValidTagsToRemove(dishId, tagIds, excludeIngredients);
 
         // if nothing is validated - we return
         if (validatedRemovals.isEmpty()) {
@@ -616,22 +644,29 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
-        List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
-        if (remainingCounts == null || remainingCounts.isEmpty()) {
-            return tagIds;
+    private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds, boolean excludeIngredients) {
+        List<TagType> typesToExclude = new ArrayList<>();
+        if (excludeIngredients) {
+            typesToExclude.add(TagType.Ingredient);
         }
-        int remainingCount = remainingCounts.get(0).getCountResult();
-        if (remainingCount >= 1) {
-            // last dish type tag not removed in this set
-            return tagIds;
+        boolean excludeDishType = false;
+        List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
+
+        int remainingCount = !remainingCounts.isEmpty()  ? remainingCounts.get(0).getCountResult() : 0;
+        if (remainingCount < 1) {
+            typesToExclude.add(TagType.DishType);
         }
 
+
+
+        if (typesToExclude.isEmpty()) {
+            return tagIds;
+        }
         // deleting this set would result in a dish without any dish tag. We'll remove
         // all dish type tags, so that the algorithm won't "decide" which tag stays
         List<TagEntity> tagsToBeDeleted = tagRepository.findAllById(tagIds);
         return tagsToBeDeleted.stream()
-                .filter(t -> !t.getTagType().equals(TagType.DishType))
+                .filter(t -> !typesToExclude.contains(t.getTagType()))
                 .map(TagEntity::getId)
                 .collect(Collectors.toSet());
     }
@@ -887,7 +922,7 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private void addTagToDish(DishEntity dish, TagEntity tag) {
+    private void addTagToDish(DishEntity dish, TagEntity tag, boolean excludeIngredients) {
         if (dish == null || tag == null) {
             return;
         }
@@ -898,6 +933,7 @@ public class TagServiceImpl implements TagService {
         TagEntity existingTag = dishItems.stream()
                 .map(DishItemEntity::getTag)
                 .filter(t -> t.getId().equals(tag.getId()))
+                .filter(t -> !excludeIngredients || !t.getTagType().equals(TagType.Ingredient))
                 .findFirst()
                 .orElse(null);
 
