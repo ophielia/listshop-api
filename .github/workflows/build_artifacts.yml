@@ -18,7 +18,7 @@ jobs:
     steps:
 
       - name: Checkout Project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: master
 
@@ -56,7 +56,7 @@ jobs:
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${{inputs.buildVersion}}
 
       - name: Helm Repository Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ophielia/listshop-helm-repo
           token: ${{ secrets.BOT_TOKEN }}
