@@ -11,7 +11,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>conversion-data</artifactId>
-    <version>1.21.0</version>
+    <version>1.21.0-RC3</version>
     <packaging>jar</packaging>
 
     <name>conversion-data</name>
@@ -20,7 +20,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-conversion</artifactId>
-        <version>1.21.0</version>
+        <version>1.21.0-RC3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>conversion-common</artifactId>
-            <version>1.21.0</version>
+            <version>1.21.0-RC3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
