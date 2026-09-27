@@ -7,7 +7,7 @@
 package com.meg.listshop.lmt.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -431,7 +431,7 @@ class TagRestControllerTest {
 
 
     private String json(Object o) throws IOException {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
         return objectMapper.writeValueAsString(o);
     }
