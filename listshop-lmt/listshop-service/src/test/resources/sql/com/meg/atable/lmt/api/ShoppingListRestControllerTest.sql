@@ -32,6 +32,8 @@ insert into list (created_on, list_layout_id, list_types, user_id, list_id, name
 values (now(), 1, 'General', 20, 509990, 'added to', false),
 -- starter list - id 509991
        (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true),
+-- dedicated list for count test - id 509996
+       (now(), 1, 'General', 20, 509996, 'retrieve list count test', false),
 -- user 504 doesn't have a starter list
        (now() - interval '3 days', 11, 'General', 504, 509999, 'added from', false),
 -- user 504 doesn't have a starter list
@@ -84,6 +86,14 @@ VALUES (509990, 501, 509990, now(),now(), null,  1, null, null),
        (509990, 500, 509993, now(),now(), null,  1, null, null),
        (509990, 504, 509994, now(),now(), null,  1, null, '509991'),
        (509990, 504, 509995, now(),now(), null,  1, null, '509991');
+INSERT INTO list_item(list_id, tag_id, item_id, last_changed,added_on, crossed_off, removed_on, used_count, dish_sources,
+                      list_sources)
+VALUES (509996, 501, 5099960, now(),now(), null, null,  1, null, null),
+       (509996, 502, 5099961, now(),now(), now(), now(), 1, null, '509991'),
+       (509996, 503, 5099962, now(),now(), now(), null, 1, null, null),
+       (509996, 500, 5099963, now(),now(), null, now(), 1, null, null),
+       (509996, 504, 5099964, now(),now(), null, null, 1, null, '509991'),
+       (509996, 504, 5099965, now(),now(), null, null, 1, null, '509991');
 INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id)
 VALUES  (5099910,509990, 1, 7777,null),
         (5099911,509991, 1, 6666,null),
@@ -91,6 +101,13 @@ VALUES  (5099910,509990, 1, 7777,null),
         (5099913,509993, 1, null,50999010),
         (5099914,509994, 1, null,509990100),
         (5099915,509995, 1, null,509990101);
+INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id)
+VALUES  (50999610,5099960, 1, 7777,null),
+        (50999611,5099961, 1, 6666,null),
+        (50999612,5099962, 1, null,5099901),
+        (50999613,5099963, 1, null,50999010),
+        (50999614,5099964, 1, null,509990100),
+        (50999615,5099965, 1, null,509990101);
 
 
 -- list items - list 509991 - starter list
@@ -532,6 +549,13 @@ where user_id = 20
   and lc.name = 'Special';
 
 
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+
 -- other user layout list - uses standard
 
 insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
@@ -557,12 +581,6 @@ values (90909090, '2022-04-16 03:32:39.320000 +00:00', null, null,  90909090, nu
         now(),
         now())
 ;
-/*
- * The List Shop
- *
- * Copyright (c) 2026.
- */
-
 --details
 insert into list_item_details
 (item_detail_id, item_id, linked_dish_id, used_count)

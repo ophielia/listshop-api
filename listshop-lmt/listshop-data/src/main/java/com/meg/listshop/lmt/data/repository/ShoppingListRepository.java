@@ -80,7 +80,7 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
             select l.list_id,count(distinct t.item_id)
             from list l
                      left outer join list_item t on t.list_id = l.list_id
-            where l.user_id = 20
+            where l.user_id = ?1
               and t.crossed_off is not null and t.removed_on is null
             group by 1
             """, nativeQuery = true)

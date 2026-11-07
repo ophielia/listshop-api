@@ -1540,8 +1540,8 @@ class ShoppingListRestControllerTest {
                     .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
-                    .body("shopping_lists.find { it.list_id == '509990' }.item_count", Matchers.equalTo(5))
-                    .body("shopping_lists.find { it.list_id == '509990' }.crossed_off_count", Matchers.equalTo(1));
+                    .body("list_of_lists.find { it.list_id == '509996' }.item_count", Matchers.equalTo(4))
+                    .body("list_of_lists.find { it.list_id == '509996' }.crossed_off_count", Matchers.equalTo(1));
         }
 
 
