@@ -139,6 +139,7 @@ public class V2ModelMapper {
                 .withCreatedOn(dto.getCreatedOn())
                 .withUpdated(dto.getLastUpdate())
                 .withItemCount(dto.getItemCount())
+                .withCrossedOffCount(dto.getCrossedOffCount())
                 .withUserId(String.valueOf(dto.getUserId()))
                 .withIsStarterList(toBoolean(dto.isStarterList()));
     }

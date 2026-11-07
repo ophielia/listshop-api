@@ -33,7 +33,9 @@ public interface ShoppingListService {
 
     String FREQUENT = "frequent";
 
-    List<ShoppingListDTO> getListsByUserId(Long userId);
+    default List<ShoppingListDTO> getListsByUserId(Long userId) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException;
 

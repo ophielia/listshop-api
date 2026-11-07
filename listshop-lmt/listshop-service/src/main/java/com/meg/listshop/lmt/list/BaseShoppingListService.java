@@ -317,9 +317,7 @@ public abstract class BaseShoppingListService  {
     }
 
 
-    public List<ShoppingListDTO> getListsByUserId(Long userId) {
-        return shoppingListRepository.findByUserId(userId);
-    }
+
 
     public void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException {
         ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);

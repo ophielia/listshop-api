@@ -22,6 +22,7 @@ public class ShoppingListDTO {
     private final boolean isStarterList;
     private Long layoutId;
     private int itemCount;
+    private int crossedOffCount;
     private List<CategoryDTO> categories;
     private List<SourceDTO> sources;
     private Map<Long, String> unitMapping;
@@ -148,6 +149,14 @@ public class ShoppingListDTO {
         this.layoutId = layoutId;
     }
 
+    public int getCrossedOffCount() {
+        return crossedOffCount;
+    }
+
+    public void setCrossedOffCount(int crossedOffCount) {
+        this.crossedOffCount = crossedOffCount;
+    }
+
     @Override
     public String toString() {
         return "ShoppingListDTO{" +
@@ -158,6 +167,7 @@ public class ShoppingListDTO {
                 ", userId=" + userId +
                 ", isStarterList=" + isStarterList +
                 ", itemCount=" + itemCount +
+                ", crossedOffCount=" + crossedOffCount +
                 '}';
     }
 

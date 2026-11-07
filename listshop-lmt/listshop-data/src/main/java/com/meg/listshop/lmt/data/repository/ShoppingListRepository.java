@@ -54,7 +54,7 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
                     from list l
                     left outer join list_item t on t.list_id = l.list_id
                     where l.user_id = ?1
-                    and t.crossed_off is null and t.removed_on is null
+                    and t.removed_on is null
                     group by 1,2,3,4,5,6,7
                     order by l.last_update desc
             """, nativeQuery = true)
@@ -75,4 +75,14 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     @Modifying
     @Query("update ShoppingListEntity t set t.isStarterList = false where t.userId = ?1")
     void clearStarterListForUser(Long userId);
+
+    @Query(value = """
+            select l.list_id,count(distinct t.item_id)
+            from list l
+                     left outer join list_item t on t.list_id = l.list_id
+            where l.user_id = 20
+              and t.crossed_off is not null and t.removed_on is null
+            group by 1
+            """, nativeQuery = true)
+    List<Object[]> getCrossedOffCounts(Long userId);
 }

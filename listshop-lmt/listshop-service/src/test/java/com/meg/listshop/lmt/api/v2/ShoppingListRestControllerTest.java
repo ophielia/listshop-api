@@ -106,135 +106,6 @@ class ShoppingListRestControllerTest {
     }
 
 
-    @Test
-    void testRetrieveLists() {
-        String response = given()
-                .header(TestUtils.authToken(jwtToken))
-                .when()
-                .get("/v2/shoppinglist")
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .extract().asString();
-
-        Assertions.assertNotNull(response);
-    }
-
-    @Test
-    void testRetrieveMostRecentList() throws Exception {
-        Long testId = 509990L;
-
-        // updating list, so that it _is_ the most recent
-        ShoppingListPut shoppingList = new ShoppingListPut(String.valueOf(testId))
-                .name("updated list most recent")
-                .isStarterList(false);
-        String payload = json(shoppingList);
-
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .contentType(ContentType.JSON)
-                .body(payload)
-                .when()
-                .put("/v2/shoppinglist/" + testId)
-                .then()
-                .statusCode(200);
-
-        // now, testing the most recent call
-        ShoppingList list = given()
-                .header(TestUtils.authToken(meJwtToken))
-                .when()
-                .get("/v2/shoppinglist/mostrecent")
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .body("list_id", Matchers.isA(String.class))
-                .extract()
-                .as(ShoppingList.class);
-
-        Assertions.assertNotNull(list);
-        // assert all items have "last_changed" filled in
-        List<Date> itemsWithoutLastChanged = list.getCategories().stream()
-                .flatMap(category -> category.getItems().stream())
-                .map(ShoppingListItem::getLastChanged)
-                .filter(Objects::isNull)
-                .toList();
-        Assertions.assertTrue(itemsWithoutLastChanged.isEmpty(), "all items should have last_changed");
-    }
-
-    @Test
-    void testRetrieveStarterList() {
-        Long testId = 509991L;
-
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .when()
-                .get("/v2/shoppinglist/starter")
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .body("list_id", Matchers.isA(String.class))
-                .body("list_id", Matchers.equalTo(String.valueOf(testId)));
-    }
-
-    @Test
-    void testRetrieveStarterListNotFound() {
-        given()
-                .header(TestUtils.authToken(noStarterJwtToken))
-                .when()
-                .get("/v2/shoppinglist/starter")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    void testRetrieveListById() {
-        Long testId = 509992L;
-
-        String json = given()
-                .header(TestUtils.authToken(meJwtToken))
-                .when()
-                .get("/v2/shoppinglist/" + testId)
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .body("list_id", Matchers.isA(String.class))
-                .body("list_id", Matchers.equalTo(String.valueOf(testId)))
-                .body("categories", Matchers.hasSize(2))
-                .body("categories.name", Matchers.hasItems("Produce"))
-                .body("categories[0].items", Matchers.hasSize(5))
-                .body("categories[0].items[0].tag.tag_id", Matchers.equalTo("500"))
-                .body("categories[0].items[0].tag.name", Matchers.equalTo("tag1"))
-                .body("categories[0].items[0].amount.quantity", Matchers.equalTo(0.5F))
-                .body("categories[0].items[0].amount.rounded_quantity", Matchers.equalTo(0.5F))
-                .body("categories[0].items[0].amount.quantity_display", Matchers.equalTo("1/2"))
-                .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
-                .body("categories[0].items[0].amount.unit_id", Matchers.equalTo("1008"))
-                .body("categories[0].items[0].amount.unit_display", Matchers.equalTo("lb"))
-                .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
-                .body("categories[0].items[0].details", Matchers.hasSize(1))
-                .body("categories[0].items[0].details[0]", Matchers.hasKey("amount"))
-                .body("categories[0].items[0].details[0].dish_id", Matchers.equalTo("50999010"))
-
-
-                .body("legend", Matchers.hasSize(6))
-                .body("legend.source_type",
-                        Matchers.hasItems("DISH", "LIST"))
-                .extract().asString();
-        Assertions.assertNotNull(json);
-
-    }
-
-    @Test
-    void testRetrieveListById_NotFound() {
-        Long dummyTestId = 12345678901L;
-
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .when()
-                .get("/v2/shoppinglist/" + dummyTestId)
-                .then()
-                .statusCode(404);
-    }
 
     @Test
     void testCustomLayout() throws Exception {
@@ -1644,6 +1515,154 @@ class ShoppingListRestControllerTest {
         }
     }
 
+    @Nested
+    class RetrieveListTests {
+        @Test
+        void testRetrieveLists() {
+            String response = given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .when()
+                    .get("/v2/shoppinglist")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract().asString();
+
+            Assertions.assertNotNull(response);
+        }
+
+        @Test
+        void testRetrieveListsCount() {
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .get("/v2/shoppinglist")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("shopping_lists.find { it.list_id == '509990' }.item_count", Matchers.equalTo(5))
+                    .body("shopping_lists.find { it.list_id == '509990' }.crossed_off_count", Matchers.equalTo(1));
+        }
+
+
+
+        @Test
+        void testRetrieveMostRecentList() throws Exception {
+            Long testId = 509990L;
+
+            // updating list, so that it _is_ the most recent
+            ShoppingListPut shoppingList = new ShoppingListPut(String.valueOf(testId))
+                    .name("updated list most recent")
+                    .isStarterList(false);
+            String payload = json(shoppingList);
+
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .put("/v2/shoppinglist/" + testId)
+                    .then()
+                    .statusCode(200);
+
+            // now, testing the most recent call
+            ShoppingList list = given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .get("/v2/shoppinglist/mostrecent")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("list_id", Matchers.isA(String.class))
+                    .extract()
+                    .as(ShoppingList.class);
+
+            Assertions.assertNotNull(list);
+            // assert all items have "last_changed" filled in
+            List<Date> itemsWithoutLastChanged = list.getCategories().stream()
+                    .flatMap(category -> category.getItems().stream())
+                    .map(ShoppingListItem::getLastChanged)
+                    .filter(Objects::isNull)
+                    .toList();
+            Assertions.assertTrue(itemsWithoutLastChanged.isEmpty(), "all items should have last_changed");
+        }
+
+        @Test
+        void testRetrieveStarterList() {
+            Long testId = 509991L;
+
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .get("/v2/shoppinglist/starter")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("list_id", Matchers.isA(String.class))
+                    .body("list_id", Matchers.equalTo(String.valueOf(testId)));
+        }
+
+        @Test
+        void testRetrieveStarterListNotFound() {
+            given()
+                    .header(TestUtils.authToken(noStarterJwtToken))
+                    .when()
+                    .get("/v2/shoppinglist/starter")
+                    .then()
+                    .statusCode(404);
+        }
+
+        @Test
+        void testRetrieveListById() {
+            Long testId = 509992L;
+
+            String json = given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .get("/v2/shoppinglist/" + testId)
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("list_id", Matchers.isA(String.class))
+                    .body("list_id", Matchers.equalTo(String.valueOf(testId)))
+                    .body("categories", Matchers.hasSize(2))
+                    .body("categories.name", Matchers.hasItems("Produce"))
+                    .body("categories[0].items", Matchers.hasSize(5))
+                    .body("categories[0].items[0].tag.tag_id", Matchers.equalTo("500"))
+                    .body("categories[0].items[0].tag.name", Matchers.equalTo("tag1"))
+                    .body("categories[0].items[0].amount.quantity", Matchers.equalTo(0.5F))
+                    .body("categories[0].items[0].amount.rounded_quantity", Matchers.equalTo(0.5F))
+                    .body("categories[0].items[0].amount.quantity_display", Matchers.equalTo("1/2"))
+                    .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
+                    .body("categories[0].items[0].amount.unit_id", Matchers.equalTo("1008"))
+                    .body("categories[0].items[0].amount.unit_display", Matchers.equalTo("lb"))
+                    .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
+                    .body("categories[0].items[0].details", Matchers.hasSize(1))
+                    .body("categories[0].items[0].details[0]", Matchers.hasKey("amount"))
+                    .body("categories[0].items[0].details[0].dish_id", Matchers.equalTo("50999010"))
+
+
+                    .body("legend", Matchers.hasSize(6))
+                    .body("legend.source_type",
+                            Matchers.hasItems("DISH", "LIST"))
+                    .extract().asString();
+            Assertions.assertNotNull(json);
+
+        }
+
+        @Test
+        void testRetrieveListById_NotFound() {
+            Long dummyTestId = 12345678901L;
+
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .get("/v2/shoppinglist/" + dummyTestId)
+                    .then()
+                    .statusCode(404);
+        }
+
+    }
 
     @Nested
     class DeleteListTests {

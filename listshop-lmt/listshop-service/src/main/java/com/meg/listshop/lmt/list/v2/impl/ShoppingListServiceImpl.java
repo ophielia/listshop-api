@@ -23,7 +23,6 @@ import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
-import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.BaseShoppingListService;
@@ -56,7 +55,6 @@ import java.util.stream.Collectors;
 public class ShoppingListServiceImpl extends BaseShoppingListService implements ShoppingListService {
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListServiceImpl.class);
     private final LayoutService listLayoutService;
-    private final ListItemDetailRepository itemDetailRepository;
 
     @Autowired
     public ShoppingListServiceImpl(TagService tagService,
@@ -65,14 +63,23 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
                                    @Qualifier("V2LayoutService") LayoutService listLayoutService,
                                    MealPlanService mealPlanService,
                                    ItemRepository itemRepository,
-                                   ListItemDetailRepository itemDetailRepository,
                                    ItemChangeRepository itemChangeRepository,
                                    ListTagStatisticService listTagStatisticService,
                                    ListItemStateMachine listItemStateMachine) {
         super(tagService, dishService, shoppingListRepository,
                 mealPlanService, itemRepository, itemChangeRepository, listTagStatisticService, listItemStateMachine);
         this.listLayoutService = listLayoutService;
-        this.itemDetailRepository = itemDetailRepository;
+    }
+
+    @Override
+    public List<ShoppingListDTO> getListsByUserId(Long userId) {
+        List<ShoppingListDTO> userLists = shoppingListRepository.findByUserId(userId);
+        Map<Long, Long> crossedOffCount = getCrossedOffCounts(userId);
+        for (ShoppingListDTO list : userLists) {
+            var count = crossedOffCount.getOrDefault(list.getListId(), 0l);
+            list.setCrossedOffCount(count.intValue());
+        }
+        return userLists;
     }
 
     @Override
@@ -200,6 +207,29 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
         return new MergeResult();
 
+    }
+
+
+    @Override
+    public void deleteList(Long userId, Long listId) throws ItemProcessingException, BadParameterException {
+        List<ShoppingListDTO> allLists = shoppingListRepository.findByUserId(userId);
+        if (allLists == null || allLists.isEmpty()) {
+            throw new ActionInvalidException(String.format("No lists found for user [%s]", userId));
+        }
+        if (allLists.size() < 2) {
+            throw new ActionInvalidException(String.format("Can't delete the last list for user [%s]", userId));
+        }
+        ShoppingListEntity shoppingList = getListForUserById(userId, listId);
+
+        if (shoppingList == null) {
+            throw new ObjectNotFoundException(String.format("Can't find list [%s] for userName [%s] to delete.", listId, userId));
+        }
+
+        // remove links to other lists
+        handleLinkedListItems(userId, listId);
+
+        // delete the list
+        shoppingListRepository.delete(shoppingList);
     }
 
     private boolean allListsEmpty(List<ItemMergeDTO> removedFromServer, List<ListItemEntity> removedListItems,
@@ -622,28 +652,6 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         return null;
     }
 
-    @Override
-    public void deleteList(Long userId, Long listId) throws ItemProcessingException, BadParameterException {
-        List<ShoppingListDTO> allLists = shoppingListRepository.findByUserId(userId);
-        if (allLists == null || allLists.isEmpty()) {
-            throw new ActionInvalidException(String.format("No lists found for user [%s]", userId));
-        }
-        if (allLists.size() < 2) {
-            throw new ActionInvalidException(String.format("Can't delete the last list for user [%s]", userId));
-        }
-        ShoppingListEntity shoppingList = getListForUserById(userId, listId);
-
-        if (shoppingList == null) {
-            throw new ObjectNotFoundException(String.format("Can't find list [%s] for userName [%s] to delete.", listId, userId));
-        }
-
-        // remove links to other lists
-        handleLinkedListItems(userId, listId);
-
-        // delete the list
-        shoppingListRepository.delete(shoppingList);
-    }
-
     private void handleLinkedListItems(Long userId, Long listId) throws ItemProcessingException {
         // get all items linked to the list
         List<Long> linkedItemsIds = itemRepository.findItemIdsForLinkedList(listId);
@@ -700,6 +708,14 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
                 .orElse(null);
     }
 
+    private Map<Long, Long> getCrossedOffCounts(Long userId) {
+        List<Object[]> crossedOffCounts = shoppingListRepository.getCrossedOffCounts(userId);
+        Map<Long, Long> crossedOffMap = new HashMap<>();
+        for (Object[] count : crossedOffCounts) {
+            crossedOffMap.put((Long) count[0], (Long) count[1]);
+        }
+        return crossedOffMap;
+    }
 
     protected Long getDefaultListLayoutId(Long userId) {
         ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);

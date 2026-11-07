@@ -24,6 +24,9 @@ public class NestedShoppingList {
     @JsonProperty("item_count")
     private Integer itemCount;
 
+    @JsonProperty("crossed_off_count")
+    private Integer crossedOffCount;
+
     @JsonProperty("user_id")
     private String userId;
 
@@ -61,6 +64,12 @@ public class NestedShoppingList {
 
     public NestedShoppingList withItemCount(Integer itemCount) {
         this.itemCount = itemCount;
+        return this;
+    }
+
+
+    public NestedShoppingList withCrossedOffCount(Integer crossedOffCount) {
+        this.crossedOffCount = crossedOffCount;
         return this;
     }
 
