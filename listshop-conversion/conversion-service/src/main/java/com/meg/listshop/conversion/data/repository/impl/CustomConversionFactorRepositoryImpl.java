@@ -167,11 +167,6 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         }
     }
 
-    private boolean isCacheable(FactorCriteria criteria) {
-        // currently is cacheable if nothing other than from and to are set
-        return criteria.getConversionId() == null;
-    }
-
     private List<Predicate> buildPredicatesFromCriteria(CriteriaBuilder cb,
                                                         Root<? extends ConversionFactor> root,
                                                         Join<? extends ConversionFactor, UnitEntity> fromUnit,
