@@ -95,7 +95,11 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
     @Override
     public List<ConversionFactor> findFactors(FactorCriteria criteria) {
-            return getCachedValue(criteria, false,this::doFindFactors);
+            List<ConversionFactor> factors = getCachedValue(criteria, false,this::doFindFactors);
+            LOG.debug("cache: [hits{}][misses{}][size{}]", cache.stats().hitCount(), cache.stats().missCount(), cache.estimatedSize());
+            LOG.debug("tagCache: [hits{}][misses{}][size{}]", tagCache.stats().hitCount(), tagCache.stats().missCount(), tagCache.estimatedSize());
+            return factors;
+
     }
 
     private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
