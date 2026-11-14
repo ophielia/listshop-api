@@ -369,6 +369,12 @@
                 <artifactId>postgresql</artifactId>
                 <version>42.7.13</version>
             </dependency>
+            <!-- Micrometer Prometheus registry  -->
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-registry-prometheus</artifactId>
+                <version>1.15.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

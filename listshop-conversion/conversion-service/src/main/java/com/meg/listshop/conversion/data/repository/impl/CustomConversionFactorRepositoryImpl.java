@@ -18,13 +18,17 @@ import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.repository.CustomConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteria;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -33,28 +37,52 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
+@Component
 public class CustomConversionFactorRepositoryImpl implements CustomConversionFactorRepository {
     private static final Logger LOG = LoggerFactory.getLogger(CustomConversionFactorRepositoryImpl.class);
+    private final MeterRegistry meterRegistry;
 
     @PersistenceContext
     EntityManager entityManager;
 
 
     private Cache<CacheKey, List<ConversionFactor>> cache;
+    private Cache<CacheKey, List<ConversionFactor>> tagCache;
     private long maximumCacheSize;
+    private long maximumTagCacheSize;
 
+    @Autowired
     public CustomConversionFactorRepositoryImpl(
-            @Value("${conversion.factor.cache.size:300}") long maximumCacheSize) {
+            MeterRegistry meterRegistry,
+            @Value("${conversion.factor.cache.size:300}") long maximumCacheSize,
+            @Value("${conversion.factor.tag.cache.size:300}") long maximumTagCacheSize) {
         this.maximumCacheSize = maximumCacheSize;
+        this.maximumTagCacheSize = maximumTagCacheSize;
+        this.meterRegistry = meterRegistry;
+        initializeCache();
     }
 
-    @PostConstruct
     private void initializeCache() {
         cache = Caffeine.newBuilder()
                 .maximumSize(maximumCacheSize)
                 .recordStats()
                 .build();
+        tagCache = Caffeine.newBuilder()
+                .maximumSize(maximumTagCacheSize)
+                .recordStats()
+                .build();
+
+        CaffeineCacheMetrics.monitor(
+                meterRegistry,
+                cache,
+                "standardConversionFactors"
+        );
+
+        CaffeineCacheMetrics.monitor(
+                meterRegistry,
+                tagCache,
+                "tagConversionFactors"
+        );
     }
 
     @Override
@@ -67,23 +95,15 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
     @Override
     public List<ConversionFactor> findFactors(FactorCriteria criteria) {
-        if (isCacheable(criteria)) {
             return getCachedValue(criteria, false,this::doFindFactors);
-        }
-
-        return doFindFactors(criteria);
     }
 
     private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
-        if (isCacheable(criteria)) {
             return getCachedValue(criteria,true, this::doFindInvertedFactors);
-        }
-
-        return doFindInvertedFactors(criteria);
     }
 
     private List<ConversionFactor> doFindFactors(FactorCriteria criteria) {
-        LOG.info("Finding conversion factors with criteria: {}", criteria);
+        LOG.debug("Finding conversion factors with criteria: {}", criteria);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
         Root<? extends ConversionFactor> root = getRootForCriteria(query, criteria);
@@ -136,7 +156,15 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
     private List<ConversionFactor> getCachedValue(FactorCriteria criteria, boolean inverted, Function<FactorCriteria, List<ConversionFactor>> lookupMethod) {
         CacheKey key = CacheKey.fromCriteria(criteria, inverted);
-        return cache.get(key, k -> lookupMethod.apply(criteria));
+        return getCacheForCriteria(criteria).get(key, k -> lookupMethod.apply(criteria));
+    }
+
+    private Cache<CacheKey, List<ConversionFactor>> getCacheForCriteria(FactorCriteria criteria) {
+        if (criteria.getConversionId() == null) {
+            return cache;
+        } else {
+            return tagCache;
+        }
     }
 
     private boolean isCacheable(FactorCriteria criteria) {
