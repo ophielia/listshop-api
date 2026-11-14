@@ -45,7 +45,7 @@ jobs:
 
 
       - name: Build - helmfiles and docker image
-        run: mvn clean install -DskipTests -Phelm
+        run: mvn clean install -DskipTests -Phelm,docker
 
       - name: Helm Package - command
         run: echo  "helm package listshop-lmt/listshop-service/target/helm/listshop-api -d ."
