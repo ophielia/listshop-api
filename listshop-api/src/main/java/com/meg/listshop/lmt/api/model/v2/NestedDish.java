@@ -9,6 +9,8 @@ package com.meg.listshop.lmt.api.model.v2;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NestedDish {
 
@@ -17,12 +19,16 @@ public class NestedDish {
 
     private String name;
 
+    @JsonProperty("last_used")
+    private Date lastUsed;
+
     NestedDish() {
     }
 
-    public NestedDish(Long dishId, String name) {
+    public NestedDish(Long dishId, String name, Date lastUsed) {
         this.dishId = String.valueOf(dishId);
         this.name = name;
+        this.lastUsed = lastUsed;
     }
 
     public String getDishId() {

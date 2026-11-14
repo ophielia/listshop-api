@@ -312,7 +312,7 @@ public class V2ModelMapper {
     }
 
     public static NestedDish toV2NestedDishModel(DishEntity dishEntity) {
-        return new NestedDish(dishEntity.getId(), dishEntity.getDishName());
+        return new NestedDish(dishEntity.getId(), dishEntity.getDishName(), dishEntity.getLastAdded());
     }
 
     private static List<Ingredient> toIngredientsModel(List<DishItemDTO> ingredientDTOs) {

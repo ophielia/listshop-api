@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Cache for conversion factors
 - calculate and expose crossed_off_count in NestedShoppingList
+- expose last_used in list of dishes
 
 ## [1.21.0]  - September 2026
 ### Added
