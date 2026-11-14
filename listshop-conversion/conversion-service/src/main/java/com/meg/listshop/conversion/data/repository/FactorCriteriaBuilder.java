@@ -83,20 +83,12 @@ public class FactorCriteriaBuilder {
         return this;
     }
 
-    public FactorCriteriaBuilder withBridgeToUnits(boolean bridgeToUnits) {
-        this.criteria.setBridgeToUnits(bridgeToUnits);
-        return this;
-    }
 
     public FactorCriteriaBuilder withTargetDefaultUnit(boolean b) {
         this.criteria.setToDefaultUnit(b);
         return this;
     }
 
-    public FactorCriteriaBuilder withTargetVolumeOnly(boolean volumeOnly) {
-        this.criteria.setTargetVolumeOnly(volumeOnly);
-        return this;
-    }
 
     public FactorCriteriaBuilder withTargetDefaultSize(boolean targetDefaultSize) {
         this.criteria.setToDefaultSize(targetDefaultSize);
@@ -113,10 +105,6 @@ public class FactorCriteriaBuilder {
         return this;
     }
 
-    public FactorCriteriaBuilder withToModifier(String toModifier) {
-        this.criteria.setToModifier(toModifier);
-        return this;
-    }
 
 
     public FactorCriteriaBuilder withToSize(String toSize) {

@@ -7,6 +7,9 @@
 package com.meg.listshop.conversion.data.repository.impl;
 
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.entity.ConversionBridgeFactorEntity;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
@@ -15,15 +18,20 @@ import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.repository.CustomConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteria;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class CustomConversionFactorRepositoryImpl implements CustomConversionFactorRepository {
@@ -31,6 +39,23 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
     @PersistenceContext
     EntityManager entityManager;
+
+
+    private Cache<CacheKey, List<ConversionFactor>> cache;
+    private long maximumCacheSize;
+
+    public CustomConversionFactorRepositoryImpl(
+            @Value("${conversion.factor.cache.size:300}") long maximumCacheSize) {
+        this.maximumCacheSize = maximumCacheSize;
+    }
+
+    @PostConstruct
+    private void initializeCache() {
+        cache = Caffeine.newBuilder()
+                .maximumSize(maximumCacheSize)
+                .recordStats()
+                .build();
+    }
 
     @Override
     public List<ConversionFactor> findAllFactors(FactorCriteria criteria) {
@@ -42,6 +67,22 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
     @Override
     public List<ConversionFactor> findFactors(FactorCriteria criteria) {
+        if (isCacheable(criteria)) {
+            return getCachedValue(criteria, false,this::doFindFactors);
+        }
+
+        return doFindFactors(criteria);
+    }
+
+    private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
+        if (isCacheable(criteria)) {
+            return getCachedValue(criteria,true, this::doFindInvertedFactors);
+        }
+
+        return doFindInvertedFactors(criteria);
+    }
+
+    private List<ConversionFactor> doFindFactors(FactorCriteria criteria) {
         LOG.info("Finding conversion factors with criteria: {}", criteria);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
@@ -58,7 +99,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 root.get("unitDefault")
         ));
 
-        List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit,criteria);
+        List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit, criteria);
 
         query.where(predicates.toArray(new Predicate[0]));
 
@@ -67,7 +108,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 .toList();
     }
 
-    private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
+    private List<ConversionFactor> doFindInvertedFactors(FactorCriteria criteria) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
         Root<? extends ConversionFactor> root = getRootForCriteria(query, criteria);
@@ -84,7 +125,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 root.get("unitDefault")
         ));
 
-        List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit,criteria);
+        List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit, criteria);
         predicates.add(cb.not(cb.isTrue(fromUnit.get("oneWayConversion"))));
         query.where(predicates.toArray(new Predicate[0]));
 
@@ -93,11 +134,21 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 .toList();
     }
 
+    private List<ConversionFactor> getCachedValue(FactorCriteria criteria, boolean inverted, Function<FactorCriteria, List<ConversionFactor>> lookupMethod) {
+        CacheKey key = CacheKey.fromCriteria(criteria, inverted);
+        return cache.get(key, k -> lookupMethod.apply(criteria));
+    }
+
+    private boolean isCacheable(FactorCriteria criteria) {
+        // currently is cacheable if nothing other than from and to are set
+        return criteria.getConversionId() == null;
+    }
+
     private List<Predicate> buildPredicatesFromCriteria(CriteriaBuilder cb,
                                                         Root<? extends ConversionFactor> root,
                                                         Join<? extends ConversionFactor, UnitEntity> fromUnit,
                                                         Join<? extends ConversionFactor, UnitEntity> toUnit,
-                                                                FactorCriteria criteria) {
+                                                        FactorCriteria criteria) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (criteria.getFromUnit() != null) {
@@ -111,7 +162,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
             predicates.add(toUnit.get("id").in(criteria.getToUnitIds()));
         }
         if (criteria.getToContext() != null) {
-            if (criteria.getToContext() == ConversionTargetType.List ) {
+            if (criteria.getToContext() == ConversionTargetType.List) {
                 predicates.add(cb.isTrue(toUnit.<Boolean>get("isListUnit")));
             } else {
                 predicates.add(cb.isTrue(toUnit.<Boolean>get("isDishUnit")));
@@ -132,7 +183,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
             predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
         }
         if (criteria.getFromContext() != null) {
-            if (criteria.getFromContext() == ConversionTargetType.List ) {
+            if (criteria.getFromContext() == ConversionTargetType.List) {
                 predicates.add(cb.isTrue(fromUnit.<Boolean>get("isListUnit")));
             } else {
                 predicates.add(cb.isTrue(fromUnit.<Boolean>get("isDishUnit")));
@@ -166,7 +217,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getSizeOrDefault() != null) {
             predicates.add(cb.or(
                     cb.isTrue(root.<Boolean>get("unitDefault")),
-                     cb.equal(root.<Boolean>get("unitSize"),criteria.getSizeOrDefault())
+                    cb.equal(root.<Boolean>get("unitSize"), criteria.getSizeOrDefault())
             ));
         }
         if (criteria.getMarkerOrNull() != null) {
@@ -197,6 +248,76 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
             return query.from(ConversionBridgeFactorEntity.class);
         } else {
             return query.from(ConversionFactorEntity.class);
+        }
+    }
+
+    private record CacheKey(
+            Long fromUnitId,
+            Long toUnitId,
+            String fromSize,
+            String toSize,
+            String toUnitIds,
+            boolean toDefaultUnit,
+            String fromModifier,
+            UnitType fromDomain,
+            UnitType toDomain,
+            boolean fromDefaultSize,
+            boolean toDefaultSize,
+            UnitType fromUnitType,
+            String fromUnitTypes,
+            ConversionTargetType fromContext,
+            ConversionTargetType toContext,
+            UnitType fromExcludeDomain,
+            boolean fromNotOneWay,
+            boolean toNotOneWay,
+            Long conversionId,
+            boolean bridgeThroughMetric,
+            boolean exactModifierMatch,
+            String markerOrNull,
+            String sizeOrDefault,
+            boolean inverted
+    ) {
+
+        public static CacheKey fromCriteria(FactorCriteria criteria, boolean inverted) {
+            String toUnitIds = listToOrderedString((Collection) criteria.getToUnitIds());
+            String fromUnitTypes = listToOrderedString((Collection) criteria.getFromUnitTypes());
+            Long unitId = criteria.getFromUnit() != null ? criteria.getFromUnit().getId() : null;
+            return new CacheKey(
+                    unitId,
+                    criteria.getToUnitId(),
+                    criteria.getFromSize(),
+                    criteria.getToSize(),
+                    toUnitIds,
+                    criteria.isToDefaultUnit(),
+                    criteria.getFromModifier(),
+                    criteria.getFromDomain(),
+                    criteria.getToDomain(),
+                    criteria.isFromDefaultSize(),
+                    criteria.isToDefaultSize(),
+                    criteria.getFromUnitType(),
+                    fromUnitTypes,
+                    criteria.getFromContext(),
+                    criteria.getToContext(),
+                    criteria.getFromExcludeDomain(),
+                    criteria.isFromNotOneWay(),
+                    criteria.isToNotOneWay(),
+                    criteria.getConversionId(),
+                    criteria.bridgeThroughMetric(),
+                    criteria.isExactModifierMatch(),
+                    criteria.getMarkerOrNull(),
+                    criteria.getSizeOrDefault(),
+                    inverted);
+
+        }
+
+        private static String listToOrderedString(Collection<Object> collection) {
+            if (collection == null) {
+                return "";
+            }
+            return collection.stream()
+                    .map(String::valueOf)
+                    .sorted()
+                    .collect(Collectors.joining(","));
         }
     }
 }

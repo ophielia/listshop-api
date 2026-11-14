@@ -16,58 +16,30 @@ import java.util.Set;
 
 public class FactorCriteria {
     private UnitEntity fromUnit;
-    private String fromSize;
-    private String fromModifier;
-    private UnitType toDomain;
-    private UnitType fromDomain;
-    private ConversionTargetType toContext;
     private Long toUnitId;
-    private Set<Long> toUnitIds;
+    private String fromSize;
     private String toSize;
-    private String toModifier;
-    private Long conversionId;
-    private boolean bridgeThroughMetric;
-    private boolean bridgeToUnits;
+    private Set<Long> toUnitIds;
     private boolean toDefaultUnit;
-    private boolean toDefaultSize;
+    private String fromModifier;
+    private UnitType fromDomain;
+    private UnitType toDomain;
     private boolean fromDefaultSize;
-    private boolean targetVolumeOnly;
-    private boolean exactModifierMatch;
+    private boolean toDefaultSize;
     private UnitType fromUnitType;
     private List<UnitType> fromUnitTypes;
     private ConversionTargetType fromContext;
-    private String markerOrNull;
-    private String sizeOrDefault;
+    private ConversionTargetType toContext;
     private UnitType fromExcludeDomain;
     private boolean fromNotOneWay;
     private boolean toNotOneWay;
+    private Long conversionId;
+    private boolean bridgeThroughMetric;
+    private boolean exactModifierMatch;
+    private String markerOrNull;
+    private String sizeOrDefault;
 
     public FactorCriteria() {
-    }
-
-    public static FactorCriteria from(FactorCriteria criteria) {
-        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
-        builder.withBridgeThroughMetric(criteria.bridgeThroughMetric())
-                .withBridgeToUnits(criteria.bridgeToUnits())
-                .withConversionId(criteria.getConversionId())
-                .withFromModifier(criteria.getFromModifier())
-                .withFromSize(criteria.getFromSize())
-                .withFromUnit(criteria.getFromUnit())
-                .withTargetDefaultSize(criteria.isToDefaultSize())
-                .withTargetDefaultUnit(criteria.isToDefaultUnit())
-                .withToModifier(criteria.getToModifier())
-                .withToSize(criteria.getToSize())
-                .withToUnit(criteria.getToUnitId())
-                .withFromExcludeDomain(criteria.getFromExcludeDomain())
-                .withFromDomain(criteria.getFromDomain());
-
-        if (criteria.isFromNotOneWay()) {
-            builder.withFromNotOneWay();
-        }
-        if (criteria.isToNotOneWay()) {
-            builder.withToNotOneWay();
-        }
-        return builder.build();
     }
 
     public UnitEntity getFromUnit() {
@@ -122,43 +94,32 @@ public class FactorCriteria {
         return bridgeThroughMetric;
     }
 
-    public boolean bridgeToUnits() {
-        return bridgeToUnits;
-    }
-
     public void setBridgeThroughMetric(boolean bridgeThroughMetric) {
         this.bridgeThroughMetric = bridgeThroughMetric;
     }
-
-    public void setBridgeToUnits(boolean bridgeToUnits) {
-        this.bridgeToUnits = bridgeToUnits;
-    }
-
-    public void setToDefaultUnit(boolean b) {
-        this.toDefaultUnit = b;
-    }
-    public void setToDefaultSize(boolean b) {
-        this.toDefaultSize = b;
-    }
-    public void setFromDefaultSize(boolean b) {
-        this.fromDefaultSize = b;
-    }
-
-
 
     public boolean isToDefaultUnit() {
         return toDefaultUnit;
     }
 
+    public void setToDefaultUnit(boolean b) {
+        this.toDefaultUnit = b;
+    }
+
     public boolean isToDefaultSize() {
         return toDefaultSize;
     }
+
+    public void setToDefaultSize(boolean b) {
+        this.toDefaultSize = b;
+    }
+
     public boolean isFromDefaultSize() {
         return fromDefaultSize;
     }
 
-    public void setTargetVolumeOnly(boolean volumeOnly) {
-        this.targetVolumeOnly = volumeOnly;
+    public void setFromDefaultSize(boolean b) {
+        this.fromDefaultSize = b;
     }
 
     public String getFromSize() {
@@ -185,20 +146,12 @@ public class FactorCriteria {
         this.toSize = toSize;
     }
 
-    public String getToModifier() {
-        return toModifier;
-    }
-
-    public void setToModifier(String toModifier) {
-        this.toModifier = toModifier;
+    public boolean isExactModifierMatch() {
+        return exactModifierMatch;
     }
 
     public void setExactModifierMatch(boolean exactModifierMatch) {
         this.exactModifierMatch = exactModifierMatch;
-    }
-
-    public boolean isExactModifierMatch() {
-        return exactModifierMatch;
     }
 
     public void setFromType(UnitType unitType) {
@@ -209,44 +162,44 @@ public class FactorCriteria {
         return fromUnitType;
     }
 
-    public void setFromUnitTypes(List<UnitType> fromUnitTypes) {
-        this.fromUnitTypes = fromUnitTypes;
-    }
-
     public List<UnitType> getFromUnitTypes() {
         return fromUnitTypes;
     }
 
-    public void setFromContext(ConversionTargetType context) {
-        this.fromContext =  context;
+    public void setFromUnitTypes(List<UnitType> fromUnitTypes) {
+        this.fromUnitTypes = fromUnitTypes;
     }
 
     public ConversionTargetType getFromContext() {
         return fromContext;
     }
 
-    public void setMarkerOrNull(String marker) {
-        this.markerOrNull = marker;
+    public void setFromContext(ConversionTargetType context) {
+        this.fromContext = context;
     }
 
     public String getMarkerOrNull() {
         return markerOrNull;
     }
 
-    public void setSizeOrDefault(String size) {
-        this.sizeOrDefault = size;
+    public void setMarkerOrNull(String marker) {
+        this.markerOrNull = marker;
     }
 
     public String getSizeOrDefault() {
         return sizeOrDefault;
     }
 
-    public void setFromExcludeDomain(UnitType domainType) {
-        this.fromExcludeDomain = domainType;
+    public void setSizeOrDefault(String size) {
+        this.sizeOrDefault = size;
     }
 
     public UnitType getFromExcludeDomain() {
         return fromExcludeDomain;
+    }
+
+    public void setFromExcludeDomain(UnitType domainType) {
+        this.fromExcludeDomain = domainType;
     }
 
     public Set<Long> getToUnitIds() {
@@ -274,4 +227,5 @@ public class FactorCriteria {
     public boolean isFromNotOneWay() {
         return fromNotOneWay;
     }
+
 }
