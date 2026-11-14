@@ -312,7 +312,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
         private static String listToOrderedString(Collection<Object> collection) {
             if (collection == null) {
-                return "";
+                return null;
             }
             return collection.stream()
                     .map(String::valueOf)
