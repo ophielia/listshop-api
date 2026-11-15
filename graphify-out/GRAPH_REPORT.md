@@ -1,786 +1,756 @@
-# Graph Report - listshop-api  (2026-09-10)
+# Graph Report - listshop-api  (2026-11-15)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 238 files · ~949,089 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7205 nodes · 24153 edges · 187 communities (134 shown, 48 thin omitted)
-- Extraction: 78% EXTRACTED · 22% INFERRED · 0% AMBIGUOUS · INFERRED: 5332 edges (avg confidence: 0.8)
+- 7899 nodes · 23258 edges · 250 communities (114 shown, 136 thin omitted)
+- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 3767 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
-## Graph Freshness
-- Built from commit: `dd8bf7b7`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
-
 ## Community Hubs (Navigation)
-- org.slf4j.Logger
-- com.fasterxml.jackson.annotation.JsonIgnore
-- ShoppingListEntity
-- UnitEntity
-- org.springframework.http.ResponseEntity
-- ListItemDetailEntity
-- org.springframework.test.context.ActiveProfiles
-- DishTagSearchResult
-- jakarta.servlet.http.HttpServletRequest
-- .toModel
-- .toModel
-- DishItemEntity
-- MealPlanEntity
-- CollectorContext
-- CollectedItem
-- UserEntity
-- org.junit.jupiter.api.Test
-- FactorCriteria
-- .authToken
-- Tag
-- .getUnit
-- TagEntity
-- ListItemEntity
-- RatingInfo
-- ConvertibleAmount
-- ProposalEntity
-- UserRestController
-- LegacyShoppingListService
-- FractionType
-- ListLayoutCategoryEntity
-- ListLayoutEntity
-- .getId
-- ProcessingContext
-- TargetEntity
-- DishEntity
-- Tag
-- ClientDeviceInfo
-- org.springframework.data.jpa.repository.Query
-- AdminTagFullInfo
-- UnitType
-- .toEntity
-- UserPropertyEntity
-- AdminTagRestControllerApi
-- ShoppingListServiceImpl
-- .getUserByUserEmail
-- ConversionFactor
-- SimpleListItemDTO
-- .getDishForUserById
-- AdminUser
-- MealPlan
-- com.fasterxml.jackson.annotation.JsonInclude
-- Category
-- ProposalSlotEntity
-- .testUpdateIngredientInDish_ConversionNewMarkers
-- TagSearchCriteria
-- NestedTag
-- SuggestionDTO
-- ProposalRequest
-- LayoutCategoryResource
-- TagType
-- LegacyShoppingListRestControllerTest
-- DomainType
-- .getId
-- TargetService
-- DishSearchCriteria
-- DishRestController
-- UserDeviceEntity
-- ItemMappingDTO
-- org.springframework.context.annotation.Bean
-- ShoppingListItem
-- DishItemDTO
-- AutoTagInstructionEntity
-- Instruction
-- jakarta.persistence.EntityManager
-- IngredientPut
-- ShoppingListItem
-- FoodConversionEntity
-- ProposalGeneratorServiceImplTest
-- LayoutCategoryDTO
-- TagServiceImpl
-- ProcessInformation
-- TagOperationPut
-- ListLayoutCategory
-- ConversionFactorEntity
-- org.springframework.stereotype.Component
-- FoodEntity
-- ListShopCategory
-- Dish
-- Suggestion
-- RestResponseExceptionHandler
-- ShoppingListProperties
-- AutoTagSubject
-- MailConfiguration
-- ShoppingList
-- LongTagIdPairDTO
-- FoodCategoryResource
-- TokenEntity
-- ListItemSource
-- SimpleFoodFactor
-- EmailParameters
-- ListLayoutCategory
-- JwtService
-- ConversionContext
-- MergeItem
-- FoodMappingDTO
-- .getUsername
-- FoodCategoryEntity
-- User
-- ConversionBridgeFactorEntity
-- CampaignEntity
-- .makeUSUnit
-- FoodCategoryMappingEntity
-- CustomStatisticRepository
-- TagReplaceServiceImpl
-- SecurityConfig.java
-- BasicAmount
-- DishRestControllerTest
-- MappingPost
-- MergeResult
-- Dish
-- Statistic
-- ListTagStatistic
-- PostSearchTags
-- TargetResource
-- FlatStringUtils
-- Amount
-- V2DishRestControllerTest
-- JwtServiceImpl
-- NestedDish
-- .getProposalOrders
-- freemarker.template.Configuration
-- ShoppingListCategory
-- ListTagStatisticServiceImpl
-- MailService
-- ProposalProcessor
-- ListOperationType
-- Ingredient
-- NestedShoppingList
-- CustomUserRepositoryImpl
-- TagRestControllerTest
-- MergeRequest
-- DishDTO
-- StatisticListPost
-- PutDish
-- Initializer
-- RoundingType
-- TagConverterProcessor
-- .setItems
-- .categorizeList
-- AdminUserDetailsEntity
-- .getUnitSubtype
-- ShoppingListPut
-- DomainConverterProcessor
-- CustomListLayoutRepositoryImpl.java
-- CustomUserDetails
-- ContentMap
-- RatingUpdateInfoResource
-- ItemSource
-- ShoppingListPut
-- com.meg.listshop:listshop-service
-- UserMetricsTask
-- DateUtils
-- JwtAuthenticationRequest
-- StandardUserTagConflictDTO
-- Application.java
-- CollectedItemStatus
-- Role
-- .createGroupSubquery
-- ListItemState
-- TagSwapout
-- SharedPropertyKeys
-- JwtAuthenticationResponse
-- Dummy
-- TargetProposalConfigurationImpl.java
-- ListLayoutException
-- copystaticfiles.sh
-- 2.baseline_command.sh
-- com.meg.listshop:common
-- com.meg.listshop:listshop-conversion
-- com.meg.listshop:listshop-lmt
-- com.meg.listshop:listshop-parent
-- listshop-api
+- Unit and Conversion Entities
+- Transactional Entities and Specifications
+- Exception Handling and Repositories
+- Meal Plan Proposal Logic
+- List Layout and Tags
+- Target Proposals and Slots
+- Unit Repositories and Rounding
+- API Models and Rest Controllers
+- Data Inflation and Flattening
+- Rounding Utilities and DTOs
+- Community 10
+- Community 11
+- Community 12
+- Community 13
+- Community 14
+- Community 15
+- Community 16
+- Community 17
+- Community 18
+- Community 19
+- Community 20
+- Community 21
+- Community 22
+- Community 23
+- Community 24
+- Community 25
+- Community 26
+- Community 27
+- Community 28
+- Community 29
+- Community 30
+- Community 31
+- Community 32
+- Community 33
+- Community 34
+- Community 35
+- Community 36
+- Community 37
+- Community 38
+- Community 39
+- Community 40
+- Community 41
+- Community 42
+- Community 43
+- Community 44
+- Community 45
+- Community 46
+- Community 47
+- Community 48
+- Community 49
+- Community 50
+- Community 51
+- Community 52
+- Community 53
+- Community 54
+- Community 55
+- Community 56
+- Community 57
+- Community 58
+- Community 59
+- Community 60
+- Community 61
+- Community 63
+- Community 64
+- Community 65
+- Community 66
+- Community 67
+- Community 68
+- Community 69
+- Community 70
+- Community 71
+- Community 72
+- Community 73
+- Community 74
+- Community 75
+- Community 76
+- Community 77
+- Community 78
+- Community 79
+- Community 80
+- Community 81
+- Community 82
+- Community 83
+- Community 84
+- Community 85
+- Community 86
+- Community 87
+- Community 88
+- Community 89
+- Community 90
+- Community 91
+- Community 92
+- Community 93
+- Community 94
+- Community 95
+- Community 96
+- Community 97
+- Community 98
+- Community 99
+- Community 100
+- Community 101
+- Community 102
+- Community 103
+- Community 104
+- Community 105
+- Community 106
+- Community 107
+- Community 108
+- Community 109
+- Community 110
+- Community 111
+- Community 112
+- Community 113
+- Community 114
+- Community 115
+- Community 116
+- Community 117
+- Community 118
+- Community 119
+- Community 120
+- Community 121
+- Community 122
+- Community 123
+- Community 124
+- Community 125
+- Community 126
+- Community 127
+- Community 128
+- Community 129
+- Community 130
+- Community 131
+- Community 132
+- Community 133
+- Community 134
+- Community 135
+- Community 136
+- Community 137
+- Community 138
+- Community 139
+- Community 140
+- Community 141
+- Community 142
+- Community 143
+- Community 144
+- Community 145
+- Community 146
+- Community 147
+- Community 148
+- Community 149
+- Community 150
+- Community 151
+- Community 153
+- Community 154
+- Community 155
+- Community 156
+- Community 157
+- Community 158
+- Community 159
+- Community 160
+- Community 161
+- Community 162
+- Community 163
+- Community 164
+- Community 165
+- Community 166
+- Community 167
+- Community 168
+- Community 169
+- Community 170
+- Community 171
+- Community 172
+- Community 173
+- Community 174
+- Community 175
+- Community 176
+- Community 177
+- Community 178
+- Community 179
+- Community 180
+- Community 182
+- Community 183
+- Community 184
+- Community 185
+- Community 188
+- Community 189
+- Community 190
+- Community 191
+- Community 192
+- Community 193
+- Community 195
+- Community 196
+- Community 197
+- Community 198
+- Community 199
+- Community 200
+- Community 201
+- Community 202
+- Community 203
+- Community 204
+- Community 206
+- Community 207
+- Community 208
+- Community 209
+- Community 210
+- Community 211
+- Community 212
+- Community 213
+- Community 214
+- Community 215
+- Community 216
+- Community 217
+- Community 219
+- Community 220
+- Community 222
+- Community 223
+- Community 224
+- Community 225
+- Community 226
+- Community 227
+- Community 229
+- Community 230
+- Community 231
+- Community 232
+- Community 234
+- Community 235
+- Community 238
+- Community 239
+- Community 240
+- Community 242
+- Community 243
+- Community 244
+- Community 245
+- Community 246
+- Community 247
+- Community 248
+- Community 249
 
 ## God Nodes (most connected - your core abstractions)
-1. `TagEntity` - 293 edges
-2. `ListItemEntity` - 226 edges
-3. `UnitEntity` - 180 edges
-4. `UserEntity` - 129 edges
-5. `ConvertibleAmount` - 122 edges
-6. `ShoppingListEntity` - 116 edges
-7. `DishEntity` - 114 edges
-8. `ProcessingContext` - 103 edges
-9. `ListItemDetailEntity` - 103 edges
-10. `ListShopPostgresqlContainer` - 102 edges
+1. `TagEntity` - 238 edges
+2. `ListItemEntity` - 210 edges
+3. `UnitEntity` - 154 edges
+4. `UserEntity` - 110 edges
+5. `ConvertibleAmount` - 103 edges
+6. `UserService` - 103 edges
+7. `ListItemDetailEntity` - 99 edges
+8. `ProcessingContext` - 98 edges
+9. `TagService` - 97 edges
+10. `ListShopPostgresqlContainer` - 94 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `BaseShoppingListService` --references--> `ItemProcessingException`  [EXTRACTED]
-  listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/BaseShoppingListService.java → listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ItemProcessingException.java
 - `LegacyShoppingListServiceImpl` --references--> `ItemProcessingException`  [EXTRACTED]
   listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/impl/LegacyShoppingListServiceImpl.java → listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ItemProcessingException.java
-- `ShoppingListServiceImpl` --references--> `ItemProcessingException`  [EXTRACTED]
-  listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/list/v2/impl/ShoppingListServiceImpl.java → listshop-api/src/main/java/com/meg/listshop/lmt/api/exception/ItemProcessingException.java
 - `AdminLayoutRestController` --implements--> `AdminLayoutRestControllerApi`  [EXTRACTED]
   listshop-lmt/listshop-service/src/main/java/com/meg/listshop/admin/controller/AdminLayoutRestController.java → listshop-api/src/main/java/com/meg/listshop/admin/controller/AdminLayoutRestControllerApi.java
-- `AdminTagRestController` --implements--> `AdminTagRestControllerApi`  [EXTRACTED]
-  listshop-lmt/listshop-service/src/main/java/com/meg/listshop/admin/controller/AdminTagRestController.java → listshop-api/src/main/java/com/meg/listshop/admin/controller/AdminTagRestControllerApi.java
+- `AdminUserRestController` --implements--> `AdminUserRestControllerApi`  [EXTRACTED]
+  listshop-lmt/listshop-service/src/main/java/com/meg/listshop/admin/controller/AdminUserRestController.java → listshop-api/src/main/java/com/meg/listshop/admin/controller/AdminUserRestControllerApi.java
+- `LayoutRestController` --implements--> `LayoutRestControllerApi`  [EXTRACTED]
+  listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/LayoutRestController.java → listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/LayoutRestControllerApi.java
+- `TagRestController` --implements--> `TagRestControllerApi`  [EXTRACTED]
+  listshop-lmt/listshop-service/src/main/java/com/meg/listshop/lmt/api/web/controller/TagRestController.java → listshop-api/src/main/java/com/meg/listshop/lmt/api/controller/TagRestControllerApi.java
 
 ## Import Cycles
 - None detected.
 
-## Communities (187 total, 48 thin omitted)
+## Communities (250 total, 136 thin omitted)
 
-### Community 0 - "org.slf4j.Logger"
+### Community 0 - "Unit and Conversion Entities"
 Cohesion: 0.03
-Nodes (71): StringTools, jakarta.transaction.Transactional, java.net.MalformedURLException, ActionIgnoredException, ActionInvalidException, AuthenticationException, BadParameterException, ItemProcessingException (+63 more)
+Nodes (29): UnitEntity, UnitSubtype, LIQUID, NONE, SOLID, VOLUME, WEIGHT, findByName() (+21 more)
 
-### Community 1 - "com.fasterxml.jackson.annotation.JsonIgnore"
-Cohesion: 0.02
-Nodes (36): com.fasterxml.jackson.annotation.JsonIgnore, Override, ProposalResource, Override, UserPropertiesResource, Override, UserProperty, Override (+28 more)
-
-### Community 2 - "ShoppingListEntity"
+### Community 1 - "Transactional Entities and Specifications"
 Cohesion: 0.04
-Nodes (20): ItemOperationType, Copy, CrossOff, Move, Remove, RemoveAll, RemoveCrossedOff, UnCrossOff (+12 more)
+Nodes (22): SpecificationType, ALL, MIXED, NONE, ListItemEntity, ListConversionService, AbstractTransition, ProcessingType (+14 more)
 
-### Community 3 - "UnitEntity"
+### Community 2 - "Exception Handling and Repositories"
 Cohesion: 0.05
-Nodes (34): Entity, Override, Table, UnitEntity, UnitRepository, RoundingUtils, SpecificationType, ALL (+26 more)
+Nodes (32): ActionInvalidException, ObjectNotFoundException, ObjectNotYoursException, AmountRepository, ShadowTagRepository, AdminUserRestController, BetaTestUserPropertyListener, JwtService (+24 more)
 
-### Community 4 - "org.springframework.http.ResponseEntity"
-Cohesion: 0.04
-Nodes (54): RequestMapping, RestController, ProposalRestControllerApi, DeleteMapping, DishRestControllerApi, CrossOrigin, DeleteMapping, Dish (+46 more)
+### Community 3 - "Meal Plan Proposal Logic"
+Cohesion: 0.05
+Nodes (9): ProposalContextEntity, ProposalEntity, ProposalContextRepository, ProposalRepository, ProposalGeneratorServiceImpl, ProposalServiceImpl, ProposalGeneratorService, ProposalService (+1 more)
 
-### Community 5 - "ListItemDetailEntity"
-Cohesion: 0.04
-Nodes (22): Entity, NamedEntityGraph, Override, Table, ListItemDetailEntity, ListConversionService, AbstractTransition, ProcessingType (+14 more)
-
-### Community 6 - "org.springframework.test.context.ActiveProfiles"
-Cohesion: 0.09
-Nodes (61): com.fasterxml.jackson.databind.ObjectMapper, io.restassured.response.Response, jakarta.annotation.PostConstruct, ProposalContextRepository, Application, AdminTagRestControllerTest, AdminUserRestControllerTest, AuthenticationRestControllerTest (+53 more)
-
-### Community 7 - "DishTagSearchResult"
+### Community 4 - "List Layout and Tags"
 Cohesion: 0.03
-Nodes (21): ApproachType, REV_SORTED_WHEEL, SORTED_WHEEL, WHEEL, WHEEL_MIXED, ContextApproachEntity, Entity, Table (+13 more)
+Nodes (7): TagEntity, ListSearchServiceImpl, ListSearchService, TagChangeToCategoryListener, TagChangeListener, TagStructureService, TagTestBuilder
 
-### Community 8 - "jakarta.servlet.http.HttpServletRequest"
-Cohesion: 0.04
-Nodes (39): jakarta.servlet.http.HttpServletRequest, java.net.URI, java.security.Principal, AuthenticationRestControllerApi, CampaignControllerApi, CrossOrigin, PostMapping, RequestMapping (+31 more)
-
-### Community 9 - ".toModel"
-Cohesion: 0.04
-Nodes (22): SourceReferenceType, DISH, LIST, CategoryDTO, Override, Override, ListItemDTO, Override (+14 more)
-
-### Community 10 - ".toModel"
+### Community 5 - "Target Proposals and Slots"
 Cohesion: 0.03
-Nodes (16): ConversionGrid, Override, ConversionSample, Override, Food, FoodCategoryMapping, Override, Override (+8 more)
+Nodes (5): TargetProposal, TargetProposalSlot, Tag, Target, TargetSlot
 
-### Community 11 - "DishItemEntity"
+### Community 6 - "Unit Repositories and Rounding"
+Cohesion: 0.08
+Nodes (22): UnitRepository, RoundingUtils, ConversionRequest, ConversionTargetType, Dish, List, ConversionAddException, ConversionFactorException (+14 more)
+
+### Community 7 - "API Models and Rest Controllers"
 Cohesion: 0.12
-Nodes (9): DishItemEntity, Entity, Override, Table, StateMachineActiveTransitionTest, RemovalTestsNoAmounts, RemovalTestsWithAmounts, StateMachineRemovedTransitionTest (+1 more)
+Nodes (37): Application, AdminUserRestControllerTest, ListShopPostgresqlContainer, StatisticRestControllerTest, V2LayoutRestControllerTest, ListItemRepositoryTest, DishSearchServiceImplTest, MergeItemCollectorTest (+29 more)
 
-### Community 12 - "MealPlanEntity"
-Cohesion: 0.06
-Nodes (16): MealPlanType, Manual, Targeted, Entity, NamedEntityGraph, Table, MealPlanEntity, Entity (+8 more)
-
-### Community 13 - "CollectorContext"
+### Community 8 - "Data Inflation and Flattening"
 Cohesion: 0.05
-Nodes (16): ContextType, List, Merge, NonSpecified, StatisticCountType, List, None, Single (+8 more)
+Nodes (7): AbstractInflateAndFlatten, TargetEntity, TargetSlotEntity, TargetRepository, TargetSlotRepository, TargetServiceImpl, TargetService
 
-### Community 14 - "CollectedItem"
+### Community 9 - "Rounding Utilities and DTOs"
+Cohesion: 0.04
+Nodes (4): RoundingUtilsTest, LegacyMealPlanRestControllerTest, NewMealPlanRestControllerTest, DishServiceImplMockTest
+
+### Community 10 - "Community 10"
+Cohesion: 0.03
+Nodes (8): LayoutRestControllerApi, TagRestControllerApi, V2LayoutRestControllerApi, V2TagRestControllerApi, TagPut, Tag, TagList, TagRestController
+
+### Community 11 - "Community 11"
+Cohesion: 0.05
+Nodes (11): ItemOperationType, Copy, CrossOff, Move, Remove, RemoveAll, RemoveCrossedOff, UnCrossOff (+3 more)
+
+### Community 13 - "Community 13"
+Cohesion: 0.05
+Nodes (3): ProposalRestControllerApi, LegacyShoppingListRestControllerApi, V2ShoppingListRestControllerApi
+
+### Community 14 - "Community 14"
+Cohesion: 0.14
+Nodes (3): StateMachineActiveTransitionTest, RemovalTestsNoAmounts, RemovalTestsWithAmounts
+
+### Community 15 - "Community 15"
+Cohesion: 0.04
+Nodes (6): AdminFoodRestController, CustomUserDetails, TagRestController, TagService, CountResult, TagServiceImplMockTest
+
+### Community 16 - "Community 16"
 Cohesion: 0.07
-Nodes (5): AbstractItemCollector, Override, CollectedItem, Override, MergeItemCollector
+Nodes (7): MealPlanEntity, SlotEntity, MealPlanRepository, SlotRepository, MealPlanServiceImpl, MealPlanService, MealPlanServiceImplMockTest
 
-### Community 15 - "UserEntity"
+### Community 17 - "Community 17"
 Cohesion: 0.05
-Nodes (17): UserCreateException, AuthorityEntity, Entity, Table, AuthorityName, ROLE_ADMIN, ROLE_USER, Entity (+9 more)
+Nodes (13): UserCreateException, ActionIgnoredException, AuthenticationException, BadParameterException, ItemProcessingException, ProcessingException, ProposalProcessingException, TagStructureException (+5 more)
 
-### Community 16 - "org.junit.jupiter.api.Test"
-Cohesion: 0.04
-Nodes (5): RoundingUtilsTest, ObjectMapper, MealPlanRestControllerTest, org.junit.jupiter.api.Test, org.springframework.security.test.context.support.WithMockUser
+### Community 19 - "Community 19"
+Cohesion: 0.05
+Nodes (7): ListLayoutEntity, CustomListLayoutRepository, CustomListLayoutRepositoryImpl, ListLayoutRepository, BaseLayoutServiceImpl, LegacyLayoutServiceImpl, LayoutServiceImplMockTest
 
-### Community 17 - "FactorCriteria"
-Cohesion: 0.04
-Nodes (7): Join, FactorCriteria, CustomConversionFactorRepositoryImpl, CriteriaBuilder, CriteriaQuery, Override, Root
+### Community 20 - "Community 20"
+Cohesion: 0.05
+Nodes (11): TargetType, PickUp, Standard, DishSearchService, DishTagSearchResult, FillInProposalProcessorImpl, NewRawSlotResult, AbstractProposalProcessor (+3 more)
 
-### Community 18 - ".authToken"
+### Community 22 - "Community 22"
+Cohesion: 0.05
+Nodes (5): ItemOperationPut, ListAddProperties, ShoppingListResource, LegacyShoppingListRestController, LegacyShoppingListService
+
+### Community 24 - "Community 24"
+Cohesion: 0.06
+Nodes (5): AdminLayoutRestControllerApi, AuthenticationRestControllerApi, StatisticRestControllerApi, TargetRestControllerApi, TargetRestController
+
+### Community 25 - "Community 25"
+Cohesion: 0.07
+Nodes (3): FactorCriteria, CacheKey, CustomConversionFactorRepositoryImpl
+
+### Community 26 - "Community 26"
+Cohesion: 0.07
+Nodes (6): AdminFoodRestControllerTest, AdminTagRestControllerTest, AuthenticationRestControllerTest, CampaignRestControllerTest, ProposalRestControllerTest, TargetRestControllerTest
+
+### Community 29 - "Community 29"
+Cohesion: 0.08
+Nodes (5): DeleteListTests, MergeTests, RetrieveListTests, ShoppingListRestControllerTest, TagTests
+
+### Community 30 - "Community 30"
+Cohesion: 0.05
+Nodes (4): Amount, IngredientPut, PostListItem, V2DishRestControllerTest
+
+### Community 31 - "Community 31"
 Cohesion: 0.09
-Nodes (12): Header, io.restassured.http.Header, DeleteListTests, BeforeEach, Disabled, Nested, ShoppingList, ShoppingListItem (+4 more)
+Nodes (4): ListItemDetailEntity, AmountTextBuilder, QuantityElements, RemoveLinkTransition
 
-### Community 19 - "Tag"
-Cohesion: 0.04
-Nodes (5): com.fasterxml.jackson.annotation.JsonProperty, TargetProposal, TargetProposalSlot, Tag, TargetSlot
+### Community 32 - "Community 32"
+Cohesion: 0.09
+Nodes (4): ProcessingContext, ProcessingUtils, ScalingProcessor, ScaleHandler
 
-### Community 21 - "TagEntity"
-Cohesion: 0.04
-Nodes (14): Entity, NamedEntityGraph, NamedNativeQuery, Override, SqlResultSetMapping, Table, TagEntity, ListSearchServiceImpl (+6 more)
-
-### Community 22 - "ListItemEntity"
-Cohesion: 0.06
-Nodes (11): Entity, NamedEntityGraphs, Override, Table, ListItemEntity, AmountTextBuilder, Override, ListConversionServiceImpl (+3 more)
-
-### Community 23 - "RatingInfo"
-Cohesion: 0.04
-Nodes (13): DishRatingInfo, Override, Override, RatingInfo, RatingUpdateInfo, DishRating, Override, DishRatings (+5 more)
-
-### Community 24 - "ConvertibleAmount"
-Cohesion: 0.06
-Nodes (11): AddScaleRequest, Override, ConversionSampleDTO, ConvertibleAmount, ConverterServiceImpl, Override, ConverterProcessor, BaseTagHandler (+3 more)
-
-### Community 25 - "ProposalEntity"
+### Community 33 - "Community 33"
 Cohesion: 0.07
-Nodes (11): Entity, Table, ProposalContextEntity, Entity, Table, ProposalEntity, ProposalRepository, Override (+3 more)
+Nodes (6): UserEntity, AuthorityRepository, UserRepository, UserDetailsServiceImpl, UserServiceImpl, SecurityConfig
 
-### Community 26 - "UserRestController"
-Cohesion: 0.05
-Nodes (16): CrossOrigin, GetMapping, PostMapping, RequestMapping, RestController, UserRestControllerApi, ClientVersions, ListShopPayload (+8 more)
+### Community 34 - "Community 34"
+Cohesion: 0.08
+Nodes (3): UserPropertyEntity, UserPropertyServiceImpl, UserPropertyServiceImplMockTest
 
-### Community 27 - "LegacyShoppingListService"
+### Community 35 - "Community 35"
 Cohesion: 0.06
-Nodes (14): EmbeddedShoppingListListResource, ShoppingListListResource, ShoppingListResource, MergeRequest, Override, ResponseEntity, ShoppingList, ShoppingListCategory (+6 more)
+Nodes (9): TagType, DishType, Ingredient, NonEdible, Rating, ICountResult, ItemToCategoryDTO, ItemRepository (+1 more)
 
-### Community 28 - "FractionType"
+### Community 36 - "Community 36"
+Cohesion: 0.08
+Nodes (6): CategoryTagMapping, LayoutCategoryDTO, LayoutDTO, ListLayoutCategoryRepository, V2LayoutServiceImpl, V2LayoutServiceImplMockTest
+
+### Community 37 - "Community 37"
+Cohesion: 0.08
+Nodes (9): ConversionFactorRepository, FactorCriteriaBuilder, ConversionTarget, BaseScaleHandler, ContextScaler, GenericScaler, SingleUnitScaler, TagUnitScaler (+1 more)
+
+### Community 39 - "Community 39"
+Cohesion: 0.05
+Nodes (5): DishRatingInfo, RatingInfo, RatingUpdateInfo, DishRating, DishRatings
+
+### Community 40 - "Community 40"
+Cohesion: 0.09
+Nodes (6): ConversionFactor, SimpleConversionFactor, CustomConversionFactorRepository, FactorProvider, TagContextScaler, HybridTagHandler
+
+### Community 42 - "Community 42"
+Cohesion: 0.06
+Nodes (8): PostUserProperties, ProposalResource, UserPropertiesResource, UserProperty, UserPropertyResource, AbstractListShopResource, ListShopModel, ListShopResource
+
+### Community 43 - "Community 43"
+Cohesion: 0.06
+Nodes (4): DishItemEntity, DishItemRepository, BasicAmount, ServiceTestUtils
+
+### Community 45 - "Community 45"
+Cohesion: 0.06
+Nodes (3): PostSearchUsers, AdminLayoutRestController, ModelMapper
+
+### Community 46 - "Community 46"
 Cohesion: 0.04
-Nodes (18): doubleValueOf(), FractionType, FiveEighths, One, OneEighth, OneHalf, OneQuarter, OneThird (+10 more)
+Nodes (48): affinity, autoscaling, enabled, maxReplicas, minReplicas, targetCPUUtilizationPercentage, url, fullnameOverride (+40 more)
 
-### Community 29 - "ListLayoutCategoryEntity"
+### Community 48 - "Community 48"
+Cohesion: 0.07
+Nodes (4): DishSlotEntity, ProposalSlotEntity, DishSlotRepository, ProposalSlotRepository
+
+### Community 49 - "Community 49"
+Cohesion: 0.08
+Nodes (5): ShadowTags, AutoTagSubject, AutoTagProcessor, Type, AbstractAutoTagProcessor
+
+### Community 50 - "Community 50"
+Cohesion: 0.06
+Nodes (7): TagInfoDTO, CustomTagInfoRepository, TagInfoMapper, TagInfoRepositoryImpl, DishRatingBuilder, RatingStructure, RatingStructureTree
+
+### Community 51 - "Community 51"
+Cohesion: 0.09
+Nodes (3): AbstractItemCollector, CollectedItem, MergeItemCollector
+
+### Community 52 - "Community 52"
+Cohesion: 0.19
+Nodes (4): ProposalRequest, ProposalRequestBuilder, FillInProposalProcessorImplTest, ProcessorTestUtils
+
+### Community 55 - "Community 55"
+Cohesion: 0.07
+Nodes (11): DishSort, DishSortDirection, ASC, DESC, DishSortKey, CreatedOn, LastUsed, Name (+3 more)
+
+### Community 56 - "Community 56"
+Cohesion: 0.06
+Nodes (7): ModifierType, Marker, Unit, UnitSize, ModifierMappingEntity, SuggestionDTO, CustomAmountRepository
+
+### Community 57 - "Community 57"
 Cohesion: 0.10
-Nodes (6): Entity, NamedNativeQuery, Table, ListLayoutCategoryEntity, Override, LayoutServiceImplMockTest
+Nodes (7): CustomAmountRepositoryImpl, CustomFoodMappingRepositoryImpl, FoodMappingMapper, CustomTagRepositoryImpl, TagConflictMapper, ItemMappingDTOMapper, ListMappingCustomRepositoryImpl
 
-### Community 30 - "ListLayoutEntity"
-Cohesion: 0.06
-Nodes (10): Entity, NamedEntityGraph, Table, ListLayoutEntity, ListLayoutRepository, BaseLayoutServiceImpl, Override, LegacyLayoutServiceImpl (+2 more)
+### Community 58 - "Community 58"
+Cohesion: 0.08
+Nodes (5): ClientType, Mobile, Web, UserDeviceEntity, UserServiceImplMockTest
 
-### Community 31 - ".getId"
-Cohesion: 0.06
-Nodes (6): ItemOperationPut, Override, ListAddProperties, Override, ShoppingListRestController, ShoppingListService
-
-### Community 32 - "ProcessingContext"
+### Community 59 - "Community 59"
 Cohesion: 0.09
-Nodes (9): FactorProvider, ProcessingContext, ProcessingUtils, Override, Override, ScalingProcessor, BaseScaleHandler, ScaleHandler (+1 more)
+Nodes (3): ListShopPayload, PostToken, UserRestControllerTest
 
-### Community 33 - "TargetEntity"
-Cohesion: 0.07
-Nodes (14): TargetType, PickUp, Standard, AbstractInflateAndFlatten, Entity, Table, TargetEntity, Entity (+6 more)
-
-### Community 34 - "DishEntity"
-Cohesion: 0.07
-Nodes (9): DishEntity, Entity, NamedEntityGraphs, Table, DishRepository, DishMapper, DishServiceImpl, Override (+1 more)
-
-### Community 35 - "Tag"
-Cohesion: 0.04
-Nodes (19): GetMapping, PostMapping, PutMapping, RequestMapping, RestController, TagRestControllerApi, GetMapping, PostMapping (+11 more)
-
-### Community 36 - "ClientDeviceInfo"
-Cohesion: 0.07
-Nodes (4): ClientDeviceInfo, Override, JwtAuthorizationRequest, PutCreateUser
-
-### Community 37 - "org.springframework.data.jpa.repository.Query"
+### Community 60 - "Community 60"
 Cohesion: 0.06
-Nodes (9): ItemToCategoryDTO, DishItemRepository, ItemRepository, TargetSlotRepository, org.springframework.data.domain.Pageable, org.springframework.data.jpa.repository.EntityGraph, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Modifying (+1 more)
+Nodes (3): DishItemDTO, CustomDishItemRepository, CustomDishItemRepositoryImpl
 
-### Community 38 - "AdminTagFullInfo"
-Cohesion: 0.05
-Nodes (4): AdminTagFullInfo, Override, AdminTagFullInfoResource, Override
+### Community 61 - "Community 61"
+Cohesion: 0.08
+Nodes (4): EmbeddedListLayoutListResource, ListLayoutListResource, ListLayoutResource, JwtUser
 
-### Community 39 - "UnitType"
+### Community 63 - "Community 63"
 Cohesion: 0.07
-Nodes (25): UnitSubtype, LIQUID, NONE, SOLID, VOLUME, WEIGHT, findByName(), UnitType (+17 more)
+Nodes (8): ApproachType, REV_SORTED_WHEEL, SORTED_WHEEL, WHEEL, WHEEL_MIXED, ContextApproachEntity, ProcessResult, TargetProposalSettings
 
-### Community 40 - ".toEntity"
-Cohesion: 0.05
-Nodes (4): Item, Override, Target, Tag
-
-### Community 41 - "UserPropertyEntity"
-Cohesion: 0.09
-Nodes (9): Entity, Override, Table, UserPropertyEntity, UserPropertyRepository, Override, UserPropertyServiceImpl, UserPropertyChangeListener (+1 more)
-
-### Community 42 - "AdminTagRestControllerApi"
-Cohesion: 0.06
-Nodes (14): AdminTagRestControllerApi, DeleteMapping, GetMapping, PostMapping, PutMapping, RequestMapping, RestController, Tag (+6 more)
-
-### Community 43 - "ShoppingListServiceImpl"
+### Community 64 - "Community 64"
 Cohesion: 0.07
-Nodes (5): ItemMergeDTO, Override, MergeResult, Override, ShoppingListServiceImpl
-
-### Community 45 - "ConversionFactor"
-Cohesion: 0.09
-Nodes (5): ConversionFactor, Override, SimpleConversionFactor, CustomConversionFactorRepository, TagContextScaler
-
-### Community 46 - "SimpleListItemDTO"
-Cohesion: 0.07
-Nodes (4): Override, PostListItem, Override, SimpleListItemDTO
-
-### Community 47 - ".getDishForUserById"
-Cohesion: 0.07
-Nodes (7): SortOrMoveDirection, DOWN, UP, ICountResult, TagType, CountResult, Override
-
-### Community 48 - "AdminUser"
-Cohesion: 0.05
-Nodes (11): AdminUserRestControllerApi, GetMapping, PostMapping, RequestMapping, RestController, AdminUser, Override, AdminUserListResource (+3 more)
-
-### Community 49 - "MealPlan"
-Cohesion: 0.06
-Nodes (7): EmbeddedMealPlanListResource, MealPlan, Override, MealPlanListResource, Override, MealPlanResource, Slot
-
-### Community 50 - "com.fasterxml.jackson.annotation.JsonInclude"
-Cohesion: 0.05
-Nodes (6): com.fasterxml.jackson.annotation.JsonInclude, com.fasterxml.jackson.annotation.JsonPropertyOrder, Override, LegendSource, ShoppingList, ShoppingListCategory
-
-### Community 52 - "Category"
-Cohesion: 0.05
-Nodes (6): Category, Override, Item, MergeRequest, ItemCategoryPojo, Override
-
-### Community 53 - "ProposalSlotEntity"
-Cohesion: 0.07
-Nodes (6): DishSlotEntity, Entity, Table, Entity, Table, ProposalSlotEntity
-
-### Community 55 - "TagSearchCriteria"
-Cohesion: 0.06
 Nodes (18): TagFilterType, All, GroupsOnly, NoGroups, ParentTags, ToReview, IncludeType, EXCLUDE (+10 more)
 
-### Community 56 - "NestedTag"
-Cohesion: 0.06
-Nodes (6): Dish, Override, NestedTag, Override, RatingInfo, RatingInfo
-
-### Community 57 - "SuggestionDTO"
-Cohesion: 0.06
-Nodes (15): ModifierType, Marker, Unit, UnitSize, Entity, Override, SqlResultSetMapping, Table (+7 more)
-
-### Community 58 - "ProposalRequest"
-Cohesion: 0.19
-Nodes (5): Override, ProposalRequest, ProposalRequestBuilder, FillInProposalProcessorImplTest, ProcessorTestUtils
-
-### Community 59 - "LayoutCategoryResource"
-Cohesion: 0.06
-Nodes (14): AdminLayoutRestControllerApi, GetMapping, PutMapping, RequestMapping, RestController, EmbeddedLayoutCategoryListResource, Override, LayoutCategory (+6 more)
-
-### Community 60 - "TagType"
-Cohesion: 0.07
-Nodes (13): Override, PostUpdateTags, TagType, DishType, Ingredient, NonEdible, Rating, TagType (+5 more)
-
-### Community 62 - "DomainType"
-Cohesion: 0.07
-Nodes (15): DomainType, ALL, METRIC, UK, US, findByName(), AmountRepository, TokenRepository (+7 more)
-
-### Community 63 - ".getId"
-Cohesion: 0.09
-Nodes (6): Entity, Table, TagRelationEntity, TagRelationRepository, Override, TagStructureServiceImpl
-
-### Community 64 - "TargetService"
-Cohesion: 0.09
-Nodes (4): Override, ResponseEntity, TargetRestController, TargetService
-
-### Community 65 - "DishSearchCriteria"
-Cohesion: 0.07
-Nodes (13): DishSort, DishSortDirection, ASC, DESC, DishSortKey, CreatedOn, LastUsed, Name (+5 more)
-
-### Community 66 - "DishRestController"
-Cohesion: 0.08
-Nodes (9): DishListResource, Override, DishResource, Override, EmbeddedDishListResource, DishRestController, Dish, Override (+1 more)
-
-### Community 67 - "UserDeviceEntity"
-Cohesion: 0.08
-Nodes (8): ClientType, Mobile, Web, Entity, Override, Table, UserDeviceEntity, UserDeviceRepository
-
-### Community 68 - "ItemMappingDTO"
-Cohesion: 0.05
-Nodes (4): ItemMappingDTO, Override, ShoppingListItem, ListMappingCustomRepository
-
-### Community 69 - "org.springframework.context.annotation.Bean"
+### Community 65 - "Community 65"
 Cohesion: 0.10
-Nodes (20): io.swagger.v3.oas.models.OpenAPI, Configuration, FreeMarkerConfigurer, PostofficeConfiguration, SpringDocConfiguration, TestConfiguration, WebConfiguration, ListLayoutProperties (+12 more)
+Nodes (3): TagRelationEntity, TagRelationRepository, TagStructureServiceImpl
 
-### Community 70 - "ShoppingListItem"
-Cohesion: 0.05
-Nodes (4): Override, ShoppingListItem, Override, ShoppingListItemDetails
-
-### Community 71 - "DishItemDTO"
+### Community 67 - "Community 67"
 Cohesion: 0.07
-Nodes (5): DishItemDTO, Override, CustomDishItemRepository, CustomDishItemRepositoryImpl, EntityManager
+Nodes (16): ListOperationType, DISH_ADD, DISH_REMOVE, LIST_ADD, LIST_REMOVE, NONE, STARTERLIST_ADD, STARTERLIST_REMOVE (+8 more)
 
-### Community 72 - "AutoTagInstructionEntity"
+### Community 68 - "Community 68"
 Cohesion: 0.08
-Nodes (10): DiscriminatorColumn, Inheritance, AutoTagInstructionEntity, Entity, Table, Override, TagInstructionEntity, Override (+2 more)
+Nodes (4): DishEntity, DishRepository, DishMapper, DishTestBuilder
 
-### Community 73 - "Instruction"
-Cohesion: 0.09
-Nodes (9): jakarta.persistence.DiscriminatorValue, TextInstructionEntity, Instruction, TextInstructionRepository, Override, TextProcessorImpl, AbstractAutoTagProcessor, Override (+1 more)
-
-### Community 74 - "jakarta.persistence.EntityManager"
-Cohesion: 0.12
-Nodes (18): jakarta.persistence.EntityManager, java.sql.ResultSet, javax.sql.DataSource, CustomAmountRepositoryImpl, NamedParameterJdbcTemplate, CustomTagRepositoryImpl, Override, ItemMappingDTOMapper (+10 more)
-
-### Community 75 - "IngredientPut"
+### Community 70 - "Community 70"
 Cohesion: 0.10
-Nodes (6): IngredientPut, Override, DishRestController, Dish, Override, ResponseEntity
+Nodes (7): TagInstructionEntity, TextInstructionEntity, Instruction, TagInstructionRepository, TextInstructionRepository, TextProcessorImpl, TagProcessorImpl
 
-### Community 76 - "ShoppingListItem"
-Cohesion: 0.05
-Nodes (4): Tag, ShoppingListItem, Override, ShoppingListItemComparator
+### Community 71 - "Community 71"
+Cohesion: 0.09
+Nodes (3): ClientVersions, PostChangePassword, ProposalRestController
 
-### Community 78 - "ProposalGeneratorServiceImplTest"
+### Community 72 - "Community 72"
+Cohesion: 0.13
+Nodes (5): CollectedItemStatus, CROSSED_OFF, NEW, REMOVED, UPDATED
+
+### Community 73 - "Community 73"
+Cohesion: 0.08
+Nodes (4): Category, CategoryListResource, CategoryResource, EmbeddedListCategoryListResource
+
+### Community 74 - "Community 74"
+Cohesion: 0.07
+Nodes (3): ListLayout, ListLayoutCategory, ListLayoutList
+
+### Community 76 - "Community 76"
+Cohesion: 0.07
+Nodes (3): LegendSource, ShoppingList, ShoppingListCategory
+
+### Community 77 - "Community 77"
+Cohesion: 0.07
+Nodes (4): FoodCategoryMappingEntity, FoodMappingDTO, CustomFoodMappingRepository, FoodCategoryMappingRepository
+
+### Community 79 - "Community 79"
+Cohesion: 0.09
+Nodes (3): AbstractCategory, ListLayoutCategoryPojo, ListShopCategory
+
+### Community 81 - "Community 81"
+Cohesion: 0.08
+Nodes (4): CategoryMappingListResource, EmbeddedCategoryMappingListResource, FoodCategoryMapping, FoodCategoryMappingResource
+
+### Community 84 - "Community 84"
+Cohesion: 0.07
+Nodes (3): Item, MergeRequest, ItemCategoryPojo
+
+### Community 85 - "Community 85"
+Cohesion: 0.08
+Nodes (3): Statistic, StatisticListPost, StatisticListResource
+
+### Community 86 - "Community 86"
 Cohesion: 0.14
-Nodes (4): ProposalGeneratorService, Override, ProposalService, ProposalGeneratorServiceImplTest
+Nodes (5): TokenType, PasswordReset, TokenEntity, TokenRepository, TokenServiceImplTest
 
-### Community 79 - "LayoutCategoryDTO"
+### Community 87 - "Community 87"
 Cohesion: 0.08
-Nodes (5): CategoryTagMapping, Override, LayoutCategoryDTO, Override, LayoutDTO
+Nodes (3): AdminUserRestControllerApi, AdminUser, AdminUserListResource
 
-### Community 80 - "TagServiceImpl"
-Cohesion: 0.10
-Nodes (3): Override, TagType, TagServiceImpl
-
-### Community 82 - "TagOperationPut"
-Cohesion: 0.07
-Nodes (10): TagOperationPut, TagOperationType, AssignFood, AssignFoodCategory, AssignToUser, CopyFoodFromTag, CopyToStandard, MarkAsNoFoodVerified (+2 more)
-
-### Community 83 - "ListLayoutCategory"
-Cohesion: 0.07
-Nodes (5): Override, ListLayout, ListLayoutCategory, Override, ListLayoutList
-
-### Community 84 - "ConversionFactorEntity"
-Cohesion: 0.11
-Nodes (5): ConversionFactorEntity, Entity, Override, Table, Override
-
-### Community 85 - "org.springframework.stereotype.Component"
-Cohesion: 0.18
-Nodes (12): ConversionFactorRepository, FactorCriteriaBuilder, ConversionTarget, ContextScaler, GenericScaler, SingleUnitScaler, TagUnitScaler, UnitScaler (+4 more)
-
-### Community 87 - "ListShopCategory"
-Cohesion: 0.09
-Nodes (5): AbstractCategory, Override, Override, ListLayoutCategoryPojo, ListShopCategory
-
-### Community 88 - "Dish"
-Cohesion: 0.07
-Nodes (8): TargetProposalDish, Dish, ItemSourceType, Dish, List, Special, Dish, UserAccount
-
-### Community 89 - "Suggestion"
-Cohesion: 0.09
-Nodes (10): AmountRestControllerApi, GetMapping, RequestMapping, RestController, EmbeddedSuggestionListResource, Override, Suggestion, Override (+2 more)
-
-### Community 90 - "RestResponseExceptionHandler"
-Cohesion: 0.15
-Nodes (8): ApiError, ResponseEntity, RestResponseExceptionHandler, org.springframework.security.authentication.BadCredentialsException, org.springframework.web.bind.annotation.ControllerAdvice, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.context.request.WebRequest, org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-
-### Community 91 - "ShoppingListProperties"
+### Community 88 - "Community 88"
 Cohesion: 0.09
 Nodes (7): CategoryType, Frequent, Highlight, HighlightList, Standard, UnCategorized, ShoppingListProperties
 
-### Community 92 - "AutoTagSubject"
-Cohesion: 0.12
-Nodes (4): Entity, Table, ShadowTags, AutoTagSubject
+### Community 94 - "Community 94"
+Cohesion: 0.14
+Nodes (3): CollectorContextBuilder, ListItemCollectorTest, ListTagStatisticServiceImplTest
 
-### Community 95 - "LongTagIdPairDTO"
+### Community 96 - "Community 96"
+Cohesion: 0.10
+Nodes (3): DateUtils, FlatStringUtils, TargetServiceConstants
+
+### Community 100 - "Community 100"
+Cohesion: 0.10
+Nodes (4): EmbeddedFoodCategoryListResource, FoodCategory, FoodCategoryListResource, FoodCategoryResource
+
+### Community 101 - "Community 101"
+Cohesion: 0.10
+Nodes (4): EmbeddedFoodListResource, Food, FoodListResource, FoodResource
+
+### Community 102 - "Community 102"
+Cohesion: 0.10
+Nodes (4): EmbeddedLayoutCategoryListResource, LayoutCategory, LayoutCategoryListResource, LayoutCategoryResource
+
+### Community 104 - "Community 104"
+Cohesion: 0.10
+Nodes (3): ListTagStatistic, ListTagStatisticRepository, ListTagStatisticServiceImpl
+
+### Community 105 - "Community 105"
+Cohesion: 0.15
+Nodes (3): PostofficeConfiguration, MailPropertiesTestConfiguration, PostofficeTestConfiguration
+
+### Community 106 - "Community 106"
+Cohesion: 0.07
+Nodes (27): runs-on, steps, description, required, GITHUB_TOKEN, buildVersion, jobs, build (+19 more)
+
+### Community 107 - "Community 107"
 Cohesion: 0.08
-Nodes (7): LongTagIdPairDTO, CustomTagRelationRepository, CustomTagRepository, CustomTagRelationRepositoryImpl, NamedParameterJdbcTemplate, LongTagIdPairMapper, TagConflictMapper
+Nodes (7): TargetProposalDish, Dish, ItemSourceType, Dish, List, Special, UserAccount
 
-### Community 96 - "FoodCategoryResource"
+### Community 109 - "Community 109"
 Cohesion: 0.10
-Nodes (7): EmbeddedFoodCategoryListResource, FoodCategory, Override, FoodCategoryListResource, Override, FoodCategoryResource, Override
+Nodes (4): AdminUserDetailsEntity, AdminUserDetailsRepository, UserDeviceRepository, ExpiredTokenCleanupTask
 
-### Community 97 - "TokenEntity"
-Cohesion: 0.15
-Nodes (6): TokenType, PasswordReset, Entity, Table, TokenEntity, TokenService
-
-### Community 99 - "SimpleFoodFactor"
-Cohesion: 0.09
-Nodes (3): Override, SimpleFoodFactor, FoodFactor
-
-### Community 100 - "EmailParameters"
-Cohesion: 0.23
-Nodes (3): Override, EmailParameters, MailServiceTest
-
-### Community 101 - "ListLayoutCategory"
-Cohesion: 0.08
-Nodes (3): Override, ListLayout, ListLayoutCategory
-
-### Community 102 - "JwtService"
-Cohesion: 0.15
-Nodes (15): jakarta.servlet.Filter, jakarta.servlet.FilterChain, jakarta.servlet.http.HttpServletResponse, JwtAuthFilter, Override, JwtAuthFilterDummyImpl, Override, JwtAuthFilterImpl (+7 more)
-
-### Community 105 - "FoodMappingDTO"
-Cohesion: 0.10
-Nodes (7): FoodMappingDTO, Override, CustomFoodMappingRepository, CustomFoodMappingRepositoryImpl, FoodMappingMapper, NamedParameterJdbcTemplate, Override
-
-### Community 106 - ".getUsername"
-Cohesion: 0.18
-Nodes (6): Override, ResponseEntity, MealPlanRestController, Override, ResponseEntity, ProposalRestController
-
-### Community 107 - "FoodCategoryEntity"
-Cohesion: 0.12
-Nodes (5): jakarta.persistence.Entity, jakarta.persistence.Table, FoodCategoryEntity, Override, org.hibernate.annotations.Immutable
-
-### Community 108 - "User"
-Cohesion: 0.10
-Nodes (3): User, Override, UserResource
-
-### Community 109 - "ConversionBridgeFactorEntity"
-Cohesion: 0.08
-Nodes (4): ConversionBridgeFactorEntity, Entity, Override, Table
-
-### Community 110 - "CampaignEntity"
-Cohesion: 0.10
-Nodes (7): CampaignEntity, Entity, Override, Table, CampaignRepository, CampaignServiceImpl, Override
-
-### Community 112 - "FoodCategoryMappingEntity"
-Cohesion: 0.12
-Nodes (5): FoodCategoryMappingEntity, Entity, Override, Table, Override
-
-### Community 113 - "CustomStatisticRepository"
-Cohesion: 0.13
-Nodes (6): StatisticOperationType, add, remove, CustomStatisticRepository, CustomStatisticRepositoryImpl, Override
-
-### Community 114 - "TagReplaceServiceImpl"
-Cohesion: 0.15
-Nodes (4): DishSlotRepository, ProposalSlotRepository, Override, TagReplaceServiceImpl
-
-### Community 115 - "SecurityConfig.java"
-Cohesion: 0.15
-Nodes (14): Override, UserDetailsServiceImpl, AuthenticationRestController, SuppressWarnings, SecurityConfig, org.springframework.security.authentication.AuthenticationManager, org.springframework.security.authentication.AuthenticationProvider, org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration (+6 more)
-
-### Community 116 - "BasicAmount"
-Cohesion: 0.15
-Nodes (4): BasicAmount, Override, EntityConvertibleAmount, Override
-
-### Community 119 - "MergeResult"
-Cohesion: 0.13
-Nodes (5): MergeConflicts, MergeResult, Override, MergeResultResource, MergeResult
-
-### Community 120 - "Dish"
-Cohesion: 0.10
-Nodes (3): Dish, Override, SuppressWarnings
-
-### Community 121 - "Statistic"
+### Community 110 - "Community 110"
 Cohesion: 0.11
-Nodes (3): Statistic, Override, StatisticListResource
+Nodes (11): ContextType, List, Merge, NonSpecified, StatisticCountType, Dish, List, None (+3 more)
 
-### Community 122 - "ListTagStatistic"
+### Community 111 - "Community 111"
 Cohesion: 0.10
-Nodes (5): Entity, Table, ListTagStatistic, Override, ResponseEntity
+Nodes (17): doubleValueOf(), FractionType, FiveEighths, One, OneEighth, OneHalf, OneQuarter, OneThird (+9 more)
 
-### Community 123 - "PostSearchTags"
-Cohesion: 0.13
-Nodes (3): Override, PostSearchTags, TagType
+### Community 116 - "Community 116"
+Cohesion: 0.08
+Nodes (3): PutDish, DishDTO, RatingInfoDTO
 
-### Community 125 - "TargetResource"
-Cohesion: 0.15
-Nodes (5): EmbeddedTargetListResource, Override, TargetListResource, Override, TargetResource
+### Community 120 - "Community 120"
+Cohesion: 0.09
+Nodes (5): LongTagIdPairDTO, CustomTagRelationRepository, CustomTagRepository, CustomTagRelationRepositoryImpl, LongTagIdPairMapper
 
-### Community 126 - "FlatStringUtils"
-Cohesion: 0.17
-Nodes (6): FlatStringUtils, Override, StartupApplicationListener, TagReplaceService, org.springframework.context.ApplicationListener, org.springframework.context.event.ContextRefreshedEvent
+### Community 121 - "Community 121"
+Cohesion: 0.08
+Nodes (24): runs-on, steps, GITHUB_TOKEN, jobs, build, name, on, release (+16 more)
 
-### Community 129 - "JwtServiceImpl"
-Cohesion: 0.22
-Nodes (4): io.jsonwebtoken.Claims, javax.crypto.SecretKey, Override, JwtServiceImpl
+### Community 130 - "Community 130"
+Cohesion: 0.11
+Nodes (3): EmbeddedSuggestionListResource, Suggestion, SuggestionListResource
 
-### Community 130 - "NestedDish"
-Cohesion: 0.13
-Nodes (4): DishList, Override, Override, NestedDish
-
-### Community 132 - "freemarker.template.Configuration"
-Cohesion: 0.19
-Nodes (5): freemarker.template.Configuration, AbstractContentBuilder, ContentBuilder, ContentBuilderFactory, SimpleContentBuilder
-
-### Community 134 - "ListTagStatisticServiceImpl"
-Cohesion: 0.20
-Nodes (3): ListTagStatisticRepository, Override, ListTagStatisticServiceImpl
-
-### Community 135 - "MailService"
-Cohesion: 0.26
-Nodes (10): BetaTestUserPropertyListener, BetaTestInformationSendTest, ResetPasswordSendTest, org.springframework.test.context.ContextConfiguration, org.springframework.test.context.TestPropertySource, EmailType, BetaNotification, BetaTestInformation (+2 more)
-
-### Community 136 - "ProposalProcessor"
-Cohesion: 0.17
-Nodes (8): Override, ProposalProcessorFactoryImpl, ProposalProcessor, ProposalProcessorFactory, ProposalSearchType, FillInSearch, NewSearch, RefreshSearch
-
-### Community 137 - "ListOperationType"
-Cohesion: 0.13
-Nodes (11): ListOperationType, DISH_ADD, DISH_REMOVE, LIST_ADD, LIST_REMOVE, NONE, STARTERLIST_ADD, STARTERLIST_REMOVE (+3 more)
-
-### Community 138 - "Ingredient"
+### Community 134 - "Community 134"
 Cohesion: 0.14
-Nodes (4): Ingredient, Override, IngredientList, Override
+Nodes (4): AuthorityEntity, AuthorityName, ROLE_ADMIN, ROLE_USER
 
-### Community 139 - "NestedShoppingList"
-Cohesion: 0.14
-Nodes (3): NestedShoppingList, Override, ShoppingListList
+### Community 135 - "Community 135"
+Cohesion: 0.12
+Nodes (5): SpringDocConfiguration, StaticResourceConfiguration, TestConfiguration, WebConfiguration, ListLayoutProperties
 
-### Community 140 - "CustomUserRepositoryImpl"
+### Community 139 - "Community 139"
+Cohesion: 0.13
+Nodes (3): EmbeddedMealPlanListResource, MealPlanListResource, MealPlanResource
+
+### Community 140 - "Community 140"
+Cohesion: 0.13
+Nodes (3): ListItemRepositoryImpl, ListTagStatisticService, ItemCollector
+
+### Community 142 - "Community 142"
+Cohesion: 0.13
+Nodes (6): StringTools, CampaignControllerApi, CampaignRestController, AmountRestController, CampaignService, AmountService
+
+### Community 144 - "Community 144"
+Cohesion: 0.13
+Nodes (4): MergeConflicts, MergeResult, MergeResultResource, MergeResult
+
+### Community 149 - "Community 149"
 Cohesion: 0.15
-Nodes (4): CustomUserRepository, CustomUserRepositoryImpl, NamedParameterJdbcTemplate, Override
+Nodes (3): EmbeddedTagListResource, TagListResource, TagResource
 
-### Community 143 - "DishDTO"
+### Community 150 - "Community 150"
+Cohesion: 0.15
+Nodes (3): EmbeddedTargetListResource, TargetListResource, TargetResource
+
+### Community 156 - "Community 156"
+Cohesion: 0.11
+Nodes (18): runs-on, steps, default, description, required, defaults, run, containerVersion (+10 more)
+
+### Community 158 - "Community 158"
+Cohesion: 0.15
+Nodes (3): DishListResource, DishResource, EmbeddedDishListResource
+
+### Community 164 - "Community 164"
 Cohesion: 0.19
-Nodes (3): DishDTO, Override, RatingInfoDTO
+Nodes (4): AbstractContentBuilder, ContentBuilder, ContentBuilderFactory, SimpleContentBuilder
 
-### Community 144 - "StatisticListPost"
+### Community 165 - "Community 165"
+Cohesion: 0.24
+Nodes (3): JwtAuthFilter, JwtAuthFilterDummyImpl, JwtAuthFilterImpl
+
+### Community 169 - "Community 169"
+Cohesion: 0.17
+Nodes (7): ProposalProcessorFactoryImpl, ProposalProcessor, ProposalProcessorFactory, ProposalSearchType, FillInSearch, NewSearch, RefreshSearch
+
+### Community 172 - "Community 172"
+Cohesion: 0.12
+Nodes (15): runs-on, steps, jobs, build, name, on, push, branches (+7 more)
+
+### Community 177 - "Community 177"
+Cohesion: 0.16
+Nodes (4): DomainConversionHandler, AbstractConverterProcessor, ConverterProcessor, DomainConverterProcessor
+
+### Community 178 - "Community 178"
 Cohesion: 0.15
-Nodes (7): CrossOrigin, GetMapping, PostMapping, RequestMapping, RestController, StatisticRestControllerApi, StatisticListPost
+Nodes (3): FoodCategoryEntity, FoodCategoryRepository, UserPropertyRepository
 
-### Community 146 - "Initializer"
+### Community 182 - "Community 182"
+Cohesion: 0.13
+Nodes (14): runs-on, steps, jobs, build, name, on, release, types (+6 more)
+
+### Community 188 - "Community 188"
+Cohesion: 0.14
+Nodes (13): runs-on, steps, jobs, build, name, on, name, run (+5 more)
+
+### Community 190 - "Community 190"
 Cohesion: 0.23
-Nodes (7): Initializer, Override, UITestContextInitializer, UITestPostgresqlContainer, org.springframework.context.ApplicationContextInitializer, org.springframework.context.ConfigurableApplicationContext, org.testcontainers.containers.PostgreSQLContainer
+Nodes (3): Initializer, UITestContextInitializer, UITestPostgresqlContainer
 
-### Community 147 - "RoundingType"
-Cohesion: 0.17
+### Community 192 - "Community 192"
+Cohesion: 0.19
+Nodes (4): SourceReferenceType, DISH, LIST, SourceDTO
+
+### Community 200 - "Community 200"
+Cohesion: 0.20
 Nodes (7): RoundingType, EIGHTH, HUNDREDTH, QUARTER, THIRD, THOUSANDTH, UNIT
 
-### Community 148 - "TagConverterProcessor"
-Cohesion: 0.24
-Nodes (4): AbstractConverterProcessor, Override, TagConverterProcessor, TagHandler
+### Community 201 - "Community 201"
+Cohesion: 0.20
+Nodes (9): TagOperationType, AssignFood, AssignFoodCategory, AssignToUser, CopyFoodFromTag, CopyToStandard, MarkAsNoFoodVerified, MarkAsReviewed (+1 more)
 
-### Community 154 - "DomainConverterProcessor"
-Cohesion: 0.33
-Nodes (3): DeltaSpec, DomainConversionHandler, DomainConverterProcessor
+### Community 207 - "Community 207"
+Cohesion: 0.49
+Nodes (10): com.meg.listshop:conversion-api, com.meg.listshop:conversion-common, com.meg.listshop:conversion-data, com.meg.listshop:conversion-service, com.meg.listshop:listshop-api, com.meg.listshop:listshop-common, com.meg.listshop:listshop-common-data, com.meg.listshop:listshop-data (+2 more)
 
-### Community 157 - "ContentMap"
-Cohesion: 0.28
-Nodes (4): AbstractMap, Entry, ContentMap, Override
+### Community 210 - "Community 210"
+Cohesion: 0.25
+Nodes (7): interval, updates, directory, package-ecosystem, schedule, target-branch, version
 
-### Community 158 - "RatingUpdateInfoResource"
-Cohesion: 0.31
-Nodes (3): Override, RatingUpdateInfoResource, net.minidev.json.annotate.JsonIgnore
-
-### Community 161 - "com.meg.listshop:listshop-service"
-Cohesion: 0.50
-Nodes (9): com.meg.listshop:conversion-api, com.meg.listshop:conversion-common, com.meg.listshop:conversion-data, com.meg.listshop:listshop-common, com.meg.listshop:listshop-common-data, com.meg.listshop:listshop-data, com.meg.listshop:listshop-service, com.meg.postoffice:postoffice-service (+1 more)
-
-### Community 168 - "Application.java"
+### Community 214 - "Community 214"
 Cohesion: 0.29
-Nodes (4): org.springframework.boot.autoconfigure.SpringBootApplication, org.springframework.boot.SpringApplication, org.springframework.scheduling.annotation.EnableScheduling, SpringApplication
+Nodes (6): Agent Guidelines, Database Migration Guidelines, Flyway, PostgreSQL, Spring Boot, V2 Layout Services
 
-### Community 169 - "CollectedItemStatus"
+### Community 223 - "Community 223"
 Cohesion: 0.33
-Nodes (5): CollectedItemStatus, CROSSED_OFF, NEW, REMOVED, UPDATED
+Nodes (3): MealPlanType, Manual, Targeted
 
-### Community 171 - ".createGroupSubquery"
-Cohesion: 0.40
-Nodes (4): CriteriaBuilder, CriteriaQuery, Root, Subquery
-
-### Community 172 - "ListItemState"
+### Community 226 - "Community 226"
 Cohesion: 0.40
 Nodes (4): ListItemState, ACTIVE, CROSSED_OFF, REMOVED
 
-### Community 174 - "SharedPropertyKeys"
+### Community 229 - "Community 229"
 Cohesion: 0.67
 Nodes (3): findByName(), SharedPropertyKeys, PREFERRED_DOMAIN
 
+### Community 232 - "Community 232"
+Cohesion: 0.50
+Nodes (3): SortOrMoveDirection, DOWN, UP
+
 ## Knowledge Gaps
-- **157 isolated node(s):** `PreferredDomain`, `TestEmailSent`, `TestInfoRequested`, `add`, `remove` (+152 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1513 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **48 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **162 isolated node(s):** `PreferredDomain`, `TestEmailSent`, `TestInfoRequested`, `add`, `remove` (+157 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2014 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **136 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TagEntity` connect `TagEntity` to `org.slf4j.Logger`, `UnitEntity`, `ListItemDetailEntity`, `org.springframework.test.context.ActiveProfiles`, `.toModel`, `.toModel`, `DishItemEntity`, `MealPlanEntity`, `CollectorContext`, `CollectedItem`, `DishDTO`, `.setItems`, `ListItemEntity`, `ProposalEntity`, `CustomListLayoutRepositoryImpl.java`, `ListLayoutCategoryEntity`, `ListLayoutEntity`, `TargetEntity`, `DishEntity`, `AdminTagFullInfo`, `.toEntity`, `SimpleListItemDTO`, `.getDishForUserById`, `.updateTag`, `ProposalSlotEntity`, `.testUpdateIngredientInDish_ConversionNewMarkers`, `TagType`, `.getId`, `DishItemDTO`, `ProposalGeneratorServiceImplTest`, `LayoutCategoryDTO`, `TagServiceImpl`, `FoodEntity`, `ListShopCategory`, `FoodCategoryMappingEntity`, `BasicAmount`, `FlatStringUtils`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
-- **Why does `ListItemEntity` connect `ListItemEntity` to `org.slf4j.Logger`, `ShoppingListEntity`, `UnitEntity`, `ListItemDetailEntity`, `ListTagStatisticServiceImpl`, `org.springframework.test.context.ActiveProfiles`, `.toModel`, `.toModel`, `DishItemEntity`, `ListOperationType`, `CollectorContext`, `CollectedItem`, `TagEntity`, `FractionType`, `ListLayoutCategoryEntity`, `org.springframework.data.jpa.repository.Query`, `.findWithDetailsByListId`, `.toEntity`, `ShoppingListServiceImpl`, `Category`, `TagType`, `ShoppingListProperties`, `Statistic`, `FlatStringUtils`?**
-  _High betweenness centrality (0.074) - this node is a cross-community bridge._
-- **Why does `UnitEntity` connect `UnitEntity` to `org.slf4j.Logger`, `ListItemDetailEntity`, `org.springframework.test.context.ActiveProfiles`, `DishItemEntity`, `FactorCriteria`, `.getUnit`, `ListItemEntity`, `ConvertibleAmount`, `FractionType`, `ProcessingContext`, `org.springframework.data.jpa.repository.Query`, `UnitType`, `ConversionFactor`, `.updateTag`, `FoodConversionEntity`, `ConversionFactorEntity`, `org.springframework.stereotype.Component`, `ConversionBridgeFactorEntity`, `.makeUSUnit`, `BasicAmount`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
+- **Why does `TagEntity` connect `List Layout and Tags` to `Transactional Entities and Specifications`, `Exception Handling and Repositories`, `Meal Plan Proposal Logic`, `Unit Repositories and Rounding`, `API Models and Rest Controllers`, `Data Inflation and Flattening`, `Community 140`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 19`, `Community 27`, `Community 35`, `Community 36`, `Community 41`, `Community 43`, `Community 47`, `Community 48`, `Community 51`, `Community 53`, `Community 60`, `Community 65`, `Community 67`, `Community 68`, `Community 72`, `Community 79`, `Community 89`, `Community 96`, `Community 236`, `Community 110`, `Community 114`, `Community 120`?**
+  _High betweenness centrality (0.093) - this node is a cross-community bridge._
 - **What connects `PreferredDomain`, `TestEmailSent`, `TestInfoRequested` to the rest of the system?**
-  _157 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `org.slf4j.Logger` be split into smaller, more focused modules?**
-  _Cohesion score 0.03214285714285714 - nodes in this community are weakly interconnected._
-- **Should `com.fasterxml.jackson.annotation.JsonIgnore` be split into smaller, more focused modules?**
-  _Cohesion score 0.024521072796934867 - nodes in this community are weakly interconnected._
-- **Should `ShoppingListEntity` be split into smaller, more focused modules?**
-  _Cohesion score 0.03812260536398467 - nodes in this community are weakly interconnected._
+  _162 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Unit and Conversion Entities` be split into smaller, more focused modules?**
+  _Cohesion score 0.027915071353985382 - nodes in this community are weakly interconnected._
+- **Why does `ListItemEntity` connect `Transactional Entities and Specifications` to `Unit and Conversion Entities`, `Exception Handling and Repositories`, `List Layout and Tags`, `Unit Repositories and Rounding`, `API Models and Rest Controllers`, `Rounding Utilities and DTOs`, `Community 11`, `Community 140`, `Community 14`, `Community 17`, `Community 27`, `Community 31`, `Community 35`, `Community 168`, `Community 41`, `Community 51`, `Community 67`, `Community 68`, `Community 72`, `Community 84`, `Community 88`, `Community 89`, `Community 94`, `Community 96`, `Community 104`, `Community 108`, `Community 110`, `Community 111`?**
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+- **Should `Transactional Entities and Specifications` be split into smaller, more focused modules?**
+  _Cohesion score 0.04023129921259842 - nodes in this community are weakly interconnected._
+- **Why does `TagInfoDTO` connect `Community 50` to `Community 64`, `Community 68`, `Community 39`, `Community 15`, `Community 57`?**
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+- **Should `Exception Handling and Repositories` be split into smaller, more focused modules?**
+  _Cohesion score 0.05330564209068882 - nodes in this community are weakly interconnected._
