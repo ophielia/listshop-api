@@ -88,6 +88,7 @@ public class ConversionServiceImpl implements ConversionService {
             toAdd.setToUnit(conversionFactor.getToUnit());
             toAdd.setFactor(conversionFactor.getFactor());
             conversionFactorRepository.save(toAdd);
+            conversionFactorRepository.refreshConversionId(conversionId);
     }
 
     @Override

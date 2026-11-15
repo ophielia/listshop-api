@@ -243,9 +243,6 @@ public class FoodServiceImpl implements FoodService {
         toAdd.setToUnit(toUnit);
         toAdd.setFactor(factor);
 
-        // add this factor
-
-        // return
         conversionService.addManualConversionFactor(tag.getConversionId(), toAdd);
     }
 

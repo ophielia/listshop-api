@@ -102,6 +102,16 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
     }
 
+    @Override
+    public void refreshConversionId(Long conversionId) {
+
+        for (CacheKey key : tagCache.asMap().keySet()) {
+            if (key.conversionId.equals(conversionId)) {
+                tagCache.invalidate(key);
+            }
+        }
+    }
+
     private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
             return getCachedValue(criteria,true, this::doFindInvertedFactors);
     }

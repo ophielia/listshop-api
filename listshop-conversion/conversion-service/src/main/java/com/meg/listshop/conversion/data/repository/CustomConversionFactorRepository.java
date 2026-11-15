@@ -17,4 +17,6 @@ public interface CustomConversionFactorRepository {
     List<ConversionFactor> findAllFactors(FactorCriteria criteria);
 
     List<ConversionFactor> findFactors(FactorCriteria criteria);
+
+    void refreshConversionId(Long conversionId);
 }
