@@ -20,5 +20,17 @@ values  (1121081, 182, 1013, 1011, 112225744, 3891, null, 'large', false, null),
         (1121087, 31, 1013, 1050, 112225744, 2835, 'wedge', 'medium', false, null),
         (1121088, 20, 1013, 1022, 112225744, 3606, null, 'medium', false, null);
 
+
+insert into public.factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id)
+values  (1030, 111, 1013, 1000, 225733, 1149, null, 'medium', false, null),
+        (1031, 111, 1013, 1000, 225733, 5556, null, 'medium', false, null)
+ON CONFLICT (factor_id) DO NOTHING;
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 -- add conversion to tomato
 update tag set conversion_id = 112225744 where tag_id = 33;
