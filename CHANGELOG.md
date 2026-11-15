@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [1.22.0]  - ??? xxxx
 ### Changed 
 - using exec-maven-plugin to build docker image
-
+- suggestions return wider array of units
+- 
 ### Added
 - Cache for conversion factors
 - calculate and expose crossed_off_count in NestedShoppingList

@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository.impl;
 
 import com.meg.listshop.conversion.data.pojo.DomainType;
@@ -16,10 +22,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -77,6 +80,32 @@ public class CustomAmountRepositoryImpl implements CustomAmountRepository {
             builder.append(" ");
             whereClause.append(builder);
         }
+
+        StringBuilder sql = new StringBuilder(sqlBase);
+        if (domainJoin != null) {
+            sql.append(domainJoin);
+        }
+        sql.append(whereClause);
+
+        logger.debug("Querying dishes: sql [{}], parameters [{}]", sql, parameters);
+        List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), parameters);
+
+        return results.stream()
+                .flatMap(m -> m.values().stream())
+                .map(Long.class::cast)
+                .collect(Collectors.toSet());
+
+    }
+
+    @Override
+    public Set<Long> getUnitIdsNonTagSpecific() {
+        logger.debug("Retrieving units for criteria");
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+
+        String sqlBase = "select distinct u.unit_id from units u ";
+        String domainJoin = null;
+        StringBuilder whereClause = new StringBuilder("where u.is_tag_specific is not true ");
 
         StringBuilder sql = new StringBuilder(sqlBase);
         if (domainJoin != null) {

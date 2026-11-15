@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -16,7 +22,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -65,19 +74,13 @@ public class AmountServiceImpl implements AmountService {
         // get unit ids for tag, if available
         if (tagId != null) {
             tagUnitIds = amountRepository.getUnitIdsForTag(tagId);
-            if (!tagUnitIds.isEmpty()) {
-            unitIds.addAll(tagUnitIds);
-            suggestions.addAll(amountRepository.getUnitSuggestionsByIds(tagUnitIds));
-            }
+                unitIds.addAll(tagUnitIds);
+
+
         }
+        unitIds.addAll(amountRepository.getUnitIdsNonTagSpecific());
 
-        // get unit ids for isLiquid and domain
-        UnitSearchCriteria searchCriteria = new UnitSearchCriteria(isLiquid,searchDomain);
-        Set<Long> nonTagUnitIds = amountRepository.getUnitIdsForCriteria(searchCriteria);
-        nonTagUnitIds.removeAll(tagUnitIds);
-        suggestions.addAll(amountRepository.getUnitSuggestionsByIds(nonTagUnitIds));
-
-
+        suggestions.addAll(amountRepository.getUnitSuggestionsByIds(unitIds));
         return suggestions;
     }
 
@@ -86,12 +89,11 @@ public class AmountServiceImpl implements AmountService {
         LOG.debug("Get text suggestion list for userId [{}], tagId [{}], isLiquid [{}], domainType [{}]", userId, tagId, isLiquid, domainType);
         List<SuggestionDTO> suggestions = new ArrayList<>();
         // get unit text markers
-        suggestions.addAll(getUnitSuggestionList(userId,tagId,isLiquid,domainType));
+        suggestions.addAll(getUnitSuggestionList(userId, tagId, isLiquid, domainType));
         // get all non-unit text markers
         suggestions.addAll(amountRepository.getNonUnitSuggestions());
         return suggestions;
     }
-
 
 
 }

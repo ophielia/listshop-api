@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.auth.service.impl;
@@ -129,7 +128,7 @@ public class UserPropertyServiceImpl implements UserPropertyService {
 
     @Override
     public DomainType getUserPreferredDomain(Long userId) {
-        UserPropertyEntity property = userPropertyRepository.findByUserIdAndKey(userId, UserPropertyKey.PreferredDomain.name()).orElse(null);
+        UserPropertyEntity property = userPropertyRepository.findByUserIdAndKey(userId, UserPropertyKey.PreferredDomain.getDisplayName()).orElse(null);
         if (property == null) {
             return null;
         }
