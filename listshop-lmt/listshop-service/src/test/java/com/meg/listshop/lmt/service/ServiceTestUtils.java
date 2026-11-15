@@ -159,11 +159,8 @@ public class ServiceTestUtils {
     }
 
     public static boolean dateInLastXSeconds(Date toCheck, int secondCount) {
-        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(secondCount);
+        LocalDateTime marginAgo = LocalDateTime.now().minusSeconds(secondCount);
         LocalDateTime timeToCheck = LocalDateTime.ofInstant(toCheck.toInstant(), ZoneId.systemDefault());
-        System.out.println(oneSecondAgo);
-        System.out.println(timeToCheck);
-         return timeToCheck.isAfter(oneSecondAgo);
-
+        return timeToCheck.isAfter(marginAgo);
     }
 }

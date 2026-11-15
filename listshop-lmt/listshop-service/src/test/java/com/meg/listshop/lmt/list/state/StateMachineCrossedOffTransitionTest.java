@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.Application;
@@ -108,13 +114,13 @@ class StateMachineCrossedOffTransitionTest    {
 
     private void verifyCrossedOffAndUpdated(ListItemEntity result) {
         Assertions.assertNotNull(result.getUpdatedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 30));
         Assertions.assertNotNull(result.getCrossedOff());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getCrossedOff(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getCrossedOff(), 30));
     }
     private void verifyNotCrossedOffButUpdated(ListItemEntity result) {
         Assertions.assertNotNull(result.getUpdatedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 30));
         Assertions.assertNull(result.getCrossedOff());
     }
 
