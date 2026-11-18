@@ -2,15 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.22.0]  - ??? xxxx
+## [1.22.0]  - November 2026
 ### Changed 
 - using exec-maven-plugin to build docker image
 - suggestions return wider array of units
-- 
+
 ### Added
 - Cache for conversion factors
 - calculate and expose crossed_off_count in NestedShoppingList
 - expose last_used in list of dishes
+- expose crossed_off_count in list of lists
 
 ## [1.21.0]  - September 2026
 ### Added
