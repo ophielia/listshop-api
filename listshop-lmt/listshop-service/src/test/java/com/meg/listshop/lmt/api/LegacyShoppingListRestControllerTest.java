@@ -6,7 +6,7 @@
 
 package com.meg.listshop.lmt.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -31,8 +31,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -93,18 +91,6 @@ class LegacyShoppingListRestControllerTest {
     @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
     Resource mergeConflictFileSource;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-
-                .filter(MappingJackson2HttpMessageConverter.class::isInstance)
-                .findAny()
-                .orElse(null);
-
-        Assertions.assertNotNull("the JSON message converter must not be null");
-    }
 
     @BeforeEach
     void setup() {

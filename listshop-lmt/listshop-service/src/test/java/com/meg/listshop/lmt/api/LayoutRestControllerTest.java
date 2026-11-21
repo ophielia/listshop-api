@@ -148,7 +148,7 @@ class LayoutRestControllerTest {
                 .then()
                 .extract()
                 .body().asString();
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        tools.jackson.databind.ObjectMapper objectMapper = new tools.jackson.databind.ObjectMapper();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
         ShoppingList resultList = afterList.getShoppingList();
 
@@ -648,13 +648,13 @@ class LayoutRestControllerTest {
     }
 
     private String json(Object o) throws IOException {
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        tools.jackson.databind.ObjectMapper objectMapper = new tools.jackson.databind.ObjectMapper();
 
         return objectMapper.writeValueAsString(o);
     }
 
     private ListLayoutListResource parseResourceFromString(String resultString) throws IOException {
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        tools.jackson.databind.ObjectMapper objectMapper = new tools.jackson.databind.ObjectMapper();
 
         ListLayoutListResource afterList = objectMapper.readValue(resultString, ListLayoutListResource.class);
         Assertions.assertNotNull(afterList);
@@ -662,7 +662,7 @@ class LayoutRestControllerTest {
     }
 
     private ListLayoutResource parseSingleResourceFromString(String resultString) throws IOException {
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        tools.jackson.databind.ObjectMapper objectMapper = new tools.jackson.databind.ObjectMapper();
 
         ListLayoutResource afterList = objectMapper.readValue(resultString, ListLayoutResource.class);
         Assertions.assertNotNull(afterList);
@@ -670,7 +670,7 @@ class LayoutRestControllerTest {
     }
 
     private CategoryListResource parseCategoryListResourceFromString(String resultString) throws IOException {
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        tools.jackson.databind.ObjectMapper objectMapper = new tools.jackson.databind.ObjectMapper();
 
         CategoryListResource afterList = objectMapper.readValue(resultString, CategoryListResource.class);
         Assertions.assertNotNull(afterList);

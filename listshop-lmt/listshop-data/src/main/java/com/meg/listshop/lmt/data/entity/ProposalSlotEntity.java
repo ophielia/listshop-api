@@ -1,9 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +29,7 @@ public class ProposalSlotEntity {
     @JoinColumn(name = "proposal_id", nullable = false)
     private ProposalEntity proposal;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "slot")
     private List<DishSlotEntity> dishSlots;
 
     private Long pickedDishId;

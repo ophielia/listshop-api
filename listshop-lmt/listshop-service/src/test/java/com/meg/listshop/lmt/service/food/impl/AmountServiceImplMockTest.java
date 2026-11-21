@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.food.impl;
 
 import com.meg.listshop.auth.service.UserPropertyService;
@@ -6,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,9 +25,9 @@ import java.util.Set;
 class AmountServiceImplMockTest {
     private AmountServiceImpl amountService;
 
-    @MockBean
+    @MockitoBean
     AmountRepository amountRepository;
-    @MockBean
+    @MockitoBean
     UserPropertyService userPropertyService;
 
     @BeforeEach

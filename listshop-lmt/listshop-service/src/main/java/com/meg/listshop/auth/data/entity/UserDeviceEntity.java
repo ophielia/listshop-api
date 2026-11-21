@@ -1,8 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.auth.data.entity;
 
 
 import com.meg.listshop.auth.api.model.ClientType;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.Date;

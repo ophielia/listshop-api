@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.auth.data.repository;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -16,8 +22,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, CustomU
 
     UserEntity findByEmailIgnoreCase(String email);
 
-    @Query(value = "select u.* from users u join user_devices ud using (user_id) where token = CAST(:userDeviceId as text)", nativeQuery = true)
-    UserEntity findByToken(@Param("userDeviceId") String userDeviceId);
+    @Query(value = """
+            select u.* from users u
+            where exists (
+                select 1 from user_devices ud
+                where ud.user_id = u.user_id and ud.token = :token
+            )
+            """, nativeQuery = true)
+    UserEntity findByToken(@Param("token") String token);
 
     @Query(value = "select u.* from users u join list l using (user_id) where l.list_id =:listId", nativeQuery = true)
     UserEntity findByListId(@Param("listId") Long listId);

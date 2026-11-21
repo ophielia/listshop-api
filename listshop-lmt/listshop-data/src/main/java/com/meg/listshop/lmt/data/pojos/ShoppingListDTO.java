@@ -8,6 +8,10 @@ package com.meg.listshop.lmt.data.pojos;
 
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,17 +57,17 @@ public class ShoppingListDTO {
     }
 
     private Date castToDate(Object object) {
-        if (object == null) {
-            return null;
+        if (object instanceof Date date) {
+            return date;
         }
-        if (object instanceof Date) {
-            return (Date) object;
+        if (object instanceof Instant instant) {
+            return Date.from(instant);
         }
-        if (object instanceof java.time.Instant) {
-            return Date.from((java.time.Instant) object);
+        if (object instanceof OffsetDateTime offsetDateTime) {
+            return Date.from(offsetDateTime.toInstant());
         }
-        if (object instanceof java.sql.Timestamp) {
-            return new Date(((java.sql.Timestamp) object).getTime());
+        if (object instanceof LocalDateTime localDateTime) {
+            return Timestamp.valueOf(localDateTime);
         }
         return null;
     }

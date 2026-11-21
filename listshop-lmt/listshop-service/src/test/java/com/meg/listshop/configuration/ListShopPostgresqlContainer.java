@@ -1,9 +1,15 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.configuration;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class ListShopPostgresqlContainer extends PostgreSQLContainer<ListShopPostgresqlContainer> {
-    private static final String IMAGE_VERSION = "postgres:10.14";
+    private static final String IMAGE_VERSION = System.getProperty("listshop.test.postgres.image", "postgres:10.14");
     private static ListShopPostgresqlContainer container;
 
     ListShopPostgresqlContainer() {
