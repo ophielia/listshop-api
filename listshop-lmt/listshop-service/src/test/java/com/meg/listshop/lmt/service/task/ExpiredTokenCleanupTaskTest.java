@@ -1,7 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.data.entity.UserDeviceEntity;
 import com.meg.listshop.auth.data.repository.UserDeviceRepository;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import org.junit.jupiter.api.Assertions;
@@ -12,11 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Created by margaretmartin on 21/03/2018.
@@ -27,8 +30,8 @@ import java.util.List;
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/service/task/ExpiredTokenCleanupTaskTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/sql/com/meg/atable/lmt/service/task/ExpiredTokenCleanupTaskTest-rollback.sql"},
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+// Roll back the fixture setup and cleanup together to preserve shared login tokens.
+@Transactional
 class ExpiredTokenCleanupTaskTest {
 
     @Container
@@ -42,23 +45,12 @@ class ExpiredTokenCleanupTaskTest {
 
     @Test
     void testCleanupTask() {
-        LocalDate testRemoveDate = LocalDate.now().minusDays(12);
-
-        // 3 items in test data set which are stale
-        // get all tags
-        List<UserDeviceEntity> alltokens = userDeviceRepository.findAll();
-        // count them
-        long count = alltokens.size();
-
-        // call cleanup task
         expiredTokenCleanupTask.removeExpiredLogins();
 
-        // get all tags and count them
-        alltokens = userDeviceRepository.findAll();
-        long newCount = alltokens.size();
-
-        // count should be 3 less
-        Assertions.assertEquals(count - 3, newCount);
+        Assertions.assertTrue(userDeviceRepository.existsById(99L), "recent web login should remain");
+        Assertions.assertTrue(userDeviceRepository.existsById(100L), "recent mobile login should remain");
+        Assertions.assertFalse(userDeviceRepository.existsById(101L), "expired mobile login should be removed");
+        Assertions.assertFalse(userDeviceRepository.existsById(102L), "expired mobile login should be removed");
+        Assertions.assertFalse(userDeviceRepository.existsById(103L), "expired web login should be removed");
     }
-
 }

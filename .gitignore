@@ -33,3 +33,4 @@ nbdist/
 .nb-gradle/
 /-
 /pom.xml.versionsBackup
+/graphify-out/
