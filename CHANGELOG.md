@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.22.1]  - November 2026
+### Fixed
+- list generation error
+
 ## [1.22.0]  - November 2026
 ### Changed 
 - using exec-maven-plugin to build docker image

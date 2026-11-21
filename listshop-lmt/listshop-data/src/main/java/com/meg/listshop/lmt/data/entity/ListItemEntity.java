@@ -86,7 +86,7 @@ public class ListItemEntity {
     @Enumerated(EnumType.STRING)
     private FractionType fractionalQuantity;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "unit_id")
     private UnitEntity unit;
 
