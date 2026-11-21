@@ -6,7 +6,7 @@
 
 package com.meg.listshop.lmt.api.v2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.RoundingUtils;
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -89,11 +88,6 @@ class ShoppingListRestControllerTest {
         RestAssured.port = serverPort;
         RestAssured.urlEncodingEnabled = false;
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
     @BeforeEach
@@ -1573,7 +1567,7 @@ class ShoppingListRestControllerTest {
                     .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
-                    .body("list_id", Matchers.isA(String.class))
+                    .body("list_id", Matchers.equalTo(testId.toString()))
                     .extract()
                     .as(ShoppingList.class);
 

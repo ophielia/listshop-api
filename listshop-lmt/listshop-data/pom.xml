@@ -17,7 +17,6 @@
     <name>listshop-data</name>
     <description>api for the list shop</description>
 
-
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-lmt</artifactId>
@@ -73,7 +72,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -97,11 +96,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.mobile</groupId>
-            <artifactId>spring-mobile-starter</artifactId>
-            <version>2.0.0.M2</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
@@ -114,13 +108,6 @@
             <version>1.11.1</version>
         </dependency>
 
-        <!-- tsid, vlad -->
-        <dependency>
-            <groupId>io.hypersistence</groupId>
-            <artifactId>hypersistence-utils-hibernate-63</artifactId>
-        </dependency>
-
-
         <!-- testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -131,25 +118,12 @@
             <artifactId>jna</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- swagger dependencies -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
         </dependency>
-
-        <!-- flyway -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-
-
 
         <!-- haiku for auto names -->
         <dependency>
@@ -163,14 +137,12 @@
             <artifactId>commons-beanutils</artifactId>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <!-- for enums -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>

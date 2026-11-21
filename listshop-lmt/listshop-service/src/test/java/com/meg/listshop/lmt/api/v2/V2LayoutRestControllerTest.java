@@ -369,7 +369,7 @@ class V2LayoutRestControllerTest {
 
 
     private String json(Object o) throws IOException {
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        tools.jackson.databind.ObjectMapper objectMapper = new tools.jackson.databind.ObjectMapper();
 
         return objectMapper.writeValueAsString(o);
     }

@@ -6,8 +6,8 @@
 
 package com.meg.listshop.admin.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.admin.model.PostUpdateTags;
@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
@@ -58,7 +57,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @Testcontainers
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-@AutoConfigureJsonTesters
 @Sql(value = {"/sql/com/meg/atable/admin/AdminTagControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/admin/AdminTagControllerTest_rollback.sql"},
@@ -483,7 +481,7 @@ class AdminTagRestControllerTest {
         return objectMapper.writeValueAsString(o);
     }
 
-    private TagListResource deserializeTagListResource(String json) throws JsonProcessingException {
+    private TagListResource deserializeTagListResource(String json) throws JacksonException {
         return objectMapper.readValue(json, TagListResource.class);
 
     }

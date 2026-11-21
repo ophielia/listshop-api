@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -16,7 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.StringUtils;
 import org.testcontainers.junit.jupiter.Container;
@@ -42,10 +48,10 @@ class FillInProposalProcessorImplTest {
     @Autowired
     private FillInProposalProcessorImpl processor;
 
-    @MockBean
+    @MockitoBean
     private TagStructureService tagStructureService;
 
-    @MockBean
+    @MockitoBean
     private DishSearchService dishSearchService;
 
 

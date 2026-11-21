@@ -6,7 +6,7 @@
 
 package com.meg.listshop.lmt.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.FlatStringUtils;

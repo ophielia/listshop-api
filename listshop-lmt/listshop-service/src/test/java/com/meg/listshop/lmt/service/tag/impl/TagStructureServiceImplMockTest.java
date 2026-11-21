@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -10,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -25,10 +31,10 @@ class TagStructureServiceImplMockTest {
 
     private TagStructureService tagStructureService;
 
-    @MockBean
+    @MockitoBean
     private TagRelationRepository tagRelationRepository;
 
-    @MockBean
+    @MockitoBean
     private TagRepository tagRepository;
 
     @BeforeEach

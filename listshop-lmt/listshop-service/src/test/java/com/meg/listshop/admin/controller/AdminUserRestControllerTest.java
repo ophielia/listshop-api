@@ -8,7 +8,6 @@ package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.test.TestConstants;
 import com.meg.listshop.test.TestUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -43,7 +42,7 @@ class AdminUserRestControllerTest {
     @LocalServerPort
     private int port;
 
-    private static final String ADMIN_TOKEN = TestConstants.USER_3_TOKEN;
+    private static final String ADMIN_TOKEN = "tokenMojo";
 
     @PostConstruct
     public void initRestAssured() {

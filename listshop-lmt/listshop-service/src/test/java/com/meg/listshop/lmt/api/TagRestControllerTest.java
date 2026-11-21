@@ -6,8 +6,8 @@
 
 package com.meg.listshop.lmt.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.PropertyNamingStrategies;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
@@ -56,7 +55,6 @@ import static io.restassured.RestAssured.given;
 @SpringBootTest(classes = Application.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@AutoConfigureJsonTesters
 @ActiveProfiles("test")
 class TagRestControllerTest {
 
@@ -431,9 +429,10 @@ class TagRestControllerTest {
 
 
     private String json(Object o) throws IOException {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        ObjectMapper snakeCaseMapper = objectMapper.rebuild()
+                .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).build();
 
-        return objectMapper.writeValueAsString(o);
+        return snakeCaseMapper.writeValueAsString(o);
     }
 
 }

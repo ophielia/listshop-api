@@ -6,7 +6,6 @@
 
 package com.meg.listshop.lmt.list.state;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;

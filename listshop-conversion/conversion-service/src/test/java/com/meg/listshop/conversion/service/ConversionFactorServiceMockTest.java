@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
@@ -13,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -26,13 +32,13 @@ class ConversionFactorServiceMockTest {
 
     private ConversionServiceImpl conversionFactorService;
 
-    @MockBean
+    @MockitoBean
     private ConversionFactorRepository conversionFactorRepository;
 
-    @MockBean
+    @MockitoBean
     private UnitRepository unitRepository;
 
-    @MockBean
+    @MockitoBean
     private ConverterService converterService;
 
     @BeforeEach

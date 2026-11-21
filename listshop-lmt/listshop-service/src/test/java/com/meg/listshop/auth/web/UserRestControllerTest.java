@@ -5,8 +5,7 @@
  */
 package com.meg.listshop.auth.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import tools.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;

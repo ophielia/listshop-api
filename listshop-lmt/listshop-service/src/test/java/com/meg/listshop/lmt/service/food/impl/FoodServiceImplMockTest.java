@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -48,28 +48,28 @@ import static org.mockito.ArgumentMatchers.any;
 class FoodServiceImplMockTest {
     private FoodService foodService;
 
-    @MockBean
+    @MockitoBean
     FoodCategoryMappingRepository foodCategoryMappingRepo;
-    @MockBean
+    @MockitoBean
     FoodRepository foodRepository;
 
-    @MockBean
+    @MockitoBean
     FoodCategoryRepository foodCategoryRepository;
-    @MockBean
+    @MockitoBean
     TagService tagService;
-    @MockBean
+    @MockitoBean
     TagStructureService tagStructureService;
 
-    @MockBean
+    @MockitoBean
     FoodConversionRepository foodConversionRepository;
 
-    @MockBean
+    @MockitoBean
     ConversionService conversionService;
 
-    @MockBean
+    @MockitoBean
     UnitRepository unitRepository;
 
-    @MockBean
+    @MockitoBean
     ConversionFactorRepository conversionFactorRepository;
 
     List<FoodCategoryMappingEntity> allMappedCategories;

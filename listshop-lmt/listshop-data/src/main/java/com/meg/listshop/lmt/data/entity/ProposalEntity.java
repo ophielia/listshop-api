@@ -1,9 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,8 +28,7 @@ public class ProposalEntity {
 
     private Long userId;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "proposal")
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "proposal")
     private List<ProposalSlotEntity> slots;
 
     private Date created;
